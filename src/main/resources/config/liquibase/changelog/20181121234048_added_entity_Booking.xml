@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+    <!--
+        Added the entity Booking.
+    -->
+    <changeSet id="20181121234048-1" author="jhipster">
+        <createTable tableName="booking">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="requested_by" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="start_time" type="datetime">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="end_time" type="datetime">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="user_comments" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="importance_level" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="tutor_accepted" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="tutor_accepted_id" type="integer">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="tutor_rejected_count" type="integer">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="cancelled" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="subject_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
+        </createTable>
+        <dropDefaultValue tableName="booking" columnName="start_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="booking" columnName="end_time" columnDataType="datetime"/>
+        
+        <createTable tableName="booking_user_info">
+            <column name="user_infos_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bookings_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="bookings_id, user_infos_id" tableName="booking_user_info"/>
+        
+    </changeSet>
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
+</databaseChangeLog>

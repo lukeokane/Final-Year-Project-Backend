@@ -1,0 +1,60 @@
+{
+    "name": "UserInfo",
+    "fields": [
+        {
+            "fieldName": "tutorSkills",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "relationshipName": "user",
+            "otherEntityName": "user",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "user"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "bookingUserDetails",
+            "otherEntityName": "bookingUserDetails",
+            "otherEntityRelationshipName": "userInfo"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "senderUserInfo",
+            "otherEntityName": "notification",
+            "otherEntityRelationshipName": "sender"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "receiverUserInfo",
+            "otherEntityName": "notification",
+            "otherEntityRelationshipName": "receiver"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "booking",
+            "otherEntityName": "booking",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "userInfo"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "semester",
+            "otherEntityName": "semester",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "userInfo"
+        }
+    ],
+    "changelogDate": "20181121234047",
+    "entityTableName": "user_info",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

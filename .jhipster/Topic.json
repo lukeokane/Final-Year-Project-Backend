@@ -1,0 +1,36 @@
+{
+    "name": "Topic",
+    "fields": [
+        {
+            "fieldName": "title",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "resource",
+            "otherEntityName": "resource",
+            "otherEntityRelationshipName": "topic"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "topic"
+        }
+    ],
+    "changelogDate": "20181121234055",
+    "entityTableName": "topic",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

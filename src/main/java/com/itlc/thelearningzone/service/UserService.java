@@ -3,7 +3,9 @@ package com.itlc.thelearningzone.service;
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
@@ -36,6 +38,8 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    
+    private final UserInfoRepository userInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -43,8 +47,9 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
+        this.userInfoRepository = userInfoRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
@@ -120,6 +125,14 @@ public class UserService {
         userRepository.save(newUser);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
+        
+     // Create and save the UserInfo entity
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setUser(newUser);
+        userInfoRepository.save(newUserInfo);
+        //userInfoSearchRepository.save(newUserInfo);
+        log.debug("Created Information for UserInfo: {}", newUserInfo);
+        
         return newUser;
     }
     private boolean removeNonActivatedUser(User existingUser){

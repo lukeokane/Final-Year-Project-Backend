@@ -1,0 +1,59 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="bookingUserDetails">
+            <h2><span>Booking User Details</span> {{bookingUserDetails.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>User Feedback</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.userFeedback}}</span>
+                </dd>
+                <dt><span>User Satisfaction</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.userSatisfaction}}</span>
+                </dd>
+                <dt><span>Usercheck In Time</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.usercheckInTime}}</span>
+                </dd>
+                <dt><span>Usercheck Out Time</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.usercheckOutTime}}</span>
+                </dd>
+                <dt><span>User Cancelled</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.userCancelled}}</span>
+                </dd>
+                <dt><span>Tutor Rejected</span></dt>
+                <dd>
+                    <span>{{bookingUserDetails.tutorRejected}}</span>
+                </dd>
+                <dt><span>User Info</span></dt>
+                <dd>
+                    <div *ngIf="bookingUserDetails.userInfoId">
+                        <a [routerLink]="['/user-info', bookingUserDetails.userInfoId, 'view']">{{bookingUserDetails.userInfoId}}</a>
+                    </div>
+                </dd>
+                <dt><span>Booking</span></dt>
+                <dd>
+                    <div *ngIf="bookingUserDetails.bookingId">
+                        <a [routerLink]="['/booking', bookingUserDetails.bookingId, 'view']">{{bookingUserDetails.bookingId}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/booking-user-details', bookingUserDetails.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

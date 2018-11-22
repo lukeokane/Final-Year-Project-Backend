@@ -1,0 +1,53 @@
+{
+    "name": "BookingUserDetails",
+    "fields": [
+        {
+            "fieldName": "userFeedback",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "userSatisfaction",
+            "fieldType": "OrdinalScale",
+            "fieldValues": "NONE,LOW,MEDIUM,HIGH"
+        },
+        {
+            "fieldName": "usercheckInTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "usercheckOutTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "userCancelled",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "tutorRejected",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "booking",
+            "otherEntityName": "booking",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181121234049",
+    "entityTableName": "booking_user_details",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

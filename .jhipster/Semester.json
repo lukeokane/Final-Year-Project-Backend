@@ -1,0 +1,54 @@
+{
+    "name": "Semester",
+    "fields": [
+        {
+            "fieldName": "semesterNumber",
+            "fieldType": "SemesterNumber",
+            "fieldValues": "NONE,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "semesterStartDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "semesterEndDate",
+            "fieldType": "LocalDate"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "semester",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "semester",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "courseYear",
+            "otherEntityName": "courseYear",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181121234053",
+    "entityTableName": "semester",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

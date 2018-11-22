@@ -1,0 +1,98 @@
+{
+    "name": "Booking",
+    "fields": [
+        {
+            "fieldName": "title",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "requestedBy",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "startTime",
+            "fieldType": "Instant",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "endTime",
+            "fieldType": "Instant",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "userComments",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "importanceLevel",
+            "fieldType": "OrdinalScale",
+            "fieldValues": "NONE,LOW,MEDIUM,HIGH",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "tutorAccepted",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "tutorAcceptedId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "tutorRejectedCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "cancelled",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "bookingUserDetails",
+            "otherEntityName": "bookingUserDetails",
+            "otherEntityRelationshipName": "booking"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "booking",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "notification",
+            "otherEntityName": "notification",
+            "otherEntityRelationshipName": "booking"
+        }
+    ],
+    "changelogDate": "20181121234048",
+    "entityTableName": "booking",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
