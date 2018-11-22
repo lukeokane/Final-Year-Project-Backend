@@ -1,0 +1,53 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="semester">
+            <h2><span>Semester</span> {{semester.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Semester Number</span></dt>
+                <dd>
+                    <span>{{semester.semesterNumber}}</span>
+                </dd>
+                <dt><span>Semester Start Date</span></dt>
+                <dd>
+                    <span>{{semester.semesterStartDate}}</span>
+                </dd>
+                <dt><span>Semester End Date</span></dt>
+                <dd>
+                    <span>{{semester.semesterEndDate}}</span>
+                </dd>
+                <dt><span>Subject</span></dt>
+                <dd>
+                    <span *ngFor="let subject of semester.subjects; let last = last">
+                        <a [routerLink]="['/subject', subject?.id, 'view' ]">{{subject.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
+                <dt><span>User Info</span></dt>
+                <dd>
+                    <span *ngFor="let userInfo of semester.userInfos; let last = last">
+                        <a [routerLink]="['/user-info', userInfo?.id, 'view' ]">{{userInfo.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
+                <dt><span>Course Year</span></dt>
+                <dd>
+                    <div *ngIf="semester.courseYearId">
+                        <a [routerLink]="['/course-year', semester.courseYearId, 'view']">{{semester.courseYearId}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/semester', semester.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

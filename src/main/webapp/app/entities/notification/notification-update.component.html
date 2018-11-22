@@ -1,0 +1,83 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <h2 id="jhi-notification-heading">Create or edit a Notification</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!notification.id">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id"
+                        [(ngModel)]="notification.id" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_timestamp">Timestamp</label>
+                    <div class="d-flex">
+                        <input id="field_timestamp" type="datetime-local" class="form-control" name="timestamp" [(ngModel)]="timestamp"
+                        required/>
+                    </div>
+                    <div [hidden]="!(editForm.controls.timestamp?.dirty && editForm.controls.timestamp?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.timestamp?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.timestamp?.errors?.ZonedDateTimelocal">
+                            This field should be a date and time.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_message">Message</label>
+                    <input type="text" class="form-control" name="message" id="field_message"
+                        [(ngModel)]="notification.message" required/>
+                    <div [hidden]="!(editForm.controls.message?.dirty && editForm.controls.message?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.message?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_senderImageURL">Sender Image URL</label>
+                    <input type="text" class="form-control" name="senderImageURL" id="field_senderImageURL"
+                        [(ngModel)]="notification.senderImageURL" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_read">Read</label>
+                    <input type="checkbox" class="form-control" name="read" id="field_read"
+                        [(ngModel)]="notification.read" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_sender">Sender</label>
+                    <select class="form-control" id="field_sender" name="sender" [(ngModel)]="notification.senderId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userInfoOption.id" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_receiver">Receiver</label>
+                    <select class="form-control" id="field_receiver" name="receiver" [(ngModel)]="notification.receiverId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userInfoOption.id" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_booking">Booking</label>
+                    <select class="form-control" id="field_booking" name="booking" [(ngModel)]="notification.bookingId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="bookingOption.id" *ngFor="let bookingOption of bookings; trackBy: trackBookingById">{{bookingOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

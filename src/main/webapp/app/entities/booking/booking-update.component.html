@@ -1,0 +1,133 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <h2 id="jhi-booking-heading">Create or edit a Booking</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!booking.id">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id"
+                        [(ngModel)]="booking.id" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_title">Title</label>
+                    <input type="text" class="form-control" name="title" id="field_title"
+                        [(ngModel)]="booking.title" required/>
+                    <div [hidden]="!(editForm.controls.title?.dirty && editForm.controls.title?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.title?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_requestedBy">Requested By</label>
+                    <input type="text" class="form-control" name="requestedBy" id="field_requestedBy"
+                        [(ngModel)]="booking.requestedBy" required/>
+                    <div [hidden]="!(editForm.controls.requestedBy?.dirty && editForm.controls.requestedBy?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.requestedBy?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_startTime">Start Time</label>
+                    <div class="d-flex">
+                        <input id="field_startTime" type="datetime-local" class="form-control" name="startTime" [(ngModel)]="startTime"
+                        required/>
+                    </div>
+                    <div [hidden]="!(editForm.controls.startTime?.dirty && editForm.controls.startTime?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.startTime?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.startTime?.errors?.ZonedDateTimelocal">
+                            This field should be a date and time.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_endTime">End Time</label>
+                    <div class="d-flex">
+                        <input id="field_endTime" type="datetime-local" class="form-control" name="endTime" [(ngModel)]="endTime"
+                        required/>
+                    </div>
+                    <div [hidden]="!(editForm.controls.endTime?.dirty && editForm.controls.endTime?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.endTime?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.endTime?.errors?.ZonedDateTimelocal">
+                            This field should be a date and time.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_userComments">User Comments</label>
+                    <input type="text" class="form-control" name="userComments" id="field_userComments"
+                        [(ngModel)]="booking.userComments" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_importanceLevel">Importance Level</label>
+                    <select class="form-control" name="importanceLevel" [(ngModel)]="booking.importanceLevel" id="field_importanceLevel"  required>
+                        <option value="NONE">NONE</option>
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                    </select>
+                    <div [hidden]="!(editForm.controls.importanceLevel?.dirty && editForm.controls.importanceLevel?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.importanceLevel?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_tutorAccepted">Tutor Accepted</label>
+                    <input type="checkbox" class="form-control" name="tutorAccepted" id="field_tutorAccepted"
+                        [(ngModel)]="booking.tutorAccepted" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_tutorAcceptedId">Tutor Accepted Id</label>
+                    <input type="number" class="form-control" name="tutorAcceptedId" id="field_tutorAcceptedId"
+                        [(ngModel)]="booking.tutorAcceptedId" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_tutorRejectedCount">Tutor Rejected Count</label>
+                    <input type="number" class="form-control" name="tutorRejectedCount" id="field_tutorRejectedCount"
+                        [(ngModel)]="booking.tutorRejectedCount" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_cancelled">Cancelled</label>
+                    <input type="checkbox" class="form-control" name="cancelled" id="field_cancelled"
+                        [(ngModel)]="booking.cancelled" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_subject">Subject</label>
+                    <select class="form-control" id="field_subject" name="subject" [(ngModel)]="booking.subjectId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="subjectOption.id" *ngFor="let subjectOption of subjects; trackBy: trackSubjectById">{{subjectOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="field_userInfo">User Info</label>
+                    <select class="form-control" id="field_userInfo" multiple name="userInfo" [(ngModel)]="booking.userInfos">
+                        <option [ngValue]="getSelected(booking.userInfos, userInfoOption)" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

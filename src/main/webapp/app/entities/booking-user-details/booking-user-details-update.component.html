@@ -1,0 +1,76 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <h2 id="jhi-booking-user-details-heading">Create or edit a Booking User Details</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!bookingUserDetails.id">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id"
+                        [(ngModel)]="bookingUserDetails.id" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_userFeedback">User Feedback</label>
+                    <input type="text" class="form-control" name="userFeedback" id="field_userFeedback"
+                        [(ngModel)]="bookingUserDetails.userFeedback" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_userSatisfaction">User Satisfaction</label>
+                    <select class="form-control" name="userSatisfaction" [(ngModel)]="bookingUserDetails.userSatisfaction" id="field_userSatisfaction" >
+                        <option value="NONE">NONE</option>
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_usercheckInTime">Usercheck In Time</label>
+                    <div class="d-flex">
+                        <input id="field_usercheckInTime" type="datetime-local" class="form-control" name="usercheckInTime" [(ngModel)]="usercheckInTime"
+                        />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_usercheckOutTime">Usercheck Out Time</label>
+                    <div class="d-flex">
+                        <input id="field_usercheckOutTime" type="datetime-local" class="form-control" name="usercheckOutTime" [(ngModel)]="usercheckOutTime"
+                        />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_userCancelled">User Cancelled</label>
+                    <input type="checkbox" class="form-control" name="userCancelled" id="field_userCancelled"
+                        [(ngModel)]="bookingUserDetails.userCancelled" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_tutorRejected">Tutor Rejected</label>
+                    <input type="checkbox" class="form-control" name="tutorRejected" id="field_tutorRejected"
+                        [(ngModel)]="bookingUserDetails.tutorRejected" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_userInfo">User Info</label>
+                    <select class="form-control" id="field_userInfo" name="userInfo" [(ngModel)]="bookingUserDetails.userInfoId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userInfoOption.id" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_booking">Booking</label>
+                    <select class="form-control" id="field_booking" name="booking" [(ngModel)]="bookingUserDetails.bookingId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="bookingOption.id" *ngFor="let bookingOption of bookings; trackBy: trackBookingById">{{bookingOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

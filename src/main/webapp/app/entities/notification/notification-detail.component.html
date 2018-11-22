@@ -1,0 +1,57 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="notification">
+            <h2><span>Notification</span> {{notification.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Timestamp</span></dt>
+                <dd>
+                    <span>{{notification.timestamp}}</span>
+                </dd>
+                <dt><span>Message</span></dt>
+                <dd>
+                    <span>{{notification.message}}</span>
+                </dd>
+                <dt><span>Sender Image URL</span></dt>
+                <dd>
+                    <span>{{notification.senderImageURL}}</span>
+                </dd>
+                <dt><span>Read</span></dt>
+                <dd>
+                    <span>{{notification.read}}</span>
+                </dd>
+                <dt><span>Sender</span></dt>
+                <dd>
+                    <div *ngIf="notification.senderId">
+                        <a [routerLink]="['/user-info', notification.senderId, 'view']">{{notification.senderId}}</a>
+                    </div>
+                </dd>
+                <dt><span>Receiver</span></dt>
+                <dd>
+                    <div *ngIf="notification.receiverId">
+                        <a [routerLink]="['/user-info', notification.receiverId, 'view']">{{notification.receiverId}}</a>
+                    </div>
+                </dd>
+                <dt><span>Booking</span></dt>
+                <dd>
+                    <div *ngIf="notification.bookingId">
+                        <a [routerLink]="['/booking', notification.bookingId, 'view']">{{notification.bookingId}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/notification', notification.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

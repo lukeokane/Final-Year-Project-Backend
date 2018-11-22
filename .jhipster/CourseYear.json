@@ -1,0 +1,35 @@
+{
+    "name": "CourseYear",
+    "fields": [
+        {
+            "fieldName": "courseYear",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "semester",
+            "otherEntityName": "semester",
+            "otherEntityRelationshipName": "courseYear"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "course",
+            "otherEntityName": "course",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181121234052",
+    "entityTableName": "course_year",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

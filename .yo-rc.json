@@ -1,0 +1,33 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.itlc.thelearningzone"
+    },
+    "jhipsterVersion": "5.7.0",
+    "applicationType": "monolith",
+    "baseName": "thelearningzone",
+    "packageName": "com.itlc.thelearningzone",
+    "packageFolder": "com/itlc/thelearningzone",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "YWVmYTNmMThjZTkzZWRlNmFlOWUxZmUxMGQ1Mzk0MTMzZTAzYWQ5OWRlOWE5NDA4ZjAxYWY2ZGI0M2ZjNDQ5YTkwY2EyMzk0YmRmNDA4ZTBhNWM3YTgwMjkxZDdhYzAyYWUzOTNjMGFlOTU1ZWQxYjM5MDMxMTEyNGEzOWRkMzI=",
+    "clientFramework": "angularX",
+    "useSass": false,
+    "clientPackageManager": "npm",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "otherModules": [],
+    "enableTranslation": false
+  }
+}

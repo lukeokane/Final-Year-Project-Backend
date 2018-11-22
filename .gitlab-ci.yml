@@ -1,0 +1,10 @@
+
+stages:
+    - build
+    - test
+    - analyze
+    - package
+    - release
+    - deploy
+
+

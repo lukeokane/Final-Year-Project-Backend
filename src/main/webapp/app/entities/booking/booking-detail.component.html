@@ -1,0 +1,75 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="booking">
+            <h2><span>Booking</span> {{booking.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Title</span></dt>
+                <dd>
+                    <span>{{booking.title}}</span>
+                </dd>
+                <dt><span>Requested By</span></dt>
+                <dd>
+                    <span>{{booking.requestedBy}}</span>
+                </dd>
+                <dt><span>Start Time</span></dt>
+                <dd>
+                    <span>{{booking.startTime}}</span>
+                </dd>
+                <dt><span>End Time</span></dt>
+                <dd>
+                    <span>{{booking.endTime}}</span>
+                </dd>
+                <dt><span>User Comments</span></dt>
+                <dd>
+                    <span>{{booking.userComments}}</span>
+                </dd>
+                <dt><span>Importance Level</span></dt>
+                <dd>
+                    <span>{{booking.importanceLevel}}</span>
+                </dd>
+                <dt><span>Tutor Accepted</span></dt>
+                <dd>
+                    <span>{{booking.tutorAccepted}}</span>
+                </dd>
+                <dt><span>Tutor Accepted Id</span></dt>
+                <dd>
+                    <span>{{booking.tutorAcceptedId}}</span>
+                </dd>
+                <dt><span>Tutor Rejected Count</span></dt>
+                <dd>
+                    <span>{{booking.tutorRejectedCount}}</span>
+                </dd>
+                <dt><span>Cancelled</span></dt>
+                <dd>
+                    <span>{{booking.cancelled}}</span>
+                </dd>
+                <dt><span>Subject</span></dt>
+                <dd>
+                    <div *ngIf="booking.subjectId">
+                        <a [routerLink]="['/subject', booking.subjectId, 'view']">{{booking.subjectId}}</a>
+                    </div>
+                </dd>
+                <dt><span>User Info</span></dt>
+                <dd>
+                    <span *ngFor="let userInfo of booking.userInfos; let last = last">
+                        <a [routerLink]="['/user-info', userInfo?.id, 'view' ]">{{userInfo.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/booking', booking.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>
