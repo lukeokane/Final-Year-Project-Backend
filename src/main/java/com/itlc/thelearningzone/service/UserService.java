@@ -40,6 +40,8 @@ public class UserService {
     private final UserRepository userRepository;
     
     private final UserInfoRepository userInfoRepository;
+    
+    private final UserInfoService userInfoService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -47,9 +49,10 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
+        this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
@@ -145,6 +148,7 @@ public class UserService {
         return true;
     }
 
+    // Updated method to Create and save the UserInfo entity for this User entity
     public User createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
@@ -173,6 +177,14 @@ public class UserService {
         userRepository.save(user);
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
+        
+     // Create and save the UserInfo entity
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setUser(user);
+        userInfoRepository.save(newUserInfo);
+        //userInfoSearchRepository.save(newUserInfo);
+        log.debug("Created Information for UserInfo: {}", newUserInfo);
+        
         return user;
     }
 
@@ -233,7 +245,12 @@ public class UserService {
             .map(UserDTO::new);
     }
 
+    // Added delete UserInfo functionality before parent entity (User) is deleted
     public void deleteUser(String login) {
+    	userInfoService.findOne(userRepository.findOneByLogin(login).get().getId()).ifPresent(userInfo -> {
+            userInfoService.delete(userInfo.getId());
+            log.debug("Deleted UserInfo: {}", userInfo);
+        });
         userRepository.findOneByLogin(login).ifPresent(user -> {
             userRepository.delete(user);
             this.clearUserCaches(user);
