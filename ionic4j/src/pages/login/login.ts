@@ -45,4 +45,9 @@ export class LoginPage {
       toast.present();
     });
   }
+
+  getScreenSize() {
+    return window.innerWidth;
+  }
+
 }
