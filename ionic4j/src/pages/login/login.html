@@ -5,10 +5,10 @@
 </ion-header> -->
 <ion-content scroll="false">
   <ion-grid style="height:100%">
-    <ng-container *ngIf="getScreenSize() > 500px">
+    <ng-container *ngIf="getScreenSize() > 500">
       <ion-row style="height:100%">
         <ion-col col-8 class="tint">
-          <img src="assets/imgs/main.png" class="img">
+          <img src="assets/imgs/main_desktop.jpg" class="img">
           <div class="centered">{{'WELCOME_TO_ITLC' | translate}}</div>
           <div class="centered1">Join our community that have more than 10000 members and learn new things
             everyday!</div>
@@ -27,8 +27,8 @@
           <form (submit)="doLogin()">
             <ion-row>
               <ion-col>
-                <i class="inside fa fa-envelope"></i>
-                <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="itlc@dkit.ie">
+                <i class="inside fa fa-user"></i>
+                <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="username">
               </ion-col>
             </ion-row>
             <br>
@@ -59,7 +59,7 @@
     <ng-container *ngIf="getScreenSize() < 500">
       <ion-row class="topImages">
         <ion-col class="tintImgMob">
-          <img src="assets/imgs/main.png" class="mobImg">
+          <img src="assets/imgs/main_mobile.jpg" class="mobImg">
           <img src="assets/imgs/ITLC_logo.PNG" class="mobImg1">
         </ion-col>
       </ion-row>
@@ -67,9 +67,9 @@
       <form (submit)="doLogin()">
         <ion-row>
           <ion-col class="pos">
-            <ion-label class="label">{{'EMAIL' | translate}}</ion-label>
-            <i class="inside fa fa-envelope"></i>
-            <input class="input" padding type="string" [(ngModel)]="account.username" name="email" placeholder="itlc@dkit.ie">
+            <ion-label class="label">{{'USERNAME' | translate}}</ion-label>
+            <i class="inside fa fa-user"></i>
+            <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="username">
           </ion-col>
         </ion-row>
         <ion-row>
