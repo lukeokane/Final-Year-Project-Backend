@@ -12,7 +12,19 @@
 </ion-header>
 
 <ion-content padding>
-  <p>{{ 'WELCOME_INTRO' | translate }}</p>
-
-  <span class="hipster"></span>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-1>
+        <button ion-button id="menu_button" menuToggle>
+          <div class="border-menu" >
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3" [style.margin-left]="20"></div>
+          </div>
+        </button>
+      </ion-col>
+      <ion-col>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

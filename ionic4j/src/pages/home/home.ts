@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { App, IonicPage, NavController } from 'ionic-angular';
+import { App, IonicPage, NavController, MenuController } from 'ionic-angular';
 import { Principal } from '../../providers/auth/principal.service';
 import { FirstRunPage } from '../pages';
 import { LoginService } from '../../providers/login/login.service';
@@ -15,7 +15,8 @@ export class HomePage implements OnInit {
   constructor(public navCtrl: NavController,
               private principal: Principal,
               private app: App,
-              private loginService: LoginService) { }
+              private loginService: LoginService,
+              private menuCtrl: MenuController) { }
 
   ngOnInit() {
     this.principal.identity().then((account) => {
@@ -35,4 +36,5 @@ export class HomePage implements OnInit {
     this.loginService.logout();
     this.app.getRootNavs()[0].setRoot(FirstRunPage);
   }
+
 }
