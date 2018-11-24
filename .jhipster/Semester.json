@@ -20,18 +20,16 @@
     ],
     "relationships": [
         {
-            "relationshipType": "many-to-many",
-            "otherEntityRelationshipName": "semester",
-            "relationshipName": "subject",
-            "otherEntityName": "subject",
-            "otherEntityField": "id",
-            "ownerSide": true
+            "relationshipType": "one-to-many",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
+            "otherEntityRelationshipName": "semester"
         },
         {
             "relationshipType": "many-to-many",
             "otherEntityRelationshipName": "semester",
-            "relationshipName": "userInfo",
-            "otherEntityName": "userInfo",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
             "otherEntityField": "id",
             "ownerSide": true
         },

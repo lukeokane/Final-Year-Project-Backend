@@ -7,10 +7,10 @@ import { JhiAlertService } from 'ng-jhipster';
 import { IUserInfo } from 'app/shared/model/user-info.model';
 import { UserInfoService } from './user-info.service';
 import { IUser, UserService } from 'app/core';
-import { IBooking } from 'app/shared/model/booking.model';
-import { BookingService } from 'app/entities/booking';
 import { ISemester } from 'app/shared/model/semester.model';
 import { SemesterService } from 'app/entities/semester';
+import { IBooking } from 'app/shared/model/booking.model';
+import { BookingService } from 'app/entities/booking';
 
 @Component({
     selector: 'jhi-user-info-update',
@@ -22,16 +22,16 @@ export class UserInfoUpdateComponent implements OnInit {
 
     users: IUser[];
 
-    bookings: IBooking[];
-
     semesters: ISemester[];
+
+    bookings: IBooking[];
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private userInfoService: UserInfoService,
         private userService: UserService,
-        private bookingService: BookingService,
         private semesterService: SemesterService,
+        private bookingService: BookingService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -46,15 +46,15 @@ export class UserInfoUpdateComponent implements OnInit {
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
-        this.bookingService.query().subscribe(
-            (res: HttpResponse<IBooking[]>) => {
-                this.bookings = res.body;
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
         this.semesterService.query().subscribe(
             (res: HttpResponse<ISemester[]>) => {
                 this.semesters = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+        this.bookingService.query().subscribe(
+            (res: HttpResponse<IBooking[]>) => {
+                this.bookings = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -94,11 +94,11 @@ export class UserInfoUpdateComponent implements OnInit {
         return item.id;
     }
 
-    trackBookingById(index: number, item: IBooking) {
+    trackSemesterById(index: number, item: ISemester) {
         return item.id;
     }
 
-    trackSemesterById(index: number, item: ISemester) {
+    trackBookingById(index: number, item: IBooking) {
         return item.id;
     }
 

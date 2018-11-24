@@ -17,14 +17,14 @@ import java.util.Optional;
 @Repository
 public interface SemesterRepository extends JpaRepository<Semester, Long> {
 
-    @Query(value = "select distinct semester from Semester semester left join fetch semester.subjects left join fetch semester.userInfos",
+    @Query(value = "select distinct semester from Semester semester left join fetch semester.subjects",
         countQuery = "select count(distinct semester) from Semester semester")
     Page<Semester> findAllWithEagerRelationships(Pageable pageable);
 
-    @Query(value = "select distinct semester from Semester semester left join fetch semester.subjects left join fetch semester.userInfos")
+    @Query(value = "select distinct semester from Semester semester left join fetch semester.subjects")
     List<Semester> findAllWithEagerRelationships();
 
-    @Query("select semester from Semester semester left join fetch semester.subjects left join fetch semester.userInfos where semester.id =:id")
+    @Query("select semester from Semester semester left join fetch semester.subjects where semester.id =:id")
     Optional<Semester> findOneWithEagerRelationships(@Param("id") Long id);
 
 }

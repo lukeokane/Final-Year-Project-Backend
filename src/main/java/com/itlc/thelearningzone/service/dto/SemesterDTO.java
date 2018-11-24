@@ -24,8 +24,6 @@ public class SemesterDTO implements Serializable {
 
     private Set<SubjectDTO> subjects = new HashSet<>();
 
-    private Set<UserInfoDTO> userInfos = new HashSet<>();
-
     private Long courseYearId;
 
     public Long getId() {
@@ -66,14 +64,6 @@ public class SemesterDTO implements Serializable {
 
     public void setSubjects(Set<SubjectDTO> subjects) {
         this.subjects = subjects;
-    }
-
-    public Set<UserInfoDTO> getUserInfos() {
-        return userInfos;
-    }
-
-    public void setUserInfos(Set<UserInfoDTO> userInfos) {
-        this.userInfos = userInfos;
     }
 
     public Long getCourseYearId() {

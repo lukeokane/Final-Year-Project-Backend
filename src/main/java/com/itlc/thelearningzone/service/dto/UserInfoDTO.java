@@ -14,6 +14,8 @@ public class UserInfoDTO implements Serializable {
 
     private Long userId;
 
+    private Long semesterId;
+
     public Long getId() {
         return id;
     }
@@ -36,6 +38,14 @@ public class UserInfoDTO implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getSemesterId() {
+        return semesterId;
+    }
+
+    public void setSemesterId(Long semesterId) {
+        this.semesterId = semesterId;
     }
 
     @Override
@@ -65,6 +75,7 @@ public class UserInfoDTO implements Serializable {
             "id=" + getId() +
             ", tutorSkills='" + getTutorSkills() + "'" +
             ", user=" + getUserId() +
+            ", semester=" + getSemesterId() +
             "}";
     }
 }

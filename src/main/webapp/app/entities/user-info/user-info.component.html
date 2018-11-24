@@ -17,6 +17,7 @@
             <th jhiSortBy="id"><span>ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorSkills"><span>Tutor Skills</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="userId"><span>User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="semesterId"><span>Semester</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -26,6 +27,11 @@
                 <td>{{userInfo.tutorSkills}}</td>
                 <td>
                     {{userInfo.userId}}
+                </td>
+                <td>
+                    <div *ngIf="userInfo.semesterId">
+                        <a [routerLink]="['../semester', userInfo.semesterId , 'view' ]" >{{userInfo.semesterId}}</a>
+                    </div>
                 </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">

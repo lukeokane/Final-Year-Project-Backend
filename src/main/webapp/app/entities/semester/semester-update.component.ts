@@ -9,8 +9,6 @@ import { ISemester } from 'app/shared/model/semester.model';
 import { SemesterService } from './semester.service';
 import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from 'app/entities/subject';
-import { IUserInfo } from 'app/shared/model/user-info.model';
-import { UserInfoService } from 'app/entities/user-info';
 import { ICourseYear } from 'app/shared/model/course-year.model';
 import { CourseYearService } from 'app/entities/course-year';
 
@@ -24,8 +22,6 @@ export class SemesterUpdateComponent implements OnInit {
 
     subjects: ISubject[];
 
-    userinfos: IUserInfo[];
-
     courseyears: ICourseYear[];
     semesterStartDateDp: any;
     semesterEndDateDp: any;
@@ -34,7 +30,6 @@ export class SemesterUpdateComponent implements OnInit {
         private jhiAlertService: JhiAlertService,
         private semesterService: SemesterService,
         private subjectService: SubjectService,
-        private userInfoService: UserInfoService,
         private courseYearService: CourseYearService,
         private activatedRoute: ActivatedRoute
     ) {}
@@ -47,12 +42,6 @@ export class SemesterUpdateComponent implements OnInit {
         this.subjectService.query().subscribe(
             (res: HttpResponse<ISubject[]>) => {
                 this.subjects = res.body;
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
-        this.userInfoService.query().subscribe(
-            (res: HttpResponse<IUserInfo[]>) => {
-                this.userinfos = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -95,10 +84,6 @@ export class SemesterUpdateComponent implements OnInit {
     }
 
     trackSubjectById(index: number, item: ISubject) {
-        return item.id;
-    }
-
-    trackUserInfoById(index: number, item: IUserInfo) {
         return item.id;
     }
 

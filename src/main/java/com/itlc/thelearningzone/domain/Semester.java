@@ -1,5 +1,6 @@
 package com.itlc.thelearningzone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,19 +41,15 @@ public class Semester implements Serializable {
     @Column(name = "semester_end_date")
     private LocalDate semesterEndDate;
 
+    @OneToMany(mappedBy = "semester")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<UserInfo> userInfos = new HashSet<>();
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "semester_subject",
                joinColumns = @JoinColumn(name = "semesters_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "subjects_id", referencedColumnName = "id"))
     private Set<Subject> subjects = new HashSet<>();
-
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "semester_user_info",
-               joinColumns = @JoinColumn(name = "semesters_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "user_infos_id", referencedColumnName = "id"))
-    private Set<UserInfo> userInfos = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties("semesters")
@@ -106,6 +103,31 @@ public class Semester implements Serializable {
         this.semesterEndDate = semesterEndDate;
     }
 
+    public Set<UserInfo> getUserInfos() {
+        return userInfos;
+    }
+
+    public Semester userInfos(Set<UserInfo> userInfos) {
+        this.userInfos = userInfos;
+        return this;
+    }
+
+    public Semester addUserInfo(UserInfo userInfo) {
+        this.userInfos.add(userInfo);
+        userInfo.setSemester(this);
+        return this;
+    }
+
+    public Semester removeUserInfo(UserInfo userInfo) {
+        this.userInfos.remove(userInfo);
+        userInfo.setSemester(null);
+        return this;
+    }
+
+    public void setUserInfos(Set<UserInfo> userInfos) {
+        this.userInfos = userInfos;
+    }
+
     public Set<Subject> getSubjects() {
         return subjects;
     }
@@ -129,31 +151,6 @@ public class Semester implements Serializable {
 
     public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
-    }
-
-    public Set<UserInfo> getUserInfos() {
-        return userInfos;
-    }
-
-    public Semester userInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
-        return this;
-    }
-
-    public Semester addUserInfo(UserInfo userInfo) {
-        this.userInfos.add(userInfo);
-        userInfo.getSemesters().add(this);
-        return this;
-    }
-
-    public Semester removeUserInfo(UserInfo userInfo) {
-        this.userInfos.remove(userInfo);
-        userInfo.getSemesters().remove(this);
-        return this;
-    }
-
-    public void setUserInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
     }
 
     public CourseYear getCourseYear() {

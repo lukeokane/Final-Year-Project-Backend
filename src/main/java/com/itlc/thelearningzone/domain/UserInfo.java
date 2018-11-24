@@ -1,6 +1,7 @@
 package com.itlc.thelearningzone.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -27,29 +28,26 @@ public class UserInfo implements Serializable {
     @Column(name = "tutor_skills")
     private String tutorSkills;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    @MapsId
+    @OneToOne    @JoinColumn(unique = true)
     private User user;
+
+    @ManyToOne
+    @JsonIgnoreProperties("userInfos")
+    private Semester semester;
 
     @OneToMany(mappedBy = "userInfo")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<BookingUserDetails> bookingUserDetails = new HashSet<>();
     @OneToMany(mappedBy = "sender")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Notification> senderUserInfos = new HashSet<>();
+    private Set<Notification> sentNotifications = new HashSet<>();
     @OneToMany(mappedBy = "receiver")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Notification> receiverUserInfos = new HashSet<>();
+    private Set<Notification> receivedNotifications = new HashSet<>();
     @ManyToMany(mappedBy = "userInfos")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JsonIgnore
     private Set<Booking> bookings = new HashSet<>();
-
-    @ManyToMany(mappedBy = "userInfos")
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JsonIgnore
-    private Set<Semester> semesters = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -86,6 +84,19 @@ public class UserInfo implements Serializable {
         this.user = user;
     }
 
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public UserInfo semester(Semester semester) {
+        this.semester = semester;
+        return this;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
+    }
+
     public Set<BookingUserDetails> getBookingUserDetails() {
         return bookingUserDetails;
     }
@@ -111,54 +122,54 @@ public class UserInfo implements Serializable {
         this.bookingUserDetails = bookingUserDetails;
     }
 
-    public Set<Notification> getSenderUserInfos() {
-        return senderUserInfos;
+    public Set<Notification> getSentNotifications() {
+        return sentNotifications;
     }
 
-    public UserInfo senderUserInfos(Set<Notification> notifications) {
-        this.senderUserInfos = notifications;
+    public UserInfo sentNotifications(Set<Notification> notifications) {
+        this.sentNotifications = notifications;
         return this;
     }
 
-    public UserInfo addSenderUserInfo(Notification notification) {
-        this.senderUserInfos.add(notification);
+    public UserInfo addSentNotifications(Notification notification) {
+        this.sentNotifications.add(notification);
         notification.setSender(this);
         return this;
     }
 
-    public UserInfo removeSenderUserInfo(Notification notification) {
-        this.senderUserInfos.remove(notification);
+    public UserInfo removeSentNotifications(Notification notification) {
+        this.sentNotifications.remove(notification);
         notification.setSender(null);
         return this;
     }
 
-    public void setSenderUserInfos(Set<Notification> notifications) {
-        this.senderUserInfos = notifications;
+    public void setSentNotifications(Set<Notification> notifications) {
+        this.sentNotifications = notifications;
     }
 
-    public Set<Notification> getReceiverUserInfos() {
-        return receiverUserInfos;
+    public Set<Notification> getReceivedNotifications() {
+        return receivedNotifications;
     }
 
-    public UserInfo receiverUserInfos(Set<Notification> notifications) {
-        this.receiverUserInfos = notifications;
+    public UserInfo receivedNotifications(Set<Notification> notifications) {
+        this.receivedNotifications = notifications;
         return this;
     }
 
-    public UserInfo addReceiverUserInfo(Notification notification) {
-        this.receiverUserInfos.add(notification);
+    public UserInfo addReceivedNotifications(Notification notification) {
+        this.receivedNotifications.add(notification);
         notification.setReceiver(this);
         return this;
     }
 
-    public UserInfo removeReceiverUserInfo(Notification notification) {
-        this.receiverUserInfos.remove(notification);
+    public UserInfo removeReceivedNotifications(Notification notification) {
+        this.receivedNotifications.remove(notification);
         notification.setReceiver(null);
         return this;
     }
 
-    public void setReceiverUserInfos(Set<Notification> notifications) {
-        this.receiverUserInfos = notifications;
+    public void setReceivedNotifications(Set<Notification> notifications) {
+        this.receivedNotifications = notifications;
     }
 
     public Set<Booking> getBookings() {
@@ -184,31 +195,6 @@ public class UserInfo implements Serializable {
 
     public void setBookings(Set<Booking> bookings) {
         this.bookings = bookings;
-    }
-
-    public Set<Semester> getSemesters() {
-        return semesters;
-    }
-
-    public UserInfo semesters(Set<Semester> semesters) {
-        this.semesters = semesters;
-        return this;
-    }
-
-    public UserInfo addSemester(Semester semester) {
-        this.semesters.add(semester);
-        semester.getUserInfos().add(this);
-        return this;
-    }
-
-    public UserInfo removeSemester(Semester semester) {
-        this.semesters.remove(semester);
-        semester.getUserInfos().remove(this);
-        return this;
-    }
-
-    public void setSemesters(Set<Semester> semesters) {
-        this.semesters = semesters;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

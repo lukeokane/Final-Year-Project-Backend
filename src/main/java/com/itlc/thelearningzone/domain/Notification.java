@@ -40,11 +40,11 @@ public class Notification implements Serializable {
     private Boolean read;
 
     @ManyToOne
-    @JsonIgnoreProperties("senderUserInfos")
+    @JsonIgnoreProperties("sentNotifications")
     private UserInfo sender;
 
     @ManyToOne
-    @JsonIgnoreProperties("receiverUserInfos")
+    @JsonIgnoreProperties("receivedNotifications")
     private UserInfo receiver;
 
     @ManyToOne

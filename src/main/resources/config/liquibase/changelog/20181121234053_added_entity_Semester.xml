@@ -52,17 +52,6 @@
 
         <addPrimaryKey columnNames="semesters_id, subjects_id" tableName="semester_subject"/>
         
-        <createTable tableName="semester_user_info">
-            <column name="user_infos_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="semesters_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="semesters_id, user_infos_id" tableName="semester_user_info"/>
-        
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 </databaseChangeLog>

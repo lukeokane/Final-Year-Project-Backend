@@ -13,6 +13,12 @@
                 <dd>
                     {{userInfo.userId}}
                 </dd>
+                <dt><span>Semester</span></dt>
+                <dd>
+                    <div *ngIf="userInfo.semesterId">
+                        <a [routerLink]="['/semester', userInfo.semesterId, 'view']">{{userInfo.semesterId}}</a>
+                    </div>
+                </dd>
             </dl>
 
             <button type="submit"
