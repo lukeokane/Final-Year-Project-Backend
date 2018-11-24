@@ -28,7 +28,9 @@ public class UserInfo implements Serializable {
     @Column(name = "tutor_skills")
     private String tutorSkills;
 
-    @OneToOne    @JoinColumn(unique = true)
+    @OneToOne
+    @JoinColumn(name = "id")
+    @MapsId
     private User user;
 
     @ManyToOne
