@@ -43,6 +43,8 @@ public class BookingDTO implements Serializable {
     private Long subjectId;
 
     private Set<UserInfoDTO> userInfos = new HashSet<>();
+    
+    private Set<BookingUserDetailsDTO> bookingUserDetailsDTO = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -52,7 +54,15 @@ public class BookingDTO implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
+    public Set<BookingUserDetailsDTO> getBookingUserDetailsDTO() {
+		return bookingUserDetailsDTO;
+	}
+
+	public void setBookingUserDetailsDTO(Set<BookingUserDetailsDTO> bookingUserDetailsDTO) {
+		this.bookingUserDetailsDTO = bookingUserDetailsDTO;
+	}
+
+	public String getTitle() {
         return title;
     }
 

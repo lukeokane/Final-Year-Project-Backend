@@ -14,7 +14,7 @@ public interface BookingMapper extends EntityMapper<BookingDTO, Booking> {
     @Mapping(source = "subject.id", target = "subjectId")
     BookingDTO toDto(Booking booking);
 
-    @Mapping(target = "bookingUserDetails", ignore = true)
+    @Mapping(target = "bookingUserDetails")
     @Mapping(source = "subjectId", target = "subject")
     @Mapping(target = "notifications", ignore = true)
     Booking toEntity(BookingDTO bookingDTO);

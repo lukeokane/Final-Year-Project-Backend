@@ -3,6 +3,8 @@ import com.itlc.thelearningzone.config.Constants;
 
 import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.Booking;
+
 import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.ByteArrayOutputStream;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +52,8 @@ public class MailServiceIntTest {
     private ArgumentCaptor<MimeMessage> messageCaptor;
 
     private MailService mailService;
+    
+    private Booking booking;
 
     @Before
     public void setup() {
@@ -176,6 +181,71 @@ public class MailServiceIntTest {
         assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
         assertThat(message.getContent().toString()).isNotEmpty();
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+    }
+    
+    @Test
+    public void testSendCancellationEmail() throws Exception {
+        User user = new User();
+        User tutorUser = new User();
+        Booking booking = new Booking();
+        user.setLangKey(Constants.DEFAULT_LANGUAGE);
+        user.setLogin("john");
+        user.setEmail("john.doe@example.com");
+        booking.setRequestedBy("John Doe");
+        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
+        booking.setTitle("Java");
+        mailService.sendBookingCancelledEmail(booking, user, tutorUser);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+       
+      
+    }
+    
+    @Test
+    public void testSendBookingEditedByAdminEmail() throws Exception {
+        User user = new User();
+        User tutorUser = new User();
+        Booking booking = new Booking();
+        user.setLangKey(Constants.DEFAULT_LANGUAGE);
+        user.setLogin("john");
+        user.setEmail("john.doe@example.com");
+        booking.setRequestedBy("John Doe");
+        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
+        booking.setTitle("Java");
+        mailService.sendBookingEditedyAdminEmail(booking, user, tutorUser);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+       
+      
+    }
+    
+    @Test
+    public void testSendBookingAcceptededByTutorEmail() throws Exception {
+        User user = new User();
+        User tutorUser = new User();
+        Booking booking = new Booking();
+        user.setLangKey(Constants.DEFAULT_LANGUAGE);
+        user.setLogin("john");
+        user.setEmail("john.doe@example.com");
+        booking.setRequestedBy("John Doe");
+        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
+        booking.setTitle("Java");
+        mailService.sendBookingAcceptedByTutorEmail(booking, user, tutorUser);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+         
     }
 
     @Test

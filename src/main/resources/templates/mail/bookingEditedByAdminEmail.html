@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="#{email.edit.title}">Booking change</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.edit.greeting(${booking.requestedBy})}">
+            Dear
+        </p>
+          </p>
+         <p>
+        <span th:text="#{email.edit.booking(${booking.title})}">
+           title
+        </span>
+        <span th:text="#{email.edit.bookingTime(${booking.startTime})}">
+          time
+        </span>
+        <span th:text="#{email.edit.tutorFirstName(${tutorUser.firstName})}">
+            first name
+        </span>
+         <span th:text="#{email.edit.tutorLastName(${tutorUser.lastName})}">
+            last name
+        </span>
+        
+       
+        </p>
+        <p>
+            <span th:text="#{email.edit.text3}">Regards, </span>
+            <br/>
+            <br/>
+            <em th:text="#{email.addy1}">IT Learning Centre</em>
+            <em th:text="#{email.addy2}">PJ Carroll Building.</em>
+            <em th:text="#{email.phoneNumAndExt}">Phone & ext</em>
+            <em th:text="#{email.ItlcEmail}">Email</em>
+        </p>
+    </body>
+</html>
