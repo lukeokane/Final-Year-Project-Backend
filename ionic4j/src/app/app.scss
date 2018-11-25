@@ -36,53 +36,59 @@ only screen and (                min-resolution: 2dppx) {
     background-size: contain;
   }
 }
-// ITLC Logo
-ion-title{
-  font-family: "Courier New", Courier, monospace;
-}
-#letterI{
-  color:#FE787B;
-}
-#letterT{
-  color:#3AAFA9;
 
-}
-#letterL{
-  color:#FFB478;
+        // ITLC Logo
+        ion-title{
+          font-family: "Courier New", Courier, monospace;
+        }
+        #letterI{
+          color:#FE787B;
+        }
+        #letterT{
+          color:#3AAFA9;
+        
+        }
+        #letterL{
+          color:#FFB478;
+        
+        }
+        #letterC{
+          color:#6395C5;
+        
+        }
+  //Side menu design
+  .bar4, .bar5, .bar6 {
+    width: 35px;
+    height: 5px;
+    background-color: white;
+    border: 1px solid #3AAFA9;
+    margin: 6px 0;
+  
+  }
+  
+  .bar4 {
+    width: 25px;
+    margin-left:10px;
+  }
+  
+  #side-menu-content{
+    background-color: #202D31;
+  }
+  
+  #side-menu-button{
+    background-color: transparent;
+    box-shadow: none;
+    float:right;
+  }
+  .list-md .item-block .item-inner{
+    border-bottom:0;
+  }
+  
+  #sideMenuTitle .toolbar-background-md{
+    background-color: #202D31;
+  }
 
-}
-#letterC{
-  color:#6395C5;
-
-}
-//Side menu design
-.bar4, .bar5, .bar6 {
-  width: 35px;
-  height: 5px;
-  background-color: white;
-  border: 1px solid #3AAFA9;
-  margin: 6px 0;
-
-}
-
-.bar4 {
-  width: 25px;
-  margin-left:10px;
-}
-
-#side-menu-content{
-  background-color: #202D31;
-}
-
-#side-menu-button{
-  background-color: transparent;
-  box-shadow: none;
-  float:right;
-}
-.list-md .item-block .item-inner{
-  border-bottom:0;
-}
-
-#sideMenuTitle .toolbar-background-md{
-  background-color: #202D31;
+  //all ion-content
+  ion-content.content.content-md{
+    position: relative;
 }

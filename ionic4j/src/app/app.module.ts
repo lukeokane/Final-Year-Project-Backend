@@ -17,6 +17,7 @@ import { AuthServerProvider } from '../providers/auth/auth-jwt.service';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
 import { EntityPageModule } from '../pages/entities/entity.module';
+import { ComponentsModule } from '../components/components.module';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -41,10 +42,11 @@ export function provideSettings(storage: Storage) {
 
 @NgModule({
   declarations: [
-    MyApp
+    MyApp  
   ],
   imports: [
     BrowserModule,
+    ComponentsModule,
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -59,7 +61,7 @@ export function provideSettings(storage: Storage) {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp
+    MyApp  
   ],
   providers: [
     Api,
