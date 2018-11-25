@@ -1,11 +1,7 @@
 import { Component } from '@angular/core';
+import { PopoverController } from 'ionic-angular';
+import { PopoverNotificationPage } from '../../pages/popover-notification/popover-notification';
 
-/**
- * Generated class for the TopMenuComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'top-menu',
   templateUrl: 'top-menu.html'
@@ -14,9 +10,23 @@ export class TopMenuComponent {
 
   text: string;
 
-  constructor() {
-    console.log('Hello TopMenuComponent Component');
-    this.text = 'Hello World';
+  constructor(public popoverCtrl: PopoverController) {
   }
 
+  showNotifications(myEvent) {
+    console.log(myEvent);
+    const popover = this.popoverCtrl.create(PopoverNotificationPage,{},{cssClass:'custom-popover'});
+    // myEvent={
+    //   target : {
+    //     getBoundingClientRect : () => {
+    //       return {
+    //         top: '100'
+    //       };
+    //     }
+    //   }
+    // };
+    
+    // const popover = this.popoverCtrl.create({PopoverNotificationPage,  { cssClass: 'custom-popover' }});
+    popover.present({ ev: myEvent });
+  }
 }

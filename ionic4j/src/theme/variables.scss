@@ -35,12 +35,16 @@ $app-direction: ltr;
 
 $colors: (
   primary:    #202D31,
-  secondary:  #32db64,
-  danger:     #f53d3d,
+  secondary:  #3AAFA9,
+  danger:     #FCB8B9,
   light:      #f4f4f4,
   dark:       #222
 );
 
+//popover notification
+$popover-md-width: 320px;
+$popover-ios-width: 320px;
+$popover-wp-width: 320px;
 
 // App iOS Variables
 // --------------------------------------------------

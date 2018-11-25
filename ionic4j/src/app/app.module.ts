@@ -18,6 +18,7 @@ import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
 import { EntityPageModule } from '../pages/entities/entity.module';
 import { ComponentsModule } from '../components/components.module';
+import { PopoverNotificationPage } from '../pages/popover-notification/popover-notification';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -42,7 +43,8 @@ export function provideSettings(storage: Storage) {
 
 @NgModule({
   declarations: [
-    MyApp  
+    MyApp ,
+    PopoverNotificationPage
   ],
   imports: [
     BrowserModule,
@@ -61,7 +63,8 @@ export function provideSettings(storage: Storage) {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp  
+    MyApp  ,
+    PopoverNotificationPage
   ],
   providers: [
     Api,

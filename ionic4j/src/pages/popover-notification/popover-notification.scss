@@ -1,0 +1,19 @@
+page-popover-notification {
+    .popover-md .popover-content{
+        width: 500px;
+    }
+    ion-item.item.item-md.item-block{
+        cursor: pointer;
+        border-bottom-color: white;
+        border-bottom-style: solid;
+
+    }
+    #view-all-notification-btn{
+        color: #3AAFA9;
+        text-align: center
+    }
+    // ion-list-header.item.item-md.list-header.list-header-md{
+    //     background-color: blue;
+
+    // }
+}
