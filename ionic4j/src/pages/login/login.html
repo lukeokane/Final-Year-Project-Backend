@@ -23,20 +23,20 @@
             <ion-row>
               <ion-col>
                 <i class="inside fa fa-user"></i>
-                <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
+                <input id="username" class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
               </ion-col>
             </ion-row>
             <br>
             <ion-row>
               <ion-col>
                 <i class="inside fa fa-lock"></i>
-                <input class="input" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
+                <input id="password" class="input" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
               </ion-col>
             </ion-row>
             <br>
             <ion-row>
               <ion-col>
-                <button ion-button round id="login" class="loginButton">
+                <button ion-button round id="login_btn_desktop_view" class="loginButton">
                   {{'CONTINUE' | translate}}
                 </button>
               </ion-col>
@@ -51,7 +51,7 @@
         </ion-col>
       </ion-row>
     </ng-container>
-    <ng-container *ngIf="getScreenSize() < 500 || getScreenSize() < 1280">
+    <ng-container *ngIf="getScreenSize() < 1280">
       <ion-row class="topImages">
         <ion-col class="tintImgMob">
           <ng-container *ngIf="getScreenSize() < 500">
@@ -70,27 +70,27 @@
           <ion-col class="pos">
             <ion-label class="label">{{'USERNAME' | translate}}</ion-label>
             <i class="inside fa fa-user"></i>
-            <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
+            <input id="username" class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col class="pos">
             <ion-label class="label">{{'PASSWORD' | translate}}</ion-label>
             <i class="inside fa fa-lock"></i>
-            <input class="input" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
+            <input id="password" class="input" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
           </ion-col>
         </ion-row>
         <br>
         <ion-row class="align">
           <ion-col>
-            <button ion-button round class="loginButton">
+            <button ion-button round class="loginButton" id="login_btn">
               {{'CONTINUE' | translate}}
             </button>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col class="align">
-            <h6 style="font-size:12px !important">{{'FORGOT_PASSWORD' | translate}}?</h6>
+            <h6 style="font-size:12px !important" id ="forgot_password_btn">{{'FORGOT_PASSWORD' | translate}}?</h6>
           </ion-col>
         </ion-row>
       </form>

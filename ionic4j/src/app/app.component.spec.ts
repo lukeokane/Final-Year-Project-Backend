@@ -62,6 +62,6 @@ describe('MyApp Component', () => {
   });
 
   it('should show tabs page', () => {
-    expect(component.rootPage).toEqual('TabsPage');
+    expect(component.rootPage).toEqual('HomePage');
   });
 });
