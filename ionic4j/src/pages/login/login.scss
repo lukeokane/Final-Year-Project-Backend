@@ -1,5 +1,9 @@
 page-login {
-     
+  
+  .height{
+    height:100%;
+  }
+
   .grid
   {
     padding: 0px;
@@ -25,15 +29,6 @@ page-login {
      position: absolute;
      top: 70%;
      left: 57.5%;
-     transform: translate(-80%, -80%);
-     color: white;
-     font-size: 22px;
- }
-
- .centered2{
-     position: absolute;
-     top: 90%;
-     left: 23%;
      transform: translate(-80%, -80%);
      color: white;
      font-size: 22px;
@@ -115,13 +110,16 @@ input{
    }
 
    .mobImg1 {
-    position: absolute;
+    // position: absolute;
     z-index: 1;
     opacity: 0.9;
-    height: 54%;
-    width: 37%;
-    top: 24%;
-    left: 32%;
+    margin-right: auto;
+    margin-left: auto;
+    display:block;
+    margin-top:18%;
+    zoom: 0.7;
+    max-height: 45%;
+    max-width: 45%;
     // border:1px solid black;
   }
 
@@ -150,6 +148,18 @@ input{
     height:32%;
     width: 100%;
    }
- 
+
+   .ipadImg
+    {
+    z-index: 1;
+    opacity: 0.9;
+    margin-right: auto;
+    margin-left: auto;
+    display:block;
+    margin-top:10%;
+    zoom: 0.6;
+    min-height: 50%;
+    max-width: 50%;      
+    }
 }
 

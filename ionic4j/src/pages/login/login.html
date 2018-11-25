@@ -4,19 +4,14 @@
   </ion-navbar>
 </ion-header> -->
 <ion-content scroll="false">
-  <ion-grid style="height:100%">
-    <ng-container *ngIf="getScreenSize() > 500">
-      <ion-row style="height:100%">
+  <ion-grid class="height">
+    <ng-container *ngIf="getScreenSize() >= 1280">
+      <ion-row class="height">
         <ion-col col-8 class="tint">
           <img src="assets/imgs/main_desktop.jpg" class="img">
           <div class="centered">{{'WELCOME_TO_ITLC' | translate}}</div>
           <div class="centered1">Join our community that have more than 10000 members and learn new things
             everyday!</div>
-          <div class="centered2">
-            <!-- <button ion-button outline round class="infoButton">
-                            About ITLC
-                        </button> -->
-          </div>
         </ion-col>
         <ion-col col-4 class="align">
           <br>
@@ -28,7 +23,7 @@
             <ion-row>
               <ion-col>
                 <i class="inside fa fa-user"></i>
-                <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="username">
+                <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
               </ion-col>
             </ion-row>
             <br>
@@ -56,11 +51,17 @@
         </ion-col>
       </ion-row>
     </ng-container>
-    <ng-container *ngIf="getScreenSize() < 500">
+    <ng-container *ngIf="getScreenSize() < 500 || getScreenSize() < 1280">
       <ion-row class="topImages">
         <ion-col class="tintImgMob">
+          <ng-container *ngIf="getScreenSize() < 500">
           <img src="assets/imgs/main_mobile.jpg" class="mobImg">
           <img src="assets/imgs/ITLC_logo.PNG" class="mobImg1">
+        </ng-container>
+        <ng-container *ngIf="getScreenSize() > 500 || getScreenSize < 1280">
+          <img src="assets/imgs/main_mobile.jpg" class="mobImg">
+          <img src="assets/imgs/ITLC_logo.PNG" class="ipadImg">
+        </ng-container>
         </ion-col>
       </ion-row>
       <br>
@@ -69,7 +70,7 @@
           <ion-col class="pos">
             <ion-label class="label">{{'USERNAME' | translate}}</ion-label>
             <i class="inside fa fa-user"></i>
-            <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="username">
+            <input class="input" padding type="string" [(ngModel)]="account.username" name="username" placeholder="Username">
           </ion-col>
         </ion-row>
         <ion-row>

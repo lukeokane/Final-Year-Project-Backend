@@ -1,3 +1,4 @@
+
 // The page the user lands on after opening the app and without a session
 export const FirstRunPage = 'WelcomePage';
 
@@ -9,3 +10,7 @@ export const MainPage = 'HomePage';
 // export const Tab1Root = 'HomePage';
 // export const Tab2Root = 'EntityPage';
 // export const Tab3Root = 'SettingsPage';
+
+export const loginPage = "LoginPage";
+export const homePage = "HomePage";
+export const signUpPage = "SignupPage";
