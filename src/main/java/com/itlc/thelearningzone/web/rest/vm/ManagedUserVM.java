@@ -1,12 +1,13 @@
 package com.itlc.thelearningzone.web.rest.vm;
 
-import com.itlc.thelearningzone.service.dto.UserDTO;
+import com.itlc.thelearningzone.service.dto.UserInfoRegisterDTO;
+
 import javax.validation.constraints.Size;
 
 /**
  * View Model extending the UserDTO, which is meant to be used in the user management UI.
  */
-public class ManagedUserVM extends UserDTO {
+public class ManagedUserVM extends UserInfoRegisterDTO {
 
     public static final int PASSWORD_MIN_LENGTH = 4;
 

@@ -130,14 +130,14 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
-        this.clearUserCaches(newUser);
+      
         log.debug("Created Information for User: {}", newUser);
         
      // Create and save the UserInfo entity
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUser(newUser);
         userInfoRepository.save(newUserInfo);
-        
+               
         //userInfoSearchRepository.save(newUserInfo);
         log.debug("Created Information for UserInfo: {}", newUserInfo);
         

@@ -29,7 +29,9 @@ export class RegisterComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.success = false;
-        this.registerAccount = {};
+        this.registerAccount = {
+            user: {}
+        };
     }
 
     ngAfterViewInit() {
@@ -44,7 +46,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
             this.error = null;
             this.errorUserExists = null;
             this.errorEmailExists = null;
-            this.registerAccount.langKey = 'en';
+            this.registerAccount.user.langKey = 'en';
             this.registerService.save(this.registerAccount).subscribe(
                 () => {
                     this.success = true;
