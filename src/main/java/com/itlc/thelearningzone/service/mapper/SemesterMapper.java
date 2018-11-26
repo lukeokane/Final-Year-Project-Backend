@@ -14,7 +14,7 @@ public interface SemesterMapper extends EntityMapper<SemesterDTO, Semester> {
     @Mapping(source = "courseYear.id", target = "courseYearId")
     SemesterDTO toDto(Semester semester);
 
-    @Mapping(target = "userInfos", ignore = true)
+    @Mapping(target = "semesterGroups", ignore = true)
     @Mapping(source = "courseYearId", target = "courseYear")
     Semester toEntity(SemesterDTO semesterDTO);
 

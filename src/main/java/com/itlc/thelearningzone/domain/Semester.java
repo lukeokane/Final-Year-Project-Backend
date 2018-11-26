@@ -43,7 +43,7 @@ public class Semester implements Serializable {
 
     @OneToMany(mappedBy = "semester")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<UserInfo> userInfos = new HashSet<>();
+    private Set<SemesterGroup> semesterGroups = new HashSet<>();
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "semester_subject",
@@ -103,29 +103,29 @@ public class Semester implements Serializable {
         this.semesterEndDate = semesterEndDate;
     }
 
-    public Set<UserInfo> getUserInfos() {
-        return userInfos;
+    public Set<SemesterGroup> getSemesterGroups() {
+        return semesterGroups;
     }
 
-    public Semester userInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
+    public Semester semesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
         return this;
     }
 
-    public Semester addUserInfo(UserInfo userInfo) {
-        this.userInfos.add(userInfo);
-        userInfo.setSemester(this);
+    public Semester addSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.add(semesterGroup);
+        semesterGroup.setSemester(this);
         return this;
     }
 
-    public Semester removeUserInfo(UserInfo userInfo) {
-        this.userInfos.remove(userInfo);
-        userInfo.setSemester(null);
+    public Semester removeSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.remove(semesterGroup);
+        semesterGroup.setSemester(null);
         return this;
     }
 
-    public void setUserInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
+    public void setSemesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
     }
 
     public Set<Subject> getSubjects() {

@@ -6,22 +6,22 @@ import java.util.Objects;
 /**
  * A DTO for the UserInfo entity.
  */
-public class UserInfoDTO implements Serializable {
+public class UserInfoRegisterDTO implements Serializable {
 
-    private Long id;
+    private UserDTO user;
 
     private String tutorSkills;
 
     private Long userId;
 
-    private Long semesterGroupId;
+    private Long semesterId;
 
-    public Long getId() {
-        return id;
+    public UserDTO getUser() {
+        return user;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 
     public String getTutorSkills() {
@@ -40,12 +40,12 @@ public class UserInfoDTO implements Serializable {
         this.userId = userId;
     }
 
-    public Long getSemesterGroupId() {
-        return semesterGroupId;
+    public Long getSemesterId() {
+        return semesterId;
     }
 
-    public void setSemesterGroupId(Long semesterGroupId) {
-        this.semesterGroupId = semesterGroupId;
+    public void setSemesterId(Long semesterId) {
+        this.semesterId = semesterId;
     }
 
     @Override
@@ -57,25 +57,25 @@ public class UserInfoDTO implements Serializable {
             return false;
         }
 
-        UserInfoDTO userInfoDTO = (UserInfoDTO) o;
-        if (userInfoDTO.getId() == null || getId() == null) {
+        UserInfoRegisterDTO userInfoDTO = (UserInfoRegisterDTO) o;
+        if (userInfoDTO.getUser() == null || getUser() == null) {
             return false;
         }
-        return Objects.equals(getId(), userInfoDTO.getId());
+        return Objects.equals(getUser(), userInfoDTO.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(getUser());
     }
 
     @Override
     public String toString() {
         return "UserInfoDTO{" +
-            "id=" + getId() +
+            "user=" + getUser().toString() +
             ", tutorSkills='" + getTutorSkills() + "'" +
             ", user=" + getUserId() +
-            ", semesterGroup=" + getSemesterGroupId() +
+            ", semester=" + getSemesterId() +
             "}";
     }
 }

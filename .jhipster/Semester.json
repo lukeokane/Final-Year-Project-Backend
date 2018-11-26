@@ -21,8 +21,8 @@
     "relationships": [
         {
             "relationshipType": "one-to-many",
-            "relationshipName": "userInfo",
-            "otherEntityName": "userInfo",
+            "relationshipName": "semesterGroup",
+            "otherEntityName": "semesterGroup",
             "otherEntityRelationshipName": "semester"
         },
         {

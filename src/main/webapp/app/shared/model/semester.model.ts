@@ -1,5 +1,5 @@
 import { Moment } from 'moment';
-import { IUserInfo } from 'app/shared/model//user-info.model';
+import { ISemesterGroup } from 'app/shared/model//semester-group.model';
 import { ISubject } from 'app/shared/model//subject.model';
 
 export const enum SemesterNumber {
@@ -19,7 +19,7 @@ export interface ISemester {
     semesterNumber?: SemesterNumber;
     semesterStartDate?: Moment;
     semesterEndDate?: Moment;
-    userInfos?: IUserInfo[];
+    semesterGroups?: ISemesterGroup[];
     subjects?: ISubject[];
     courseYearId?: number;
 }
@@ -30,7 +30,7 @@ export class Semester implements ISemester {
         public semesterNumber?: SemesterNumber,
         public semesterStartDate?: Moment,
         public semesterEndDate?: Moment,
-        public userInfos?: IUserInfo[],
+        public semesterGroups?: ISemesterGroup[],
         public subjects?: ISubject[],
         public courseYearId?: number
     ) {}

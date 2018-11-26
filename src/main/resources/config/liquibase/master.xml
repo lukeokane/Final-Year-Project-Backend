@@ -15,6 +15,7 @@
     <include file="config/liquibase/changelog/20181121234054_added_entity_Subject.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20181121234055_added_entity_Topic.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20181121234056_added_entity_Resource.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20181126060345_added_entity_SemesterGroup.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20181121234047_added_entity_constraints_UserInfo.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20181121234048_added_entity_constraints_Booking.xml" relativeToChangelogFile="false"/>
@@ -24,5 +25,6 @@
     <include file="config/liquibase/changelog/20181121234053_added_entity_constraints_Semester.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20181121234054_added_entity_constraints_Subject.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20181121234056_added_entity_constraints_Resource.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20181126060345_added_entity_constraints_SemesterGroup.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

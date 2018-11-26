@@ -17,8 +17,8 @@
         },
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "semester",
-            "otherEntityName": "semester",
+            "relationshipName": "semesterGroup",
+            "otherEntityName": "semesterGroup",
             "otherEntityField": "id"
         },
         {

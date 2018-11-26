@@ -30,6 +30,10 @@ public class Subject implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @NotNull
+    @Column(name = "subject_code", nullable = false)
+    private String subjectCode;
+
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "subject_topic",
@@ -65,6 +69,19 @@ public class Subject implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public Subject subjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+        return this;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
     }
 
     public Set<Topic> getTopics() {
@@ -168,6 +185,7 @@ public class Subject implements Serializable {
         return "Subject{" +
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
+            ", subjectCode='" + getSubjectCode() + "'" +
             "}";
     }
 }

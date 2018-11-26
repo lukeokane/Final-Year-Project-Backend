@@ -8,15 +8,15 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity UserInfo and its DTO UserInfoDTO.
  */
-@Mapper(componentModel = "spring", uses = {UserMapper.class, SemesterMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, SemesterGroupMapper.class})
 public interface UserInfoMapper extends EntityMapper<UserInfoDTO, UserInfo> {
 
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "semester.id", target = "semesterId")
+    @Mapping(source = "semesterGroup.id", target = "semesterGroupId")
     UserInfoDTO toDto(UserInfo userInfo);
 
     @Mapping(source = "userId", target = "user")
-    @Mapping(source = "semesterId", target = "semester")
+    @Mapping(source = "semesterGroupId", target = "semesterGroup")
     @Mapping(target = "bookingUserDetails", ignore = true)
     @Mapping(target = "sentNotifications", ignore = true)
     @Mapping(target = "receivedNotifications", ignore = true)

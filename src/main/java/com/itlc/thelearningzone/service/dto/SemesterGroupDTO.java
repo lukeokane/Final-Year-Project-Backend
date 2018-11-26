@@ -2,24 +2,19 @@ package com.itlc.thelearningzone.service.dto;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 
 /**
- * A DTO for the Subject entity.
+ * A DTO for the SemesterGroup entity.
  */
-public class SubjectDTO implements Serializable {
+public class SemesterGroupDTO implements Serializable {
 
     private Long id;
 
     @NotNull
     private String title;
 
-    @NotNull
-    private String subjectCode;
-
-    private Set<TopicDTO> topics = new HashSet<>();
+    private Long semesterId;
 
     public Long getId() {
         return id;
@@ -37,20 +32,12 @@ public class SubjectDTO implements Serializable {
         this.title = title;
     }
 
-    public String getSubjectCode() {
-        return subjectCode;
+    public Long getSemesterId() {
+        return semesterId;
     }
 
-    public void setSubjectCode(String subjectCode) {
-        this.subjectCode = subjectCode;
-    }
-
-    public Set<TopicDTO> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(Set<TopicDTO> topics) {
-        this.topics = topics;
+    public void setSemesterId(Long semesterId) {
+        this.semesterId = semesterId;
     }
 
     @Override
@@ -62,11 +49,11 @@ public class SubjectDTO implements Serializable {
             return false;
         }
 
-        SubjectDTO subjectDTO = (SubjectDTO) o;
-        if (subjectDTO.getId() == null || getId() == null) {
+        SemesterGroupDTO semesterGroupDTO = (SemesterGroupDTO) o;
+        if (semesterGroupDTO.getId() == null || getId() == null) {
             return false;
         }
-        return Objects.equals(getId(), subjectDTO.getId());
+        return Objects.equals(getId(), semesterGroupDTO.getId());
     }
 
     @Override
@@ -76,10 +63,10 @@ public class SubjectDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "SubjectDTO{" +
+        return "SemesterGroupDTO{" +
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
-            ", subjectCode='" + getSubjectCode() + "'" +
+            ", semester=" + getSemesterId() +
             "}";
     }
 }

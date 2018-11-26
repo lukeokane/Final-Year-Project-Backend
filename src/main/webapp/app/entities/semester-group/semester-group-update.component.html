@@ -1,18 +1,18 @@
 <div class="row justify-content-center">
     <div class="col-8">
         <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
-            <h2 id="jhi-subject-heading">Create or edit a Subject</h2>
+            <h2 id="jhi-semester-group-heading">Create or edit a Semester Group</h2>
             <div>
                 <jhi-alert-error></jhi-alert-error>
-                <div class="form-group" [hidden]="!subject.id">
+                <div class="form-group" [hidden]="!semesterGroup.id">
                     <label for="id">ID</label>
                     <input type="text" class="form-control" id="id" name="id"
-                        [(ngModel)]="subject.id" readonly />
+                        [(ngModel)]="semesterGroup.id" readonly />
                 </div>
                 <div class="form-group">
                     <label class="form-control-label" for="field_title">Title</label>
                     <input type="text" class="form-control" name="title" id="field_title"
-                        [(ngModel)]="subject.title" required/>
+                        [(ngModel)]="semesterGroup.title" required/>
                     <div [hidden]="!(editForm.controls.title?.dirty && editForm.controls.title?.invalid)">
                         <small class="form-text text-danger"
                         [hidden]="!editForm.controls.title?.errors?.required">
@@ -20,22 +20,12 @@
                         </small>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-control-label" for="field_subjectCode">Subject Code</label>
-                    <input type="text" class="form-control" name="subjectCode" id="field_subjectCode"
-                        [(ngModel)]="subject.subjectCode" required/>
-                    <div [hidden]="!(editForm.controls.subjectCode?.dirty && editForm.controls.subjectCode?.invalid)">
-                        <small class="form-text text-danger"
-                        [hidden]="!editForm.controls.subjectCode?.errors?.required">
-                        This field is required.
-                        </small>
-                    </div>
-                </div>
 
                 <div class="form-group">
-                    <label for="field_topic">Topic</label>
-                    <select class="form-control" id="field_topic" multiple name="topic" [(ngModel)]="subject.topics">
-                        <option [ngValue]="getSelected(subject.topics, topicOption)" *ngFor="let topicOption of topics; trackBy: trackTopicById">{{topicOption.id}}</option>
+                    <label class="form-control-label" for="field_semester">Semester</label>
+                    <select class="form-control" id="field_semester" name="semester" [(ngModel)]="semesterGroup.semesterId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="semesterOption.id" *ngFor="let semesterOption of semesters; trackBy: trackSemesterById">{{semesterOption.id}}</option>
                     </select>
                 </div>
             </div>

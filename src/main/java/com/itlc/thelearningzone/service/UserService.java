@@ -10,6 +10,7 @@ import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
+import com.itlc.thelearningzone.service.dto.UserInfoRegisterDTO;
 import com.itlc.thelearningzone.service.util.RandomUtil;
 import com.itlc.thelearningzone.web.rest.errors.*;
 
@@ -95,14 +96,17 @@ public class UserService {
             });
     }
 
-    public User registerUser(UserDTO userDTO, String password) {
-        userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
+    public User registerUser(UserInfoRegisterDTO userInfoRegisterDTO, String password) {
+    	
+    	UserDTO userDTO = userInfoRegisterDTO.getUser();
+    	
+        userRepository.findOneByLogin(userInfoRegisterDTO.getUser().getLogin().toLowerCase()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new LoginAlreadyUsedException();
             }
         });
-        userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
+        userRepository.findOneByEmailIgnoreCase(userInfoRegisterDTO.getUser().getEmail()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new EmailAlreadyUsedException();
@@ -133,6 +137,7 @@ public class UserService {
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUser(newUser);
         userInfoRepository.save(newUserInfo);
+        
         //userInfoSearchRepository.save(newUserInfo);
         log.debug("Created Information for UserInfo: {}", newUserInfo);
         

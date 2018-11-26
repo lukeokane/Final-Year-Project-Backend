@@ -15,10 +15,10 @@
     <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
 
     <!--
-        Added the entity Subject.
+        Added the entity SemesterGroup.
     -->
-    <changeSet id="20181121234054-1" author="jhipster">
-        <createTable tableName="subject">
+    <changeSet id="20181126060345-1" author="jhipster">
+        <createTable tableName="semester_group">
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -26,23 +26,12 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="subject_code" type="varchar(255)">
-                <constraints nullable="false" />
+            <column name="semester_id" type="bigint">
+                <constraints nullable="true" />
             </column>
 
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
-        
-        <createTable tableName="subject_topic">
-            <column name="topics_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="subjects_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="subjects_id, topics_id" tableName="subject_topic"/>
         
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->

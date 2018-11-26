@@ -50,6 +50,9 @@ public class SubjectResourceIntTest {
     private static final String DEFAULT_TITLE = "AAAAAAAAAA";
     private static final String UPDATED_TITLE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_SUBJECT_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_SUBJECT_CODE = "BBBBBBBBBB";
+
     @Autowired
     private SubjectRepository subjectRepository;
 
@@ -100,7 +103,8 @@ public class SubjectResourceIntTest {
      */
     public static Subject createEntity(EntityManager em) {
         Subject subject = new Subject()
-            .title(DEFAULT_TITLE);
+            .title(DEFAULT_TITLE)
+            .subjectCode(DEFAULT_SUBJECT_CODE);
         return subject;
     }
 
@@ -126,6 +130,7 @@ public class SubjectResourceIntTest {
         assertThat(subjectList).hasSize(databaseSizeBeforeCreate + 1);
         Subject testSubject = subjectList.get(subjectList.size() - 1);
         assertThat(testSubject.getTitle()).isEqualTo(DEFAULT_TITLE);
+        assertThat(testSubject.getSubjectCode()).isEqualTo(DEFAULT_SUBJECT_CODE);
     }
 
     @Test
@@ -169,6 +174,25 @@ public class SubjectResourceIntTest {
 
     @Test
     @Transactional
+    public void checkSubjectCodeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = subjectRepository.findAll().size();
+        // set the field null
+        subject.setSubjectCode(null);
+
+        // Create the Subject, which fails.
+        SubjectDTO subjectDTO = subjectMapper.toDto(subject);
+
+        restSubjectMockMvc.perform(post("/api/subjects")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(subjectDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Subject> subjectList = subjectRepository.findAll();
+        assertThat(subjectList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllSubjects() throws Exception {
         // Initialize the database
         subjectRepository.saveAndFlush(subject);
@@ -178,7 +202,8 @@ public class SubjectResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(subject.getId().intValue())))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())));
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].subjectCode").value(hasItem(DEFAULT_SUBJECT_CODE.toString())));
     }
     
     @SuppressWarnings({"unchecked"})
@@ -225,7 +250,8 @@ public class SubjectResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(subject.getId().intValue()))
-            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE.toString()));
+            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE.toString()))
+            .andExpect(jsonPath("$.subjectCode").value(DEFAULT_SUBJECT_CODE.toString()));
     }
 
     @Test
@@ -249,7 +275,8 @@ public class SubjectResourceIntTest {
         // Disconnect from session so that the updates on updatedSubject are not directly saved in db
         em.detach(updatedSubject);
         updatedSubject
-            .title(UPDATED_TITLE);
+            .title(UPDATED_TITLE)
+            .subjectCode(UPDATED_SUBJECT_CODE);
         SubjectDTO subjectDTO = subjectMapper.toDto(updatedSubject);
 
         restSubjectMockMvc.perform(put("/api/subjects")
@@ -262,6 +289,7 @@ public class SubjectResourceIntTest {
         assertThat(subjectList).hasSize(databaseSizeBeforeUpdate);
         Subject testSubject = subjectList.get(subjectList.size() - 1);
         assertThat(testSubject.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(testSubject.getSubjectCode()).isEqualTo(UPDATED_SUBJECT_CODE);
     }
 
     @Test

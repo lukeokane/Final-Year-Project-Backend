@@ -23,6 +23,7 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "tutor_skills")
@@ -35,7 +36,7 @@ public class UserInfo implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("userInfos")
-    private Semester semester;
+    private SemesterGroup semesterGroup;
 
     @OneToMany(mappedBy = "userInfo")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -86,17 +87,17 @@ public class UserInfo implements Serializable {
         this.user = user;
     }
 
-    public Semester getSemester() {
-        return semester;
+    public SemesterGroup getSemesterGroup() {
+        return semesterGroup;
     }
 
-    public UserInfo semester(Semester semester) {
-        this.semester = semester;
+    public UserInfo semesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroup = semesterGroup;
         return this;
     }
 
-    public void setSemester(Semester semester) {
-        this.semester = semester;
+    public void setSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroup = semesterGroup;
     }
 
     public Set<BookingUserDetails> getBookingUserDetails() {

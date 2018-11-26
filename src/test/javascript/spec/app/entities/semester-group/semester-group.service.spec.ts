@@ -4,24 +4,24 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 import { take, map } from 'rxjs/operators';
-import { SubjectService } from 'app/entities/subject/subject.service';
-import { ISubject, Subject } from 'app/shared/model/subject.model';
+import { SemesterGroupService } from 'app/entities/semester-group/semester-group.service';
+import { ISemesterGroup, SemesterGroup } from 'app/shared/model/semester-group.model';
 
 describe('Service Tests', () => {
-    describe('Subject Service', () => {
+    describe('SemesterGroup Service', () => {
         let injector: TestBed;
-        let service: SubjectService;
+        let service: SemesterGroupService;
         let httpMock: HttpTestingController;
-        let elemDefault: ISubject;
+        let elemDefault: ISemesterGroup;
         beforeEach(() => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule]
             });
             injector = getTestBed();
-            service = injector.get(SubjectService);
+            service = injector.get(SemesterGroupService);
             httpMock = injector.get(HttpTestingController);
 
-            elemDefault = new Subject(0, 'AAAAAAA', 'AAAAAAA');
+            elemDefault = new SemesterGroup(0, 'AAAAAAA');
         });
 
         describe('Service methods', async () => {
@@ -36,7 +36,7 @@ describe('Service Tests', () => {
                 req.flush(JSON.stringify(returnedFromService));
             });
 
-            it('should create a Subject', async () => {
+            it('should create a SemesterGroup', async () => {
                 const returnedFromService = Object.assign(
                     {
                         id: 0
@@ -45,18 +45,17 @@ describe('Service Tests', () => {
                 );
                 const expected = Object.assign({}, returnedFromService);
                 service
-                    .create(new Subject(null))
+                    .create(new SemesterGroup(null))
                     .pipe(take(1))
                     .subscribe(resp => expect(resp).toMatchObject({ body: expected }));
                 const req = httpMock.expectOne({ method: 'POST' });
                 req.flush(JSON.stringify(returnedFromService));
             });
 
-            it('should update a Subject', async () => {
+            it('should update a SemesterGroup', async () => {
                 const returnedFromService = Object.assign(
                     {
-                        title: 'BBBBBB',
-                        subjectCode: 'BBBBBB'
+                        title: 'BBBBBB'
                     },
                     elemDefault
                 );
@@ -70,11 +69,10 @@ describe('Service Tests', () => {
                 req.flush(JSON.stringify(returnedFromService));
             });
 
-            it('should return a list of Subject', async () => {
+            it('should return a list of SemesterGroup', async () => {
                 const returnedFromService = Object.assign(
                     {
-                        title: 'BBBBBB',
-                        subjectCode: 'BBBBBB'
+                        title: 'BBBBBB'
                     },
                     elemDefault
                 );
@@ -91,7 +89,7 @@ describe('Service Tests', () => {
                 httpMock.verify();
             });
 
-            it('should delete a Subject', async () => {
+            it('should delete a SemesterGroup', async () => {
                 const rxPromise = service.delete(123).subscribe(resp => expect(resp.ok));
 
                 const req = httpMock.expectOne({ method: 'DELETE' });
