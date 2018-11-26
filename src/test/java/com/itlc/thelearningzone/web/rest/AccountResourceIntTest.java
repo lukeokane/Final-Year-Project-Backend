@@ -379,7 +379,7 @@ public class AccountResourceIntTest {
 
         firstUser.setUser(userDTOFirst);
         firstUser.setPassword("password");
-        firstUser.setSemesterId(1L);
+        firstUser.setSemesterGroupId(1L);
         // Register first user
         restMvc.perform(
             post("/api/register")
@@ -405,7 +405,7 @@ public class AccountResourceIntTest {
         
         secondUser.setUser(userDTOSecond);
         secondUser.setPassword(firstUser.getPassword());
-        secondUser.setSemesterId(1L);
+        secondUser.setSemesterGroupId(1L);
 
         // Register second (non activated) user
         restMvc.perform(
@@ -436,7 +436,7 @@ public class AccountResourceIntTest {
         
         userWithUpperCaseEmail.setPassword(firstUser.getPassword());
         userWithUpperCaseEmail.setUser(userDTOThird);
-        userWithUpperCaseEmail.setSemesterId(1L);
+        userWithUpperCaseEmail.setSemesterGroupId(1L);
         // Register third (not activated) user
         restMvc.perform(
             post("/api/register")
@@ -475,7 +475,7 @@ public class AccountResourceIntTest {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
         
         validUser.setUser(userDTO);
-        validUser.setSemesterId(1L);
+        validUser.setSemesterGroupId(1L);
         validUser.setPassword("password");
 
         restMvc.perform(
