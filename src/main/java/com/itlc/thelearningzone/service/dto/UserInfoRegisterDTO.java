@@ -14,7 +14,7 @@ public class UserInfoRegisterDTO implements Serializable {
 
     private Long userId;
 
-    private Long semesterId;
+    private Long semesterGroupId;
 
     public UserDTO getUser() {
         return user;
@@ -40,12 +40,12 @@ public class UserInfoRegisterDTO implements Serializable {
         this.userId = userId;
     }
 
-    public Long getSemesterId() {
-        return semesterId;
+    public Long getSemesterGroupId() {
+        return semesterGroupId;
     }
 
-    public void setSemesterId(Long semesterId) {
-        this.semesterId = semesterId;
+    public void setSemesterGroupId(Long semesterGroupId) {
+        this.semesterGroupId = semesterGroupId;
     }
 
     @Override
@@ -71,11 +71,11 @@ public class UserInfoRegisterDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "UserInfoDTO{" +
+        return "UserInfoRegisterDTO{" +
             "user=" + getUser().toString() +
             ", tutorSkills='" + getTutorSkills() + "'" +
             ", user=" + getUserId() +
-            ", semester=" + getSemesterId() +
+            ", semesterGroupID=" + getSemesterGroupId() +
             "}";
     }
 }
