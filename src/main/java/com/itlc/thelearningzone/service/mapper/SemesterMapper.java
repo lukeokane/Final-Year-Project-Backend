@@ -8,7 +8,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity Semester and its DTO SemesterDTO.
  */
-@Mapper(componentModel = "spring", uses = {SubjectMapper.class, CourseYearMapper.class})
+@Mapper(componentModel = "spring", uses = {CourseYearMapper.class})
 public interface SemesterMapper extends EntityMapper<SemesterDTO, Semester> {
 
     @Mapping(source = "courseYear.id", target = "courseYearId")

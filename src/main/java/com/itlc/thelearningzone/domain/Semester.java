@@ -44,13 +44,6 @@ public class Semester implements Serializable {
     @OneToMany(mappedBy = "semester")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<SemesterGroup> semesterGroups = new HashSet<>();
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "semester_subject",
-               joinColumns = @JoinColumn(name = "semesters_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "subjects_id", referencedColumnName = "id"))
-    private Set<Subject> subjects = new HashSet<>();
-
     @ManyToOne
     @JsonIgnoreProperties("semesters")
     private CourseYear courseYear;
@@ -126,31 +119,6 @@ public class Semester implements Serializable {
 
     public void setSemesterGroups(Set<SemesterGroup> semesterGroups) {
         this.semesterGroups = semesterGroups;
-    }
-
-    public Set<Subject> getSubjects() {
-        return subjects;
-    }
-
-    public Semester subjects(Set<Subject> subjects) {
-        this.subjects = subjects;
-        return this;
-    }
-
-    public Semester addSubject(Subject subject) {
-        this.subjects.add(subject);
-        subject.getSemesters().add(this);
-        return this;
-    }
-
-    public Semester removeSubject(Subject subject) {
-        this.subjects.remove(subject);
-        subject.getSemesters().remove(this);
-        return this;
-    }
-
-    public void setSubjects(Set<Subject> subjects) {
-        this.subjects = subjects;
     }
 
     public CourseYear getCourseYear() {

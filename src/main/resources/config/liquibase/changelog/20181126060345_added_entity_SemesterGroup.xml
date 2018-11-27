@@ -33,6 +33,17 @@
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
         
+        <createTable tableName="semester_group_subject">
+            <column name="subjects_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="semester_groups_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="semester_groups_id, subjects_id" tableName="semester_group_subject"/>
+        
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 </databaseChangeLog>

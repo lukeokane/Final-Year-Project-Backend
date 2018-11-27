@@ -62,6 +62,15 @@ public class SemesterGroupServiceImpl implements SemesterGroupService {
             .map(semesterGroupMapper::toDto);
     }
 
+    /**
+     * Get all the SemesterGroup with eager load of many-to-many relationships.
+     *
+     * @return the list of entities
+     */
+    public Page<SemesterGroupDTO> findAllWithEagerRelationships(Pageable pageable) {
+        return semesterGroupRepository.findAllWithEagerRelationships(pageable).map(semesterGroupMapper::toDto);
+    }
+    
 
     /**
      * Get one semesterGroup by id.
@@ -73,7 +82,7 @@ public class SemesterGroupServiceImpl implements SemesterGroupService {
     @Transactional(readOnly = true)
     public Optional<SemesterGroupDTO> findOne(Long id) {
         log.debug("Request to get SemesterGroup : {}", id);
-        return semesterGroupRepository.findById(id)
+        return semesterGroupRepository.findOneWithEagerRelationships(id)
             .map(semesterGroupMapper::toDto);
     }
 

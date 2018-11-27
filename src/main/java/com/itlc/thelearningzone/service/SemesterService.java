@@ -28,13 +28,7 @@ public interface SemesterService {
      */
     Page<SemesterDTO> findAll(Pageable pageable);
 
-    /**
-     * Get all the Semester with eager load of many-to-many relationships.
-     *
-     * @return the list of entities
-     */
-    Page<SemesterDTO> findAllWithEagerRelationships(Pageable pageable);
-    
+
     /**
      * Get the "id" semester.
      *

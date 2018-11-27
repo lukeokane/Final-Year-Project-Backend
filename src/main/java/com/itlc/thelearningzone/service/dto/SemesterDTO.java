@@ -3,8 +3,6 @@ package com.itlc.thelearningzone.service.dto;
 import java.time.LocalDate;
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 import com.itlc.thelearningzone.domain.enumeration.SemesterNumber;
 
@@ -21,8 +19,6 @@ public class SemesterDTO implements Serializable {
     private LocalDate semesterStartDate;
 
     private LocalDate semesterEndDate;
-
-    private Set<SubjectDTO> subjects = new HashSet<>();
 
     private Long courseYearId;
 
@@ -56,14 +52,6 @@ public class SemesterDTO implements Serializable {
 
     public void setSemesterEndDate(LocalDate semesterEndDate) {
         this.semesterEndDate = semesterEndDate;
-    }
-
-    public Set<SubjectDTO> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(Set<SubjectDTO> subjects) {
-        this.subjects = subjects;
     }
 
     public Long getCourseYearId() {

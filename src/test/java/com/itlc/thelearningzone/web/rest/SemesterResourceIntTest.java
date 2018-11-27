@@ -12,12 +12,9 @@ import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -29,14 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 
 
 import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,14 +57,8 @@ public class SemesterResourceIntTest {
     @Autowired
     private SemesterRepository semesterRepository;
 
-    @Mock
-    private SemesterRepository semesterRepositoryMock;
-
     @Autowired
     private SemesterMapper semesterMapper;
-
-    @Mock
-    private SemesterService semesterServiceMock;
 
     @Autowired
     private SemesterService semesterService;
@@ -196,39 +185,6 @@ public class SemesterResourceIntTest {
             .andExpect(jsonPath("$.[*].semesterEndDate").value(hasItem(DEFAULT_SEMESTER_END_DATE.toString())));
     }
     
-    @SuppressWarnings({"unchecked"})
-    public void getAllSemestersWithEagerRelationshipsIsEnabled() throws Exception {
-        SemesterResource semesterResource = new SemesterResource(semesterServiceMock);
-        when(semesterServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        MockMvc restSemesterMockMvc = MockMvcBuilders.standaloneSetup(semesterResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
-
-        restSemesterMockMvc.perform(get("/api/semesters?eagerload=true"))
-        .andExpect(status().isOk());
-
-        verify(semesterServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public void getAllSemestersWithEagerRelationshipsIsNotEnabled() throws Exception {
-        SemesterResource semesterResource = new SemesterResource(semesterServiceMock);
-            when(semesterServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-            MockMvc restSemesterMockMvc = MockMvcBuilders.standaloneSetup(semesterResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
-
-        restSemesterMockMvc.perform(get("/api/semesters?eagerload=true"))
-        .andExpect(status().isOk());
-
-            verify(semesterServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
     @Test
     @Transactional
     public void getSemester() throws Exception {

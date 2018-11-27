@@ -17,6 +17,14 @@
             "otherEntityRelationshipName": "semesterGroup"
         },
         {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "semesterGroup",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
             "relationshipType": "many-to-one",
             "relationshipName": "semester",
             "otherEntityName": "semester",

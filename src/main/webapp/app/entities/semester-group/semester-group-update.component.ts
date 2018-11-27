@@ -6,6 +6,8 @@ import { JhiAlertService } from 'ng-jhipster';
 
 import { ISemesterGroup } from 'app/shared/model/semester-group.model';
 import { SemesterGroupService } from './semester-group.service';
+import { ISubject } from 'app/shared/model/subject.model';
+import { SubjectService } from 'app/entities/subject';
 import { ISemester } from 'app/shared/model/semester.model';
 import { SemesterService } from 'app/entities/semester';
 
@@ -17,11 +19,14 @@ export class SemesterGroupUpdateComponent implements OnInit {
     semesterGroup: ISemesterGroup;
     isSaving: boolean;
 
+    subjects: ISubject[];
+
     semesters: ISemester[];
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private semesterGroupService: SemesterGroupService,
+        private subjectService: SubjectService,
         private semesterService: SemesterService,
         private activatedRoute: ActivatedRoute
     ) {}
@@ -31,6 +36,12 @@ export class SemesterGroupUpdateComponent implements OnInit {
         this.activatedRoute.data.subscribe(({ semesterGroup }) => {
             this.semesterGroup = semesterGroup;
         });
+        this.subjectService.query().subscribe(
+            (res: HttpResponse<ISubject[]>) => {
+                this.subjects = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
         this.semesterService.query().subscribe(
             (res: HttpResponse<ISemester[]>) => {
                 this.semesters = res.body;
@@ -69,7 +80,22 @@ export class SemesterGroupUpdateComponent implements OnInit {
         this.jhiAlertService.error(errorMessage, null, null);
     }
 
+    trackSubjectById(index: number, item: ISubject) {
+        return item.id;
+    }
+
     trackSemesterById(index: number, item: ISemester) {
         return item.id;
+    }
+
+    getSelected(selectedVals: Array<any>, option: any) {
+        if (selectedVals) {
+            for (let i = 0; i < selectedVals.length; i++) {
+                if (option.id === selectedVals[i].id) {
+                    return selectedVals[i];
+                }
+            }
+        }
+        return option;
     }
 }

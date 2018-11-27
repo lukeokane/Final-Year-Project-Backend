@@ -9,6 +9,12 @@
                 <dd>
                     <span>{{semesterGroup.title}}</span>
                 </dd>
+                <dt><span>Subject</span></dt>
+                <dd>
+                    <span *ngFor="let subject of semesterGroup.subjects; let last = last">
+                        <a [routerLink]="['/subject', subject?.id, 'view' ]">{{subject.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
                 <dt><span>Semester</span></dt>
                 <dd>
                     <div *ngIf="semesterGroup.semesterId">

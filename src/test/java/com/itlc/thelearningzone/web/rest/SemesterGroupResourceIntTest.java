@@ -12,9 +12,12 @@ import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -24,12 +27,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 
 
 import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,8 +53,14 @@ public class SemesterGroupResourceIntTest {
     @Autowired
     private SemesterGroupRepository semesterGroupRepository;
 
+    @Mock
+    private SemesterGroupRepository semesterGroupRepositoryMock;
+
     @Autowired
     private SemesterGroupMapper semesterGroupMapper;
+
+    @Mock
+    private SemesterGroupService semesterGroupServiceMock;
 
     @Autowired
     private SemesterGroupService semesterGroupService;
@@ -170,6 +181,39 @@ public class SemesterGroupResourceIntTest {
             .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())));
     }
     
+    @SuppressWarnings({"unchecked"})
+    public void getAllSemesterGroupsWithEagerRelationshipsIsEnabled() throws Exception {
+        SemesterGroupResource semesterGroupResource = new SemesterGroupResource(semesterGroupServiceMock);
+        when(semesterGroupServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        MockMvc restSemesterGroupMockMvc = MockMvcBuilders.standaloneSetup(semesterGroupResource)
+            .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
+            .setMessageConverters(jacksonMessageConverter).build();
+
+        restSemesterGroupMockMvc.perform(get("/api/semester-groups?eagerload=true"))
+        .andExpect(status().isOk());
+
+        verify(semesterGroupServiceMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void getAllSemesterGroupsWithEagerRelationshipsIsNotEnabled() throws Exception {
+        SemesterGroupResource semesterGroupResource = new SemesterGroupResource(semesterGroupServiceMock);
+            when(semesterGroupServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+            MockMvc restSemesterGroupMockMvc = MockMvcBuilders.standaloneSetup(semesterGroupResource)
+            .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
+            .setMessageConverters(jacksonMessageConverter).build();
+
+        restSemesterGroupMockMvc.perform(get("/api/semester-groups?eagerload=true"))
+        .andExpect(status().isOk());
+
+            verify(semesterGroupServiceMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
     @Test
     @Transactional
     public void getSemesterGroup() throws Exception {

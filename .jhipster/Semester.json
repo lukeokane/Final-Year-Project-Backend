@@ -26,14 +26,6 @@
             "otherEntityRelationshipName": "semester"
         },
         {
-            "relationshipType": "many-to-many",
-            "otherEntityRelationshipName": "semester",
-            "relationshipName": "subject",
-            "otherEntityName": "subject",
-            "otherEntityField": "id",
-            "ownerSide": true
-        },
-        {
             "relationshipType": "many-to-one",
             "relationshipName": "courseYear",
             "otherEntityName": "courseYear",
