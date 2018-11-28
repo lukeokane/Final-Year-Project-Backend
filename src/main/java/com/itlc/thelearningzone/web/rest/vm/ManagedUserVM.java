@@ -1,13 +1,13 @@
 package com.itlc.thelearningzone.web.rest.vm;
 
-import com.itlc.thelearningzone.service.dto.UserInfoRegisterDTO;
+import com.itlc.thelearningzone.service.dto.UserDTO;
 
 import javax.validation.constraints.Size;
 
 /**
  * View Model extending the UserDTO, which is meant to be used in the user management UI.
  */
-public class ManagedUserVM extends UserInfoRegisterDTO {
+public class ManagedUserVM extends UserDTO {
 
     public static final int PASSWORD_MIN_LENGTH = 4;
 
@@ -15,6 +15,8 @@ public class ManagedUserVM extends UserInfoRegisterDTO {
 
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
+    
+    private Long semesterGroupId;
 
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
@@ -27,10 +29,19 @@ public class ManagedUserVM extends UserInfoRegisterDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public void setSemesterGroupId(Long semesterGroupId) {
+	    this.semesterGroupId = semesterGroupId;
+	}
+    
+    public Long getSemesterGroupId() {
+		return semesterGroupId;
+	}
 
     @Override
     public String toString() {
         return "ManagedUserVM{" +
             "} " + super.toString();
     }
+
 }

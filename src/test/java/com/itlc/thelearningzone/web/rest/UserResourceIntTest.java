@@ -146,18 +146,16 @@ public class UserResourceIntTest {
         // Create the User
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin(DEFAULT_LOGIN);
-        userDTO.setFirstName(DEFAULT_FIRSTNAME);
-        userDTO.setLastName(DEFAULT_LASTNAME);
-        userDTO.setEmail(DEFAULT_EMAIL);
-        userDTO.setActivated(true);
-        userDTO.setImageUrl(DEFAULT_IMAGEURL);
-        userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setLogin(DEFAULT_LOGIN);
         managedUserVM.setPassword(DEFAULT_PASSWORD);
+        managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
+        managedUserVM.setLastName(DEFAULT_LASTNAME);
+        managedUserVM.setEmail(DEFAULT_EMAIL);
+        managedUserVM.setActivated(true);
+        managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
+        managedUserVM.setLangKey(DEFAULT_LANGKEY);
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         
         restUserMockMvc.perform(post("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -183,20 +181,16 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        
-        userDTO.setId(1L);
-        userDTO.setLogin(DEFAULT_LOGIN);
-        userDTO.setFirstName(DEFAULT_FIRSTNAME);
-        userDTO.setLastName(DEFAULT_LASTNAME);
-        userDTO.setEmail(DEFAULT_EMAIL);
-        userDTO.setActivated(true);
-        userDTO.setImageUrl(DEFAULT_IMAGEURL);
-        userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setId(1L);
+        managedUserVM.setLogin(DEFAULT_LOGIN);
         managedUserVM.setPassword(DEFAULT_PASSWORD);
+        managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
+        managedUserVM.setLastName(DEFAULT_LASTNAME);
+        managedUserVM.setEmail(DEFAULT_EMAIL);
+        managedUserVM.setActivated(true);
+        managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
+        managedUserVM.setLangKey(DEFAULT_LANGKEY);
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restUserMockMvc.perform(post("/api/users")
@@ -217,19 +211,16 @@ public class UserResourceIntTest {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
-        
-        UserDTO userDTO = new UserDTO();  
-        userDTO.setLogin(DEFAULT_LOGIN);// this login should already be used
-        userDTO.setFirstName(DEFAULT_FIRSTNAME);
-        userDTO.setLastName(DEFAULT_LASTNAME);
-        userDTO.setEmail("anothermail@localhost");
-        userDTO.setActivated(true);
-        userDTO.setImageUrl(DEFAULT_IMAGEURL);
-        userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        managedUserVM.setUser(userDTO);
+
         managedUserVM.setPassword(DEFAULT_PASSWORD);
+        managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
+        managedUserVM.setLastName(DEFAULT_LASTNAME);
+        managedUserVM.setEmail("anothermail@localhost");
+        managedUserVM.setActivated(true);
+        managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
+        managedUserVM.setLangKey(DEFAULT_LANGKEY);
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
 
         // Create the User
         restUserMockMvc.perform(post("/api/users")
@@ -251,18 +242,15 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("anotherlogin");
-        userDTO.setFirstName(DEFAULT_FIRSTNAME);
-        userDTO.setLastName(DEFAULT_LASTNAME);
-        userDTO.setEmail(DEFAULT_EMAIL);// this email should already be used
-        userDTO.setActivated(true);
-        userDTO.setImageUrl(DEFAULT_IMAGEURL);
-        userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setLogin("anotherlogin");
         managedUserVM.setPassword(DEFAULT_PASSWORD);
+        managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
+        managedUserVM.setLastName(DEFAULT_LASTNAME);
+        managedUserVM.setEmail(DEFAULT_EMAIL);// this email should already be used
+        managedUserVM.setActivated(true);
+        managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
+        managedUserVM.setLangKey(DEFAULT_LANGKEY);
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
         
         // Create the User
         restUserMockMvc.perform(post("/api/users")
@@ -335,24 +323,18 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        
-        userDTO.setId(updatedUser.getId());
-        userDTO.setLogin(updatedUser.getLogin());
-        userDTO.setFirstName(UPDATED_FIRSTNAME);
-        userDTO.setLastName(UPDATED_LASTNAME);
-        userDTO.setEmail(UPDATED_EMAIL);
-        userDTO.setActivated(updatedUser.getActivated());
-        userDTO.setImageUrl(UPDATED_IMAGEURL);
-        userDTO.setLangKey(UPDATED_LANGKEY);
-        userDTO.setCreatedBy(updatedUser.getCreatedBy());
-        userDTO.setCreatedDate(updatedUser.getCreatedDate());
-        userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
-        userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        managedUserVM.setUser(userDTO);
         managedUserVM.setPassword(UPDATED_PASSWORD);
+        managedUserVM.setFirstName(UPDATED_FIRSTNAME);
+        managedUserVM.setLastName(UPDATED_LASTNAME);
+        managedUserVM.setEmail(UPDATED_EMAIL);
+        managedUserVM.setActivated(updatedUser.getActivated());
+        managedUserVM.setImageUrl(UPDATED_IMAGEURL);
+        managedUserVM.setLangKey(UPDATED_LANGKEY);
+        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
+        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
+        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
+        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc.perform(put("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -382,23 +364,21 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(updatedUser.getId());
-        userDTO.setLogin(UPDATED_LOGIN);
-        userDTO.setFirstName(UPDATED_FIRSTNAME);
-        userDTO.setLastName(UPDATED_LASTNAME);
-        userDTO.setEmail(UPDATED_EMAIL);
-        userDTO.setActivated(updatedUser.getActivated());
-        userDTO.setImageUrl(UPDATED_IMAGEURL);
-        userDTO.setLangKey(UPDATED_LANGKEY);
-        userDTO.setCreatedBy(updatedUser.getCreatedBy());
-        userDTO.setCreatedDate(updatedUser.getCreatedDate());
-        userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
-        userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setId(updatedUser.getId());
+        managedUserVM.setLogin(UPDATED_LOGIN);
         managedUserVM.setPassword(UPDATED_PASSWORD);
+        managedUserVM.setFirstName(UPDATED_FIRSTNAME);
+        managedUserVM.setLastName(UPDATED_LASTNAME);
+        managedUserVM.setEmail(UPDATED_EMAIL);
+        managedUserVM.setActivated(updatedUser.getActivated());
+        managedUserVM.setImageUrl(UPDATED_IMAGEURL);
+        managedUserVM.setLangKey(UPDATED_LANGKEY);
+        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
+        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
+        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
+        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
 
         restUserMockMvc.perform(put("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -439,23 +419,20 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(updatedUser.getId());
-        userDTO.setLogin(updatedUser.getLogin());
-        userDTO.setFirstName(updatedUser.getFirstName());
-        userDTO.setLastName(updatedUser.getLastName());
-        userDTO.setEmail("jhipster@localhost");// this email should already be used by anotherUser
-        userDTO.setActivated(updatedUser.getActivated());
-        userDTO.setImageUrl(updatedUser.getImageUrl());
-        userDTO.setLangKey(updatedUser.getLangKey());
-        userDTO.setCreatedBy(updatedUser.getCreatedBy());
-        userDTO.setCreatedDate(updatedUser.getCreatedDate());
-        userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
-        userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setId(updatedUser.getId());
+        managedUserVM.setLogin(updatedUser.getLogin());
         managedUserVM.setPassword(updatedUser.getPassword());
+        managedUserVM.setFirstName(updatedUser.getFirstName());
+        managedUserVM.setLastName(updatedUser.getLastName());
+        managedUserVM.setEmail("jhipster@localhost");// this email should already be used by anotherUser
+        managedUserVM.setActivated(updatedUser.getActivated());
+        managedUserVM.setImageUrl(updatedUser.getImageUrl());
+        managedUserVM.setLangKey(updatedUser.getLangKey());
+        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
+        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
+        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
+        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc.perform(put("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -485,24 +462,21 @@ public class UserResourceIntTest {
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        
-        userDTO.setId(updatedUser.getId());
-        userDTO.setLogin("jhipster");// this login should already be used by anotherUser
-        userDTO.setFirstName(updatedUser.getFirstName());
-        userDTO.setLastName(updatedUser.getLastName());
-        userDTO.setEmail(updatedUser.getEmail());
-        userDTO.setActivated(updatedUser.getActivated());
-        userDTO.setImageUrl(updatedUser.getImageUrl());
-        userDTO.setLangKey(updatedUser.getLangKey());
-        userDTO.setCreatedBy(updatedUser.getCreatedBy());
-        userDTO.setCreatedDate(updatedUser.getCreatedDate());
-        userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
-        userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        managedUserVM.setUser(userDTO);
+        managedUserVM.setId(updatedUser.getId());
+        managedUserVM.setLogin("jhipster");// this login should already be used by anotherUser
         managedUserVM.setPassword(updatedUser.getPassword());
+        managedUserVM.setFirstName(updatedUser.getFirstName());
+        managedUserVM.setLastName(updatedUser.getLastName());
+        managedUserVM.setEmail(updatedUser.getEmail());
+        managedUserVM.setActivated(updatedUser.getActivated());
+        managedUserVM.setImageUrl(updatedUser.getImageUrl());
+        managedUserVM.setLangKey(updatedUser.getLangKey());
+        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
+        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
+        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
+        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         restUserMockMvc.perform(put("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(managedUserVM)))
@@ -520,7 +494,7 @@ public class UserResourceIntTest {
         restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
-
+  
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Validate the database is empty

@@ -2,15 +2,16 @@ package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
+import com.itlc.thelearningzone.domain.SemesterGroup;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
+import com.itlc.thelearningzone.repository.SemesterGroupRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
-import com.itlc.thelearningzone.service.dto.UserInfoRegisterDTO;
 import com.itlc.thelearningzone.service.util.RandomUtil;
 import com.itlc.thelearningzone.web.rest.errors.*;
 
@@ -42,6 +43,8 @@ public class UserService {
     
     private final UserInfoRepository userInfoRepository;
     
+    private final SemesterGroupRepository semesterGroupRepository;
+    
     private final UserInfoService userInfoService;
 
     private final PasswordEncoder passwordEncoder;
@@ -50,9 +53,10 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, SemesterGroupRepository semesterGroupRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
+        this.semesterGroupRepository = semesterGroupRepository;
         this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
@@ -96,17 +100,15 @@ public class UserService {
             });
     }
 
-    public User registerUser(UserInfoRegisterDTO userInfoRegisterDTO, String password) {
+    public User registerUser(UserDTO userDTO, String password) {
     	
-    	UserDTO userDTO = userInfoRegisterDTO.getUser();
-    	
-        userRepository.findOneByLogin(userInfoRegisterDTO.getUser().getLogin().toLowerCase()).ifPresent(existingUser -> {
+        userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new LoginAlreadyUsedException();
             }
         });
-        userRepository.findOneByEmailIgnoreCase(userInfoRegisterDTO.getUser().getEmail()).ifPresent(existingUser -> {
+        userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new EmailAlreadyUsedException();
@@ -133,16 +135,31 @@ public class UserService {
       
         log.debug("Created Information for User: {}", newUser);
         
-     // Create and save the UserInfo entity
+        return newUser;
+    }
+    
+    public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
+    	
+    	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
+    	
+    	if (!semesterGroup.isPresent()) {
+    		throw new IllegalArgumentException("Semester Group ID is does not exist");
+    	}
+    	
+    	User newUser = this.registerUser(userDTO, password);
+          
+        // Create and save the UserInfo entity
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUser(newUser);
+        newUserInfo.setSemesterGroup(semesterGroup.get());
         userInfoRepository.save(newUserInfo);
                
-        //userInfoSearchRepository.save(newUserInfo);
         log.debug("Created Information for UserInfo: {}", newUserInfo);
         
         return newUser;
     }
+    
+    
     private boolean removeNonActivatedUser(User existingUser){
         if (existingUser.getActivated()) {
              return false;

@@ -162,19 +162,41 @@ public class AccountResourceIntTest {
     public void testRegisterValid() throws Exception {
         ManagedUserVM validUser = new ManagedUserVM();
         
-        UserDTO user = new UserDTO();
-        
-        user.setLogin("test-register-valid");
-        user.setFirstName("Alice");
-        user.setLastName("Test");
-        user.setEmail("test-register-valid@example.com");
-        user.setImageUrl("http://placehold.it/50x50");
-        user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        validUser.setUser(user);
+        validUser.setLogin("test-register-valid");
         validUser.setPassword("password");
+        validUser.setFirstName("Alice");
+        validUser.setLastName("Test");
+        validUser.setEmail("test-register-valid@example.com");
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
+        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
+
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+            .andExpect(status().isCreated());
+
+        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
+    }
+    
+    @Test
+    @Transactional
+    public void testRegisterValidWithSemester() throws Exception {
+        ManagedUserVM validUser = new ManagedUserVM();
         
+        validUser.setLogin("test-register-valid");
+        validUser.setPassword("password");
+        validUser.setFirstName("Alice");
+        validUser.setLastName("Test");
+        validUser.setEmail("test-register-valid@example.com");
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        validUser.setSemesterGroupId(1L);
+
         assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
 
         restMvc.perform(
@@ -191,19 +213,15 @@ public class AccountResourceIntTest {
     public void testRegisterInvalidLogin() throws Exception {
     	ManagedUserVM invalidUser = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        
-        userDTO.setLogin("funky-log!n");// <-- invalid
-        userDTO.setFirstName("Funky");
-        userDTO.setLastName("One");
-        userDTO.setEmail("funky@example.com");
-        userDTO.setActivated(true);
-        userDTO.setImageUrl("http://placehold.it/50x50");
-        userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        invalidUser.setUser(userDTO);
         invalidUser.setPassword("password");
+        invalidUser.setFirstName("Funky");
+        invalidUser.setLastName("One");
+        invalidUser.setEmail("funky@example.com");
+        invalidUser.setActivated(true);
+        invalidUser.setImageUrl("http://placehold.it/50x50");
+        invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         
         restUserMockMvc.perform(
             post("/api/register")
@@ -220,18 +238,16 @@ public class AccountResourceIntTest {
     public void testRegisterInvalidEmail() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("bob");
-        userDTO.setFirstName("Bob");
-        userDTO.setLastName("Green");
-        userDTO.setEmail("invalid");// <-- invalid
-        userDTO.setActivated(true);
-        userDTO.setImageUrl("http://placehold.it/50x50");
-        userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        invalidUser.setUser(userDTO);
+        invalidUser.setLogin("bob");
         invalidUser.setPassword("password");
+        invalidUser.setFirstName("Bob");
+        invalidUser.setLastName("Green");
+        invalidUser.setEmail("invalid");// <-- invalid
+        invalidUser.setActivated(true);
+        invalidUser.setImageUrl("http://placehold.it/50x50");
+        invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         
         restUserMockMvc.perform(
             post("/api/register")
@@ -248,18 +264,16 @@ public class AccountResourceIntTest {
     public void testRegisterInvalidPassword() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("bob");
-        userDTO.setFirstName("Bob");
-        userDTO.setLastName("Green");
-        userDTO.setEmail("bob@example.com");
-        userDTO.setActivated(true);
-        userDTO.setImageUrl("http://placehold.it/50x50");
-        userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        invalidUser.setUser(userDTO);
+        invalidUser.setLogin("bob");
         invalidUser.setPassword("123");// password with only 3 digits
+        invalidUser.setFirstName("Bob");
+        invalidUser.setLastName("Green");
+        invalidUser.setEmail("bob@example.com");
+        invalidUser.setActivated(true);
+        invalidUser.setImageUrl("http://placehold.it/50x50");
+        invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         restUserMockMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -275,18 +289,16 @@ public class AccountResourceIntTest {
     public void testRegisterNullPassword() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("bob");
-        userDTO.setFirstName("Bob");
-        userDTO.setLastName("Green");
-        userDTO.setEmail("bob@example.com");
-        userDTO.setActivated(true);
-        userDTO.setImageUrl("http://placehold.it/50x50");
-        userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        invalidUser.setUser(userDTO);
+        invalidUser.setLogin("bob");
         invalidUser.setPassword(null);// invalid null password
+        invalidUser.setFirstName("Bob");
+        invalidUser.setLastName("Green");
+        invalidUser.setEmail("bob@example.com");
+        invalidUser.setActivated(true);
+        invalidUser.setImageUrl("http://placehold.it/50x50");
+        invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         restUserMockMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -303,35 +315,31 @@ public class AccountResourceIntTest {
         // First registration
     	ManagedUserVM firstUser = new ManagedUserVM();
         
-        UserDTO userDTOFirst = new UserDTO();
-        userDTOFirst.setLogin("alice");
-        userDTOFirst.setFirstName("Alice");
-        userDTOFirst.setLastName("Something");
-        userDTOFirst.setEmail("alice@example.com");
-        userDTOFirst.setImageUrl("http://placehold.it/50x50");
-        userDTOFirst.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTOFirst.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-        
-        firstUser.setUser(userDTOFirst);
-        firstUser.setPassword("password");
+    	firstUser.setLogin("alice");
+    	firstUser.setPassword("password");
+        firstUser.setFirstName("Alice");
+        firstUser.setLastName("Something");
+        firstUser.setEmail("alice@example.com");
+        firstUser.setImageUrl("http://placehold.it/50x50");
+        firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         // Duplicate login, different email
         ManagedUserVM secondUser = new ManagedUserVM();
         
-        UserDTO userDTOSecond = new UserDTO(); 
-        userDTOSecond.setLogin(userDTOFirst.getLogin());
-        userDTOSecond.setFirstName(userDTOFirst.getFirstName());
-        userDTOSecond.setLastName(userDTOFirst.getLastName());
-        userDTOSecond.setEmail("alice2@example.com");
-        userDTOSecond.setImageUrl(userDTOFirst.getImageUrl());
-        userDTOSecond.setLangKey(userDTOFirst.getLangKey());
-        userDTOSecond.setCreatedBy(userDTOFirst.getCreatedBy());
-        userDTOSecond.setCreatedDate(userDTOFirst.getCreatedDate());
-        userDTOSecond.setLastModifiedBy(userDTOFirst.getLastModifiedBy());
-        userDTOSecond.setLastModifiedDate(userDTOFirst.getLastModifiedDate());
-        userDTOSecond.setAuthorities(new HashSet<>(userDTOFirst.getAuthorities()));
-        
-        secondUser.setUser(userDTOSecond);
+        secondUser.setLogin(firstUser.getLogin());
         secondUser.setPassword(firstUser.getPassword());
+        secondUser.setFirstName(firstUser.getFirstName());
+        secondUser.setLastName(firstUser.getLastName());
+        secondUser.setEmail("alice2@example.com");
+        secondUser.setImageUrl(firstUser.getImageUrl());
+        secondUser.setLangKey(firstUser.getLangKey());
+        secondUser.setCreatedBy(firstUser.getCreatedBy());
+        secondUser.setCreatedDate(firstUser.getCreatedDate());
+        secondUser.setLastModifiedBy(firstUser.getLastModifiedBy());
+        secondUser.setLastModifiedDate(firstUser.getLastModifiedDate());
+        secondUser.setAuthorities(new HashSet<>(firstUser.getAuthorities()));
+
         
         // First user
         restMvc.perform(
@@ -366,20 +374,15 @@ public class AccountResourceIntTest {
         // First user
         ManagedUserVM firstUser = new ManagedUserVM();
         
-        UserDTO userDTOFirst = new UserDTO();
-     
-        userDTOFirst.setLogin("test-register-duplicate-email");
-        
-        userDTOFirst.setFirstName("Alice");
-        userDTOFirst.setLastName("Test");
-        userDTOFirst.setEmail("test-register-duplicate-email@example.com");
-        userDTOFirst.setImageUrl("http://placehold.it/50x50");
-        userDTOFirst.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTOFirst.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
-        firstUser.setUser(userDTOFirst);
+        firstUser.setLogin("test-register-duplicate-email");
         firstUser.setPassword("password");
-        firstUser.setSemesterGroupId(1L);
+        firstUser.setFirstName("Alice");
+        firstUser.setLastName("Test");
+        firstUser.setEmail("test-register-duplicate-email@example.com");
+        firstUser.setImageUrl("http://placehold.it/50x50");
+        firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         // Register first user
         restMvc.perform(
             post("/api/register")
@@ -393,19 +396,14 @@ public class AccountResourceIntTest {
         // Duplicate email, different login
         ManagedUserVM secondUser = new ManagedUserVM();
         
-        UserDTO userDTOSecond = new UserDTO();
-        
-        userDTOSecond.setLogin("test-register-duplicate-email-2");
-        userDTOSecond.setFirstName(userDTOFirst.getFirstName());
-        userDTOSecond.setLastName(userDTOFirst.getLastName());
-        userDTOSecond.setEmail(userDTOFirst.getEmail());
-        userDTOSecond.setImageUrl(userDTOFirst.getImageUrl());
-        userDTOSecond.setLangKey(userDTOFirst.getLangKey());
-        userDTOSecond.setAuthorities(new HashSet<>(userDTOFirst.getAuthorities()));
-        
-        secondUser.setUser(userDTOSecond);
+        secondUser.setLogin("test-register-duplicate-email-2");
         secondUser.setPassword(firstUser.getPassword());
-        secondUser.setSemesterGroupId(1L);
+        secondUser.setFirstName(firstUser.getFirstName());
+        secondUser.setLastName(firstUser.getLastName());
+        secondUser.setEmail(firstUser.getEmail());
+        secondUser.setImageUrl(firstUser.getImageUrl());
+        secondUser.setLangKey(firstUser.getLangKey());
+        secondUser.setAuthorities(new HashSet<>(firstUser.getAuthorities()));
 
         // Register second (non activated) user
         restMvc.perform(
@@ -423,21 +421,16 @@ public class AccountResourceIntTest {
         // Duplicate email - with uppercase email address
         ManagedUserVM userWithUpperCaseEmail = new ManagedUserVM();
         
-        UserDTO userDTOThird = new UserDTO();
-        
-        userDTOThird.setId(userDTOFirst.getId());
-        userDTOThird.setLogin("test-register-duplicate-email-3");
-        userDTOThird.setFirstName(userDTOFirst.getFirstName());
-        userDTOThird.setLastName(userDTOFirst.getLastName());
-        userDTOThird.setEmail("TEST-register-duplicate-email@example.com");
-        userDTOThird.setImageUrl(userDTOFirst.getImageUrl());
-        userDTOThird.setLangKey(userDTOFirst.getLangKey());
-        userDTOThird.setAuthorities(new HashSet<>(userDTOFirst.getAuthorities()));
-        
+        userWithUpperCaseEmail.setId(firstUser.getId());
+        userWithUpperCaseEmail.setLogin("test-register-duplicate-email-3");
         userWithUpperCaseEmail.setPassword(firstUser.getPassword());
-        userWithUpperCaseEmail.setUser(userDTOThird);
-        userWithUpperCaseEmail.setSemesterGroupId(1L);
-        // Register third (not activated) user
+        userWithUpperCaseEmail.setFirstName(firstUser.getFirstName());
+        userWithUpperCaseEmail.setLastName(firstUser.getLastName());
+        userWithUpperCaseEmail.setEmail("TEST-register-duplicate-email@example.com");
+        userWithUpperCaseEmail.setImageUrl(firstUser.getImageUrl());
+        userWithUpperCaseEmail.setLangKey(firstUser.getLangKey());
+        userWithUpperCaseEmail.setAuthorities(new HashSet<>(firstUser.getAuthorities()));
+
         restMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -464,19 +457,15 @@ public class AccountResourceIntTest {
     public void testRegisterAdminIsIgnored() throws Exception {
     	ManagedUserVM validUser = new ManagedUserVM(); 
         
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("badguy");
-        userDTO.setFirstName("Bad");
-        userDTO.setLastName("Guy");
-        userDTO.setEmail("badguy@example.com");
-        userDTO.setActivated(true);
-        userDTO.setImageUrl("http://placehold.it/50x50");
-        userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
-        
-        validUser.setUser(userDTO);
-        validUser.setSemesterGroupId(1L);
-        validUser.setPassword("password");
+    	validUser.setLogin("badguy");
+        validUser.setFirstName("Bad");
+        validUser.setLastName("Guy");
+        validUser.setEmail("badguy@example.com");
+        validUser.setActivated(true);
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
+
 
         restMvc.perform(
             post("/api/register")
