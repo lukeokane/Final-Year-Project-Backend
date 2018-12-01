@@ -1,40 +1,112 @@
-<ion-header>
+<!-- <ion-header>
 
   <ion-navbar>
     <ion-title>{{ 'SIGNUP_TITLE' | translate }}</ion-title>
   </ion-navbar>
 
-</ion-header>
-
-
-<ion-content>
-  <form (submit)="doSignup()">
-    <ion-list>
-
-      <ion-item>
-        <ion-label floating>{{ 'FIRST_NAME' | translate }}</ion-label>
-        <ion-input type="text" [(ngModel)]="account.firstName" name="firstName"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label floating>{{ 'LAST_NAME' | translate }}</ion-label>
-        <ion-input type="text" [(ngModel)]="account.lastName" name="firstName"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label floating>{{ 'EMAIL' | translate }}</ion-label>
-        <ion-input type="email" [(ngModel)]="account.email" name="email"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label floating>{{ 'PASSWORD' | translate }}</ion-label>
-        <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
-      </ion-item>
-
-      <div padding>
-        <button ion-button color="primary" block>{{ 'SIGNUP_BUTTON' | translate }}</button>
-      </div>
-
-    </ion-list>
-  </form>
+</ion-header> -->
+<ion-content scroll="false">
+  <ion-grid class="height">
+    <ng-container *ngIf="getScreenSize() >= 1280">
+      <ion-row class="height">
+        <ion-col col-8 class="tint">
+          <img src="assets/imgs/main_desktop.jpg" class="img">
+          <div class="centered">{{'WELCOME_TO_ITLC' | translate}}</div>
+          <div class="centered1">Join our community that have more than 10000 members and learn new things
+            everyday!</div>
+        </ion-col>
+        <ion-col col-4 class="align">
+          <br>
+          <img src="assets/imgs/ITLC_logo.PNG" style="height:23%;">
+          <br><br>
+          <form (submit)="doSignup()">
+            <ion-row>
+              <ion-col class="alignRight">
+                <input padding class="input" type="text" [(ngModel)]="account.firstName" name="firstName" placeholder="First Name">
+              </ion-col>
+              <ion-col class="alignLeft">
+                <input padding class="input" type="text" [(ngModel)]="account.lastName" name="lastName" placeholder="Last Name">
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <i class="inside fa fa-envelope"></i>
+                <input padding class="input" type="email" [(ngModel)]="account.email" name="email" placeholder="Email">
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <i class="inside fa fa-lock"></i>
+                <input padding class="input" type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <select padding class="input">
+                  <option [ngValue]="null" disabled [selected]="true">Choose an option</option>
+                  <option>Option 1</option>
+                  <option>Option 2</option>
+                </select>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <button ion-button round class="signUpButton">{{ 'SIGNUP_BUTTON' | translate }}</button>
+              </ion-col>
+            </ion-row>
+          </form>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+    <ng-container *ngIf="getScreenSize() < 1280">
+      <ion-row class="topImages">
+        <ion-col class="tintImgMob">
+          <ng-container *ngIf="getScreenSize() < 500">
+            <img src="assets/imgs/main_mobile.jpg" class="mobImg">
+            <img src="assets/imgs/ITLC_logo.PNG" class="mobImg1">
+          </ng-container>
+          <ng-container *ngIf="getScreenSize() > 500 || getScreenSize < 1280">
+            <img src="assets/imgs/main_mobile.jpg" class="mobImg">
+            <img src="assets/imgs/ITLC_logo.PNG" class="ipadImg">
+          </ng-container>
+        </ion-col>
+      </ion-row>
+      <br><br>
+      <ion-row>
+        <ion-col style="text-align:right">
+          <input class="inputReg" padding type="text" [(ngModel)]="account.firstName" name="firstName" placeholder="First Name">
+        </ion-col>
+        <ion-col>
+          <input class="inputReg" padding type="text" [(ngModel)]="account.lastName" name="lastName" placeholder="Last Name">
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="align">
+          <i class="inside fa fa-envelope"></i>
+          <input class="inputReg" padding type="email" [(ngModel)]="account.email" name="email" placeholder="Email">
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="align">
+          <i class="inside fa fa-lock"></i>
+          <input class="inputReg" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="align">
+          <select class="inputReg" padding>
+            <option [ngValue]="null" disabled [selected]="true">Choose an option</option>
+            <option>Option 1</option>
+            <option>Option 2</option>
+          </select>
+        </ion-col>
+      </ion-row>
+      <br>
+      <ion-row>
+        <ion-col class="align">
+          <button ion-button round class="signUpButton">{{ 'SIGNUP_BUTTON' | translate }}</button>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </ion-grid>
 </ion-content>
