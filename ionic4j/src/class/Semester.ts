@@ -6,7 +6,8 @@ export class Semester {
         public id?:number,
         public semesterNumber?:SemesterNumber,
         public startDate?:Date,
-        public endDate?:Date
+        public endDate?:Date,
+        public courseYearId?:number
     )
     { }
 

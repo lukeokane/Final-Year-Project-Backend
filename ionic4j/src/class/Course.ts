@@ -1,9 +1,9 @@
-export class SemesterGroup {
+export class Course {
 
     constructor(
         public id?:number,
         public title?:string,
-        public semesterId?:number
+        public courseCode?:string
     )
     { }
 

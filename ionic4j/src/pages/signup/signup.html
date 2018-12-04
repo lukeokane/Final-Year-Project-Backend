@@ -16,8 +16,7 @@
             everyday!</div>
         </ion-col>
         <ion-col col-4 class="align">
-          <br>
-          <img src="assets/imgs/ITLC_logo.PNG" style="height:23%;">
+          <img src="assets/imgs/ITLC_logo.PNG" style="height:22%;">
           <br><br>
           <form (submit)="doSignup()">
             <ion-row>
@@ -42,10 +41,36 @@
             </ion-row>
             <ion-row>
               <ion-col>
-                <select padding class="input">
+                <!-- <select padding class="input">
                   <option [ngValue]="null" disabled [selected]="true">Choose an option</option>
                   <option>Option 1</option>
                   <option>Option 2</option>
+                </select> -->
+                <i class="inside fa fa-desktop"></i>
+                <select padding class="input" (ngModel)="account.course" (ngModelChange)="initCourseYear($event)" name="course">
+                  <option [ngValue]="null" disabled [selected]="true">Choose a Course</option>
+                  <option *ngFor="let value of courses; let i=index" [ngValue]="value">
+                    Year - {{value?.title}}
+                </select>
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="FilteredYears.length > 0 && FilteredYears != null && FilteredYears != undefined">
+              <ion-col>
+                <i class="inside fa fa-calendar"></i>
+                <select padding class="input" (ngModel)="account.year" (ngModelChange)="initSemester($event)" name="year">
+                  <option [ngValue]="null" disabled [selected]="true">Choose a Year</option>
+                  <option *ngFor="let value of FilteredYears; let i=index" [ngValue]="value">
+                    {{value?.courseYear}}
+                </select>
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="FilteredSemesterGroup != null && FilteredSemesterGroup != undefined">
+              <ion-col>
+                <i class="inside fa fa-users"></i>
+                <select padding class="input" (ngModel)="account.semesterGroup" name="semesterGroup">
+                  <option [ngValue]="null" disabled [selected]="true">Choose a Group</option>
+                  <option *ngFor="let value of FilteredSemesterGroup; let i=index" [ngValue]="value">
+                    {{value?.title}}
                 </select>
               </ion-col>
             </ion-row>
@@ -65,7 +90,7 @@
             <img src="assets/imgs/main_mobile.jpg" class="mobImg">
             <img src="assets/imgs/ITLC_logo.PNG" class="mobImg1">
           </ng-container>
-          <ng-container *ngIf="getScreenSize() > 500 || getScreenSize < 1280">
+          <ng-container *ngIf="getScreenSize() > 500">
             <img src="assets/imgs/main_mobile.jpg" class="mobImg">
             <img src="assets/imgs/ITLC_logo.PNG" class="ipadImg">
           </ng-container>
@@ -92,12 +117,33 @@
           <input class="inputReg" padding type="password" [(ngModel)]="account.password" name="password" placeholder="Password">
         </ion-col>
       </ion-row>
-      <ion-row>
-        <ion-col class="align">
-          <select class="inputReg" padding>
-            <option [ngValue]="null" disabled [selected]="true">Choose an option</option>
-            <option>Option 1</option>
-            <option>Option 2</option>
+      <ion-row class="align">
+        <ion-col>
+          <i class="inside fa fa-desktop"></i>
+          <select padding class="inputReg" (ngModel)="account.course" (ngModelChange)="initCourseYear($event)" name="course">
+            <option [ngValue]="null" disabled [selected]="true">Choose a Course</option>
+            <option *ngFor="let value of courses; let i=index" [ngValue]="value">
+              {{value?.title}}
+          </select>
+        </ion-col>
+      </ion-row>
+      <ion-row class="align" *ngIf="FilteredYears.length > 0 && FilteredYears != null && FilteredYears != undefined">
+        <ion-col>
+          <i class="inside fa fa-calendar"></i>
+          <select padding class="inputReg" (ngModel)="account.year" (ngModelChange)="initSemester($event)" name="year">
+            <option [ngValue]="null" disabled [selected]="true">Choose a Year</option>
+            <option *ngFor="let value of FilteredYears; let i=index" [ngValue]="value">
+             Year - {{value?.courseYear}}
+          </select>
+        </ion-col>
+      </ion-row>
+      <ion-row class="align" *ngIf="FilteredSemesterGroup != null && FilteredSemesterGroup != undefined">
+        <ion-col>
+          <i class="inside fa fa-users"></i>
+          <select padding class="inputReg" (ngModel)="account.semesterGroup" name="semesterGroup">
+            <option [ngValue]="null" disabled [selected]="true">Choose a Group</option>
+            <option *ngFor="let value of FilteredSemesterGroup; let i=index" [ngValue]="value">
+              {{value?.title}}
           </select>
         </ion-col>
       </ion-row>

@@ -1,3 +1,7 @@
+import { SemesterService } from './../services/Semester.provider';
+import { CourseService } from './../services/Course.provider';
+import { SemesterGroupService } from './../services/SemesterGroup.provider';
+import { CourseYearService } from './../services/CourseYear.provider';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -75,6 +79,10 @@ export function provideSettings(storage: Storage) {
     AuthServerProvider,
     LocalStorageService,
     SessionStorageService,
+    CourseService,
+    CourseYearService,
+    SemesterGroupService,
+    SemesterService,
     Camera,
     SplashScreen,
     StatusBar,
