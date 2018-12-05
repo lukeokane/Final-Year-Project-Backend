@@ -7,3 +7,5 @@ user_id;authority_name
 5;ROLE_TUTOR
 6;ROLE_ACM
 7;ROLE_ITLC
+8;ROLE_ADMIN
+8;ROLE_USER

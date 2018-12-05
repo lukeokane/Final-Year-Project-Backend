@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
 
 	private final NotificationService notificationService;
 	
-	private final Long ADMIN_ID = (long) 9; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
+	private final Long ADMIN_ID = (long) 8; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
 			UserRepository userRepository, MailService mailService, NotificationService notificationService, UserInfoRepository userInfoRepository,UserService userService) {
