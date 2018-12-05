@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -61,6 +63,20 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findAll(pageable)
             .map(notificationMapper::toDto);
     }
+    
+    /**
+     * Get all the  notifications by user logged in
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    @Override
+	@Transactional(readOnly = true)
+	public Page<NotificationDTO> findAllDateAsc(Pageable pageable) {
+		log.debug("Request to get all Notifications");
+        return notificationRepository.getAllTest(pageable)
+            .map(notificationMapper::toDto);
+	}
 
 
     /**
@@ -87,4 +103,16 @@ public class NotificationServiceImpl implements NotificationService {
         log.debug("Request to delete Notification : {}", id);
         notificationRepository.deleteById(id);
     }
+
+	@Override
+	public List<NotificationDTO> findAllNotificationsList() {
+		List<NotificationDTO> list = new ArrayList<NotificationDTO>();
+		List<Notification> ps = notificationRepository.findAllList();
+		for (Notification p : ps)
+			list.add(notificationMapper.toDto(p));
+
+		return list;
+	}
+	
+
 }

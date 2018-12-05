@@ -59,6 +59,27 @@ public class BookingResource {
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+    
+    /**
+     * POST  /bookings : Create a new booking and create a booking notification for the ITLC admin for a new booking request
+     *
+     * @param bookingDTO the bookingDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new bookingDTO, or with status 400 (Bad Request) if the booking has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PostMapping("bookings/createBookingWithAdminNotification")
+    @Timed
+    public ResponseEntity<BookingDTO> createBookingAdminNotification(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to save Booking : {}", bookingDTO);
+        if (bookingDTO.getId() != null) {
+            throw new BadRequestAlertException("A new booking cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        BookingDTO result = bookingService.save(bookingDTO);
+        bookingService.saveBookingWithAdminNotification(result);
+        return ResponseEntity.created(new URI("/api/bookings/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
 
     /**
      * PUT  /bookings : Updates an existing booking.
@@ -77,6 +98,95 @@ public class BookingResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         BookingDTO result = bookingService.save(bookingDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
+            .body(result);
+    }
+    
+    
+    /**
+     * PUT  /bookings : Updates an existing booking by admin to be assigned to a tutor and creates a notification for the tutor of a job offer
+     *
+     * @param bookingDTO the bookingDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bookingDTO,
+     * or with status 400 (Bad Request) if the bookingDTO is not valid,
+     * or with status 500 (Internal Server Error) if the bookingDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/updateBookingAssignTutor")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingAssignedToTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to update Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        BookingDTO result = bookingService.updateBookingAssignedTutor(bookingDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
+            .body(result);
+    }
+    
+    /**
+     * PUT  /bookings : Updates an existing booking to a boolean status of accepted by the tutor who the booking was assigned to and creates acceptance notification to user who requested tutorial
+     *
+     * @param bookingDTO the bookingDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bookingDTO,
+     * or with status 400 (Bad Request) if the bookingDTO is not valid,
+     * or with status 500 (Internal Server Error) if the bookingDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/updateBookingAcceptedByTutor")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingAcceptedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to update Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        BookingDTO result = bookingService.updateBookingAccepted(bookingDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
+            .body(result);
+    }
+    
+    /**
+     * PUT  /bookings : Updates an existing booking to a boolean status of rejected by the tutor who the booking was assigned to and creates rejection notification to the admin who assigned the tutorial
+     *
+     * @param bookingDTO the bookingDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bookingDTO,
+     * or with status 400 (Bad Request) if the bookingDTO is not valid,
+     * or with status 500 (Internal Server Error) if the bookingDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/updateBookingRejectedByTutor")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingRejectedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to update Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        BookingDTO result = bookingService.updateBookingRejected(bookingDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
+            .body(result);
+    }
+    
+    /**
+     * PUT  /bookings : Updates an existing booking to a status of cancelled. Creates a cancellation notification for all users who have registered
+     *
+     * @param bookingDTO the bookingDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bookingDTO,
+     * or with status 400 (Bad Request) if the bookingDTO is not valid,
+     * or with status 500 (Internal Server Error) if the bookingDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/updateBookingCancelledByTutor")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingToCancelled(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to update Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        BookingDTO result = bookingService.updateBookingCancelled(bookingDTO);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
             .body(result);

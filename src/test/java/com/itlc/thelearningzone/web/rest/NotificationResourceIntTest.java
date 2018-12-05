@@ -191,7 +191,7 @@ public class NotificationResourceIntTest {
         List<Notification> notificationList = notificationRepository.findAll();
         assertThat(notificationList).hasSize(databaseSizeBeforeTest);
     }
-
+    
     @Test
     @Transactional
     public void getAllNotifications() throws Exception {
@@ -208,7 +208,8 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(DEFAULT_SENDER_IMAGE_URL.toString())))
             .andExpect(jsonPath("$.[*].read").value(hasItem(DEFAULT_READ.booleanValue())));
     }
-    
+
+
     @Test
     @Transactional
     public void getNotification() throws Exception {
@@ -224,6 +225,17 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE.toString()))
             .andExpect(jsonPath("$.senderImageURL").value(DEFAULT_SENDER_IMAGE_URL.toString()))
             .andExpect(jsonPath("$.read").value(DEFAULT_READ.booleanValue()));
+    }
+    
+    @Test
+    @Transactional
+    public void getAllNotificationsDateAscList() throws Exception {
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+        // Get the notification
+        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscList"))
+             .andExpect(status().isNotFound());
+            
     }
 
     @Test

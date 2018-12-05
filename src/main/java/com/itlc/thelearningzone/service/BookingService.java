@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 /**
  * Service Interface for managing Booking.
  */
@@ -49,4 +51,14 @@ public interface BookingService {
      * @param id the id of the entity
      */
     void delete(Long id);
+
+	BookingDTO updateBookingCancelled(@Valid BookingDTO bookingDTO);
+
+	BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO);
+
+	void saveBookingWithAdminNotification(@Valid BookingDTO bookingDTO);
+
+	BookingDTO updateBookingAssignedTutor(@Valid BookingDTO bookingDTO);
+
+	BookingDTO updateBookingRejected(@Valid BookingDTO bookingDTO);
 }

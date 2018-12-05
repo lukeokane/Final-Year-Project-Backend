@@ -96,6 +96,39 @@ public class NotificationResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/notifications");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    /**
+	 * GET /notifications : get all notifications by user logged in.
+	 *
+	 * @param pageable
+	 *            the pagination information
+	 * @return the ResponseEntity with status 200 (OK) and the list of notifications
+	 *         in body
+	 */
+	@GetMapping("/notifications/findAllNotificationsDateAscPageable")
+	@Timed
+	public ResponseEntity<List<NotificationDTO>> getAllNonReadNotifications(Pageable pageable) {
+		log.debug("REST request to get a page of Notifications");
+		Page<NotificationDTO> page = notificationService.findAllDateAsc(pageable);
+		HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/notifications");
+		return ResponseEntity.ok().headers(headers).body(page.getContent());
+	}
+	
+	/**
+	 * GET /languages : get all the notifications in a list by current user logged in ordered by nearest date 
+	 * pagination.
+	 *
+	 * @param
+	 * @return the ResponseEntity with status 200 (OK) and the list of notifications
+	 *         in body
+	 */
+	@GetMapping("/notifications/findAllNotificationsDateAscList")
+	@Timed
+	public ResponseEntity<List<NotificationDTO>> getAllNotificationsDateAscList(@PathVariable Long id) {
+		log.debug("REST request to get all the notifications");
+		List<NotificationDTO> notifications = notificationService.findAllNotificationsList();
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(notifications));
+	}
 
     /**
      * GET  /notifications/:id : get the "id" notification.
