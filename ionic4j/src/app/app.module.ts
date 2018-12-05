@@ -1,3 +1,4 @@
+import { Notification } from './../class/Notification';
 import { SemesterService } from './../services/Semester.provider';
 import { CourseService } from './../services/Course.provider';
 import { SemesterGroupService } from './../services/SemesterGroup.provider';
@@ -17,7 +18,7 @@ import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
 import { AccountService } from '../providers/auth/account.service';
-import { NotificationService } from '../providers/auth/account.service';
+import { NotificationService } from '../providers/Notification/notification.service';
 import { AuthServerProvider } from '../providers/auth/auth-jwt.service';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
