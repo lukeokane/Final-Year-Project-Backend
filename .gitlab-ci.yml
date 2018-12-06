@@ -3,7 +3,7 @@ image: jhipster/jhipster:v5.7.0
 cache:
     key: ""
     paths:
-        - .maven/
+        - chmod +x .maven/
 stages:
     - build
     - test
