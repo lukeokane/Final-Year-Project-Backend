@@ -1,9 +1,9 @@
 image: jhipster/jhipster:v5.7.0
 
 cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: ""
     paths:
-        - node_modules/
+        - .maven/
 stages:
     - build
     - test
