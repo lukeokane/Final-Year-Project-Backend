@@ -14,7 +14,7 @@ stages:
 
 
 before_script:
-    - export MAVEN_USER_HOME=C:\Users\Shaun\.m2\repository
+    - export MAVEN_USER_HOME=C:\Users\Shaun\.m2\wrapper\dists\apache-maven-3.6.0-bin\2dakv70gp803gtm5ve1ufmvttn\apache-maven-3.6.0
     - ./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.13.0 -DnpmVersion=6.4.1 -Dmaven.repo.local=$MAVEN_USER_HOME
     - ./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dmaven.repo.local=$MAVEN_USER_HOME
 
