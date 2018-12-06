@@ -9,8 +9,8 @@ stages:
     - test
     - analyze
     - package
-    # - release
-    # - deploy
+    - release
+    - deploy
 
 
 before_script:
