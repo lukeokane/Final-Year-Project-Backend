@@ -56,7 +56,8 @@ sonar-analyze:
         - frontend-test
     script:
         - ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
-        - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dmaven.repo.local=$MAVEN_USER_HOME
+        #- ./mvnw -Pprod clean test sonar:sonar
+        - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
     allow_failure: true
 
 # maven-package:
