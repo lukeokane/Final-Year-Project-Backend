@@ -8,9 +8,9 @@ stages:
     - build
     - test
     - analyze
-    - package
-    - release
-    - deploy
+    # - package
+    # - release
+    # - deploy
 
 
 before_script:
@@ -59,14 +59,14 @@ sonar-analyze:
         - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dmaven.repo.local=$MAVEN_USER_HOME
     allow_failure: true
 
-maven-package:
-    stage: package
-    script:
-        - ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
-    artifacts:
-        paths:
-            - target/*.war
-        expire_in: 1 day
+# maven-package:
+#     stage: package
+#     script:
+#         - ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
+#     artifacts:
+#         paths:
+#             - target/*.war
+#         expire_in: 1 day
 
 # Uncomment the following line to use gitlabs container registry. You need to adapt the REGISTRY_URL in case you are not using gitlab.com
 docker-push:
