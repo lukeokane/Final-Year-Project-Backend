@@ -5,7 +5,7 @@ cache:
     paths:
         - .maven/
 stages:
-    #- build
+    - build
     - test
     - analyze
     # - package
@@ -18,15 +18,15 @@ before_script:
     - ./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.13.0 -DnpmVersion=6.4.1 -Dmaven.repo.local=$MAVEN_USER_HOME
     - ./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dmaven.repo.local=$MAVEN_USER_HOME
 
-# maven-compile:
-#     stage: build
-#     script:
-#         - ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
-#     artifacts:
-#         paths:
-#             - target/classes/
-#             - target/generated-sources/
-#         expire_in: 1 day
+maven-compile:
+    stage: build
+    script:
+        - ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
+    artifacts:
+        paths:
+            - target/classes/
+            - target/generated-sources/
+        expire_in: 1 day
 
 maven-test:
     stage: test
