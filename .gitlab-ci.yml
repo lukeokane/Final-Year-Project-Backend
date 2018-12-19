@@ -6,7 +6,7 @@ cache:
         - .maven/
 stages:
     #- build
-    #- test
+    - test
     - analyze
     # - package
     # - release
@@ -28,27 +28,27 @@ before_script:
 #             - target/generated-sources/
 #         expire_in: 1 day
 
-# maven-test:
-#     stage: test
-#     script:
-#         - ./mvnw test -Dmaven.repo.local=$MAVEN_USER_HOME
-#     artifacts:
-#         reports:
-#             junit: target/surefire-reports/TEST-*.xml
-#         paths:
-#             - target/test-results
-#         expire_in: 1 day
+maven-test:
+    stage: test
+    script:
+        - ./mvnw test -Dmaven.repo.local=$MAVEN_USER_HOME
+    artifacts:
+        reports:
+            junit: target/surefire-reports/TEST-*.xml
+        paths:
+            - target/test-results
+        expire_in: 1 day
 
-# frontend-test:
-#     stage: test
-#     script:
-#         - ./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='test -- -u' -Dmaven.repo.local=$MAVEN_USER_HOME
-#     artifacts:
-#         reports:
-#             junit: target/test-results/jest/TESTS-*.xml
-#         paths:
-#             - target/test-results
-#         expire_in: 1 day
+frontend-test:
+    stage: test
+    script:
+        - ./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='test -- -u' -Dmaven.repo.local=$MAVEN_USER_HOME
+    artifacts:
+        reports:
+            junit: target/test-results/jest/TESTS-*.xml
+        paths:
+            - target/test-results
+        expire_in: 1 day
 sonar-analyze:
     stage: analyze
     dependencies:
