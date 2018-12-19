@@ -67,6 +67,13 @@ export class BookingService {
             .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
+    updateBookingRejectedByAdmin(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingRequestRejectedByAdmin`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
     find(id: number): Observable<EntityResponseType> {
         return this.http
             .get<IBooking>(`${this.resourceUrl}/${id}`, { observe: 'response' })

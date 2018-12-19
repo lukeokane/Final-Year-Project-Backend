@@ -608,6 +608,52 @@ public class BookingResourceIntTest {
         assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
     }
     
+    @Test
+    @Transactional
+    public void updateBookingRequestRejectedByAdmin() throws Exception {
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        int databaseSizeBeforeUpdate = bookingRepository.findAll().size();
+
+        // Update the booking
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        // Disconnect from session so that the updates on updatedBooking are not directly saved in db
+        em.detach(updatedBooking);
+        updatedBooking
+            .title(UPDATED_TITLE)
+            .requestedBy(UPDATED_REQUESTED_BY)
+            .startTime(UPDATED_START_TIME)
+            .endTime(UPDATED_END_TIME)
+            .userComments(UPDATED_USER_COMMENTS)
+            .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
+            .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
+            .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
+            .cancelled(UPDATED_CANCELLED);
+        BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
+
+        restBookingMockMvc.perform(put("/api/bookings")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+            .andExpect(status().isOk());
+
+        // Validate the Booking in the database
+        List<Booking> bookingList = bookingRepository.findAll();
+        assertThat(bookingList).hasSize(databaseSizeBeforeUpdate);
+        Booking testBooking = bookingList.get(bookingList.size() - 1);
+        assertThat(testBooking.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(testBooking.getRequestedBy()).isEqualTo(UPDATED_REQUESTED_BY);
+        assertThat(testBooking.getStartTime()).isEqualTo(UPDATED_START_TIME);
+        assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
+        assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
+        assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
+        assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
+        assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
+        assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+    }
+    
     
     @Test
     @Transactional
