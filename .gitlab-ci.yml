@@ -58,7 +58,7 @@ sonar-analyze:
         - ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
         #- ./mvnw -Pprod clean test sonar:sonar
         #- ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
-        - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.projectKey=ce45b3a7f6437c5b22db728bc3c96ddd590bd3aa -Dsonar.organization=thelearningzone -D"sonar.sources=. -D"sonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
+        - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.projectKey=ce45b3a7f6437c5b22db728bc3c96ddd590bd3aa -Dsonar.organization=thelearningzone -D"sonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
 
     allow_failure: true
 
