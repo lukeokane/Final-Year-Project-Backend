@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -64,6 +64,12 @@ public class BookingServiceImpl implements BookingService {
 
 	}
 
+	@Override
+	public Page<BookingDTO> findAllInTimeFrame(Pageable pageable, Instant startTime, Instant endTime) {
+		log.debug("Request to get all Bookings between {0} and {1}", Date.from(startTime), Date.from(endTime));
+		return bookingRepository.findAllInTimeFrame(pageable, startTime, endTime).map(bookingMapper::toDto);
+	}
+	
 	/**
 	 * Save a booking.
 	 *

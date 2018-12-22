@@ -5,6 +5,7 @@ import com.itlc.thelearningzone.service.dto.BookingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -29,6 +30,14 @@ public interface BookingService {
      * @return the list of entities
      */
     Page<BookingDTO> findAll(Pageable pageable);
+    
+    /**
+     * Get all the bookings.
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    Page<BookingDTO> findAllInTimeFrame(Pageable pageable, Instant startTime, Instant endTime);
 
     /**
      * Get all the Booking with eager load of many-to-many relationships.

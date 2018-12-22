@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,5 +27,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select booking from Booking booking left join fetch booking.userInfos where booking.id =:id")
     Optional<Booking> findOneWithEagerRelationships(@Param("id") Long id);
+    
+    @Query(value = "select distinct booking from Booking booking left join fetch booking.userInfos where booking.startTime between :startTime and :endTime",
+    		countQuery = "select count(distinct booking) from Booking booking where startTime > :startTime and startTime < :endTime ")
+    Page<Booking>findAllInTimeFrame(Pageable pageable, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
 }

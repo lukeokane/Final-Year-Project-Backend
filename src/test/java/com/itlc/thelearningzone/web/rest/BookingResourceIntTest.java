@@ -654,6 +654,61 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
         assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
     }
+    
+    /*
+     * Check that search for bookings between times where there is bookings present will return a result
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsInTimeFrame() throws Exception {
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        
+        // Get all the bookingList
+        restBookingMockMvc.perform(get("/api/bookings?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+    }
+    
+    /*
+     * Check that search for bookings between times where there is none present will return 0 results
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsNoneInTimeFrame() throws Exception {
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours before
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        
+        // Get all the bookingList
+        restBookingMockMvc.perform(get("/api/bookings?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(0));
+    }
 
     @Test
     @Transactional

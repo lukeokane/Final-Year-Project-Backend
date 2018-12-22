@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -197,14 +197,20 @@ public class BookingResource {
      *
      * @param pageable the pagination information
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param endTime the bookings to return that begin before this time in milliseconds 
      * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
      */
     @GetMapping("/bookings")
     @Timed
-    public ResponseEntity<List<BookingDTO>> getAllBookings(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Bookings");
+    public ResponseEntity<List<BookingDTO>> getAllBookings(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload, 
+    		@RequestParam(required = false, defaultValue = "0") Long startTimeMs, @RequestParam(required = false, defaultValue = "0") Long endTimeMs) {
+    	
+    	log.debug("REST request to get a page of Bookings");
         Page<BookingDTO> page;
-        if (eagerload) {
+        if (startTimeMs != 0 && endTimeMs != 0) {
+        	page = bookingService.findAllInTimeFrame(pageable, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        } else if (eagerload) {
             page = bookingService.findAllWithEagerRelationships(pageable);
         } else {
             page = bookingService.findAll(pageable);
