@@ -29,7 +29,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findOneWithEagerRelationships(@Param("id") Long id);
     
     @Query(value = "select distinct booking from Booking booking left join fetch booking.userInfos where booking.startTime between :startTime and :endTime",
-    		countQuery = "select count(distinct booking) from Booking booking where startTime > :startTime and startTime < :endTime ")
+    		countQuery = "select count(distinct booking) from Booking booking where booking.startTime between :startTime and :endTime")
     Page<Booking>findAllInTimeFrame(Pageable pageable, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
+    @Query(value = "select distinct booking from Booking booking join booking.userInfos u where u.id = :userId and booking.startTime between :startTime and :endTime",
+    		countQuery = "select count(distinct booking) from Booking booking join booking.userInfos u where u.id = :userId and booking.startTime between :startTime and :endTime")
+    Page<Booking> findUserBookingsInTimeFrame(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 }

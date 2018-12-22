@@ -32,12 +32,21 @@ public interface BookingService {
     Page<BookingDTO> findAll(Pageable pageable);
     
     /**
-     * Get all the bookings.
+     * Get all the bookings within a time frame.
      *
      * @param pageable the pagination information
      * @return the list of entities
      */
     Page<BookingDTO> findAllInTimeFrame(Pageable pageable, Instant startTime, Instant endTime);
+    
+    /**
+     * Get all the bookings within a time frame associated with a user ID.
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    Page<BookingDTO> findUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime);
+
 
     /**
      * Get all the Booking with eager load of many-to-many relationships.

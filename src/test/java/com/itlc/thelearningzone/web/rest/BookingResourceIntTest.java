@@ -3,7 +3,9 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
@@ -30,8 +32,9 @@ import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,6 +113,11 @@ public class BookingResourceIntTest {
     private MockMvc restBookingMockMvc;
 
     private Booking booking;
+    
+    private UserInfo userInfo;
+    
+    @Autowired
+    private UserInfoRepository userInfoRepository;
 
     @Before
     public void setup() {
@@ -142,10 +150,19 @@ public class BookingResourceIntTest {
             .cancelled(DEFAULT_CANCELLED);
         return booking;
     }
+    
+    public static UserInfo createUserInfoEntity(EntityManager em)
+    {
+    	UserInfo userInfo = new UserInfo();
+    	userInfo.setId(8L);
+
+    	return userInfo;
+    }
 
     @Before
     public void initTest() {
         booking = createEntity(em);
+        userInfo = createUserInfoEntity(em);
     }
 
     @Test
@@ -732,6 +749,126 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
             .andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+    }
+    
+    /*
+     * Check that search for user's bookings between times where there is bookings present will return no result
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getUserBookingsNoneInTimeFrame() throws Exception {
+    	
+        // Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo); 
+    	
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the booking database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours before
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();        
+        
+        // Get bookings for user in between the passed times, expect none to be returned
+        restBookingMockMvc.perform(get("/api/bookings?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userId=" + userId + "&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(0));
+    }
+    
+    
+    
+    /*
+     * Check that search for user's bookings between times where there is bookings present will return a result
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getUserBookingsInTimeFrame() throws Exception {
+    	
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 1 to be returned
+        restBookingMockMvc.perform(get("/api/bookings?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userId=" + userId + "&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+    }
+    
+    
+    /*
+     * Check for users bookings within a time range, user id is non existant.
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getUserBookingsUserDoesNotExist() throws Exception {
+    	
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // Set userId to a non-existent ID
+        Long userId = userInfo.getId() + 1;
+        
+        
+        // Get bookings for user in between the passed times, none expect to be returned
+        restBookingMockMvc.perform(get("/api/bookings?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userId=" + userId + "&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(0));
     }
     
     /*

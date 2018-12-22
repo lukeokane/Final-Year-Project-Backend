@@ -225,18 +225,32 @@ public class BookingResource {
      */
     @GetMapping("/bookings")
     @Timed
-    public ResponseEntity<List<BookingDTO>> getAllBookings(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload, 
-    		@RequestParam(required = false, defaultValue = "0") Long startTimeMs, @RequestParam(required = false, defaultValue = "0") Long endTimeMs) {
+    public ResponseEntity<List<BookingDTO>> getAllBookings(Pageable pageable, 
+    		@RequestParam(required = false, defaultValue = "false") boolean eagerload, 
+    		@RequestParam(required = false) Long startTimeMs,
+    		@RequestParam(required = false) Long endTimeMs,
+    		@RequestParam(required = false) Long userId) {
     	
     	log.debug("REST request to get a page of Bookings");
         Page<BookingDTO> page;
-        if (startTimeMs != 0 && endTimeMs != 0) {
+        
+        // If start time and end time present, get bookings between the times
+        if (startTimeMs != null && endTimeMs != null) {
+        	// No id passed, get all bookings
+        	if (userId == null)
+        	{
         	page = bookingService.findAllInTimeFrame(pageable, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
+        	// If id is present, get bookings for particular user.
+        	else {
+        	page = bookingService.findUserBookingsInTimeFrame(pageable, userId, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
         } else if (eagerload) {
             page = bookingService.findAllWithEagerRelationships(pageable);
         } else {
             page = bookingService.findAll(pageable);
         }
+        
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookings?eagerload=%b", eagerload));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

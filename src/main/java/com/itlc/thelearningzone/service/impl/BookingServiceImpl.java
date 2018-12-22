@@ -74,6 +74,12 @@ public class BookingServiceImpl implements BookingService {
 		return bookingRepository.findAllInTimeFrame(pageable, startTime, endTime).map(bookingMapper::toDto);
 	}
 	
+	@Override
+	public Page<BookingDTO> findUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime) {
+		log.debug("Request to get all Bookings between {0} and {1} for user {2}", Date.from(startTime), Date.from(endTime), userId);
+		return bookingRepository.findUserBookingsInTimeFrame(pageable, userId, startTime, endTime).map(bookingMapper::toDto);
+	}
+	
 	/**
 	 * Save a booking.
 	 *
