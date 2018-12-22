@@ -52,6 +52,10 @@ public class BookingServiceImpl implements BookingService {
 	private final NotificationService notificationService;
 	
 	private final Long ADMIN_ID = (long) 8; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
+	
+    private final String SENDER_URL = "../../content/images/";
+	
+	private final String IMAGE_FORMAT = ".png";
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
 			UserRepository userRepository, MailService mailService, NotificationService notificationService, UserInfoRepository userInfoRepository,UserService userService) {
@@ -102,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
 			notification.setSenderId(userInfoDTO.getId());
 		}		
 		notification.setBookingId(bookingDTO.getId());
-		notification.setSenderImageURL(sender.get().getImageUrl());
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver 
 		 //need to find a way to get the admin ID
          Optional<User> receiver = userRepository.findById(ADMIN_ID);
@@ -133,7 +137,7 @@ public class BookingServiceImpl implements BookingService {
 			Instant instant = Instant.now();
 			notification.setTimestamp(instant);
 			notification.setMessage(notificationMessage);
-			notification.setSenderImageURL(tutorUser.getImageUrl());
+			notification.setSenderImageURL(SENDER_URL.concat(tutorUser.getLogin()).concat(IMAGE_FORMAT));
 			notification.setRead(false);
 			notification.setSenderId(tutorID);
 			notification.setReceiverId(userInfoDTO.getUserId());
@@ -175,7 +179,7 @@ public class BookingServiceImpl implements BookingService {
 		Long tutorID = Long.valueOf(idTut.longValue());
 		User tutorUser = userRepository.getOne(tutorID);
 		notification.setSenderId(tutorID);
-		notification.setSenderImageURL(tutorUser.getImageUrl());
+		notification.setSenderImageURL(SENDER_URL.concat(tutorUser.getLogin()).concat(IMAGE_FORMAT));
 		// getting receiverID
 		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		notification.setReceiverId(reveiver.get().getId());
@@ -202,7 +206,7 @@ public class BookingServiceImpl implements BookingService {
 		// need to find a way to set the adminsID
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		notification.setSenderId(ADMIN_ID);
-		notification.setSenderImageURL(sender.get().getImageUrl());
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
 		Integer idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
@@ -232,7 +236,7 @@ public class BookingServiceImpl implements BookingService {
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);
-		notification.setSenderImageURL(sender.get().getImageUrl());
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		notification.setBookingId(bookingDTO.getId());
 		// getting receiver
 		Optional<User> receiver = userRepository.findById(ADMIN_ID);
@@ -243,7 +247,33 @@ public class BookingServiceImpl implements BookingService {
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
-
+	
+	@Override
+	public BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO) {
+		
+		// Creating a notification for the student that requested a tutorial that there request is rejected. notification comes from the admin
+		NotificationDTO notification = new NotificationDTO();
+		Instant instant = Instant.now();
+		notification.setTimestamp(instant);
+		String notificationMessage = "Sorry no available tutorials based on your available times, please request a tutorial with different times";
+		notification.setMessage(notificationMessage);
+		notification.setRead(false);
+				
+		// getting sender
+		Optional<User> sender = userRepository.findById(ADMIN_ID);
+		notification.setSenderId(sender.get().getId());
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		// getting receiver
+		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		notification.setReceiverId(reveiver.get().getId());
+		notification.setBookingId(bookingDTO.getId());
+		
+		notificationService.save(notification);
+				
+		Booking booking = bookingMapper.toEntity(bookingDTO);
+		booking = bookingRepository.save(booking);
+		return bookingMapper.toDto(booking);
+	}
 
 	/**
 	 * Get all the bookings.

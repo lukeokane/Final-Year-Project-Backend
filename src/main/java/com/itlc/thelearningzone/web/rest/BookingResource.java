@@ -191,6 +191,28 @@ public class BookingResource {
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
             .body(result);
     }
+    
+    /**
+     * PUT  /bookings : Updates a booking request to cancelled. Creates a rejection notification for the student who requested the tutorial
+     *
+     * @param bookingDTO the bookingDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bookingDTO,
+     * or with status 400 (Bad Request) if the bookingDTO is not valid,
+     * or with status 500 (Internal Server Error) if the bookingDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/updateBookingRequestRejectedByAdmin")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to update Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
+            .body(result);
+    }
 
     /**
      * GET  /bookings : get all the bookings.
