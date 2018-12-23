@@ -97,7 +97,6 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public void saveBookingWithAdminNotification(@Valid BookingDTO bookingDTO) {
 		
-		//Optional<User> users = userRepository.findByAuthority("marcus@live.ie");
 		// Creating a notification for the admin that a student has requested a tutorial.
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
@@ -107,14 +106,12 @@ public class BookingServiceImpl implements BookingService {
 		notification.setRead(false);
 		// getting sender 
 		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-//		notification.setSenderId(sender.get().getId());
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}		
 		notification.setBookingId(bookingDTO.getId());
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver 
-		 //need to find a way to get the admin ID
          Optional<User> receiver = userRepository.findById(ADMIN_ID);
          notification.setReceiverId(receiver.get().getId());
 		 notificationService.save(notification);
@@ -209,7 +206,6 @@ public class BookingServiceImpl implements BookingService {
 		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender 
-		// need to find a way to set the adminsID
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		notification.setSenderId(ADMIN_ID);
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));

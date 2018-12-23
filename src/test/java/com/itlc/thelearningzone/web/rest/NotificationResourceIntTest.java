@@ -237,6 +237,17 @@ public class NotificationResourceIntTest {
              .andExpect(status().isNotFound());
             
     }
+    
+    @Test
+    @Transactional
+    public void getAllNotificationsPageable() throws Exception {
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+        // Get the notification
+        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscPageable"))
+             .andExpect(status().isNotFound());
+            
+    }
 
     @Test
     @Transactional

@@ -107,7 +107,7 @@ public class NotificationResource {
 	 */
 	@GetMapping("/notifications/findAllNotificationsDateAscPageable")
 	@Timed
-	public ResponseEntity<List<NotificationDTO>> getAllNonReadNotifications(Pageable pageable) {
+	public ResponseEntity<List<NotificationDTO>> getAllNotificationsPageable(Pageable pageable) {
 		log.debug("REST request to get a page of Notifications");
 		Page<NotificationDTO> page = notificationService.findAllDateAsc(pageable);
 		HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/notifications");
