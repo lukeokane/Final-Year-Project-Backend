@@ -7,10 +7,12 @@ import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.BookingService;
+import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
+import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,8 @@ import java.util.Set;
 
 import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -97,6 +101,12 @@ public class BookingResourceIntTest {
 
     @Autowired
     private BookingService bookingService;
+    
+    @Mock
+    private SubjectService subjectServiceMock;
+
+    @Autowired
+    private SubjectService subjectService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -122,7 +132,7 @@ public class BookingResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final BookingResource bookingResource = new BookingResource(bookingService);
+        final BookingResource bookingResource = new BookingResource(bookingService,subjectService);
         this.restBookingMockMvc = MockMvcBuilders.standaloneSetup(bookingResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -333,7 +343,7 @@ public class BookingResourceIntTest {
     
     @SuppressWarnings({"unchecked"})
     public void getAllBookingsWithEagerRelationshipsIsEnabled() throws Exception {
-        BookingResource bookingResource = new BookingResource(bookingServiceMock);
+        BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService);
         when(bookingServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         MockMvc restBookingMockMvc = MockMvcBuilders.standaloneSetup(bookingResource)
@@ -350,7 +360,7 @@ public class BookingResourceIntTest {
 
     @SuppressWarnings({"unchecked"})
     public void getAllBookingsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        BookingResource bookingResource = new BookingResource(bookingServiceMock);
+        BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService);
             when(bookingServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
             MockMvc restBookingMockMvc = MockMvcBuilders.standaloneSetup(bookingResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
@@ -892,26 +902,500 @@ public class BookingResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.size()").value(0));
     }
-
+    
+    /*
+     * Check that search for bookings with eagerload and user info works
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
     @Test
     @Transactional
-    public void updateNonExistingBooking() throws Exception {
-        int databaseSizeBeforeUpdate = bookingRepository.findAll().size();
+    public void getAllBookingsDetailsTest1() throws Exception {
 
-        // Create the Booking
-        BookingDTO bookingDTO = bookingMapper.toDto(booking);
+      	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+     
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+        
+        // Add a second booking
+    	Booking booking = new Booking()
+    	.title(DEFAULT_TITLE)
+        .requestedBy(DEFAULT_REQUESTED_BY)
+        .startTime(DEFAULT_START_TIME)
+        .endTime(DEFAULT_END_TIME)
+        .userComments(DEFAULT_USER_COMMENTS)
+        .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+        .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+        .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+        .cancelled(DEFAULT_CANCELLED);
 
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restBookingMockMvc.perform(put("/api/bookings")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
-            .andExpect(status().isBadRequest());
+    	bookingRepository.save(booking);
+    	
+    	bookingRepository.flush();
 
-        // Validate the Booking in the database
-        List<Booking> bookingList = bookingRepository.findAll();
-        assertThat(bookingList).hasSize(databaseSizeBeforeUpdate);
+        restBookingMockMvc.perform(get("/api/bookingsDetails?eagerload=true&userInfo=true"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        	.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
+        	.andExpect(jsonPath("$.[*].booking.userInfos").isArray());      
+    }   
+    
+    /*
+     * Check that search for bookings with user info works
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest2() throws Exception {
+
+      	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+     
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+        
+        // Add a second booking
+    	Booking booking = new Booking()
+    	.title(DEFAULT_TITLE)
+        .requestedBy(DEFAULT_REQUESTED_BY)
+        .startTime(DEFAULT_START_TIME)
+        .endTime(DEFAULT_END_TIME)
+        .userComments(DEFAULT_USER_COMMENTS)
+        .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+        .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+        .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+        .cancelled(DEFAULT_CANCELLED);
+
+    	bookingRepository.save(booking);
+    	
+    	bookingRepository.flush();
+
+        restBookingMockMvc.perform(get("/api/bookingsDetails?userInfo=true"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        	.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
+        	.andExpect(jsonPath("$.[*].booking.userInfos").isArray());      
+    } 
+    
+    /*
+     * Check that search for bookings between two dates works with user information works
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest3() throws Exception {
+
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .cancelled(DEFAULT_CANCELLED);
+    	
+    	bookingRepository.save(booking2);
+        // Initialize the database
+        bookingRepository.save(booking);
+        bookingRepository.flush();
+
+        // Set start time 16 hours before start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 2 to be returned
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(2))
+        .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+        .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+        .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+        .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+        .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+        .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+        .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))	
+        .andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
+    	.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
     }
+    
+    /*
+     * Check that search for bookings between two dates before all booking times works, returns 0 bookings
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest4() throws Exception {
 
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .cancelled(DEFAULT_CANCELLED);
+    	
+    	bookingRepository.save(booking2);
+        // Initialize the database
+        bookingRepository.save(booking);
+        bookingRepository.flush();
+
+        // Set start time 16 hours before start booking time and end time 12 hours before
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 0 to be returned
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(0));
+    }
+    
+
+    /*
+     * Check that search for bookings between two dates after all booking times works, returns 0 bookings
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest5() throws Exception {
+
+      	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+     
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+        
+        // Add a second booking
+    	Booking booking2 = new Booking()
+    	.title(DEFAULT_TITLE)
+        .requestedBy(DEFAULT_REQUESTED_BY)
+        .startTime(DEFAULT_START_TIME)
+        .endTime(DEFAULT_END_TIME)
+        .userComments(DEFAULT_USER_COMMENTS)
+        .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+        .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+        .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+        .cancelled(DEFAULT_CANCELLED);
+
+    	bookingRepository.save(booking2);
+    	
+    	bookingRepository.flush();
+    	
+        // Set start time 16 hours after start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().plus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(0));      
+    }  
+    
+    /*
+     * Check that search for bookings between two dates for one user works
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest6() throws Exception {
+
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 1 to be returned
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userId=" + userId + "&userInfo=true&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(1))
+            .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
+        	.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
+    }
+    
+    /*
+     * Check that search for bookings between two dates before any bookings for a particular user with no user info works
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest7() throws Exception {
+
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours before start booking time and end time 12 hours before
+        long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 0 to be returned
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&userId=" + userId + "&sort=id,desc"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(0));
+    }
+    
+    /*
+     * Check that search for bookings for a particular user with no user info works, returns 0 results
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest8() throws Exception {
+
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.saveAndFlush(booking);
+
+        // Set start time 16 hours after start booking time and end time 12 hours after
+        long startTimeMs = booking.getStartTime().plus(16, ChronoUnit.HOURS).toEpochMilli();
+        long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
+        
+        // setID to the userInfo id present in the booking
+        Long userId = userInfo.getId();
+               
+        // Get bookings for user in between the passed times, expect 0 to be returned
+        restBookingMockMvc.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&userId=" + userId + "&sort=id,desc"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(0));
+    }
+    
+    /*
+     * Check that search for bookings for a particular user with no user info works
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest9() throws Exception {
+
+      	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+     
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+        
+        // Add a second booking
+    	Booking booking2 = new Booking()
+    	.title(DEFAULT_TITLE)
+        .requestedBy(DEFAULT_REQUESTED_BY)
+        .startTime(DEFAULT_START_TIME)
+        .endTime(DEFAULT_END_TIME)
+        .userComments(DEFAULT_USER_COMMENTS)
+        .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+        .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+        .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+        .cancelled(DEFAULT_CANCELLED);
+
+    	bookingRepository.save(booking2);
+    	
+    	bookingRepository.flush();
+
+        restBookingMockMvc.perform(get("/api/bookingsDetails?userInfo=false&userId=8"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(1))
+            .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        	.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
+        	.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));      
+    } 
+    
+    /*
+     * Check that search for bookings for a particular user with user info works
+     */
+    @Test
+    @Transactional
+    public void getAllBookingsDetailsTest10() throws Exception {
+
+      	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+     
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+        
+        // Add a second booking
+    	Booking booking2 = new Booking()
+    	.title(DEFAULT_TITLE)
+        .requestedBy(DEFAULT_REQUESTED_BY)
+        .startTime(DEFAULT_START_TIME)
+        .endTime(DEFAULT_END_TIME)
+        .userComments(DEFAULT_USER_COMMENTS)
+        .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+        .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+        .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+        .cancelled(DEFAULT_CANCELLED);
+
+    	bookingRepository.save(booking2);
+    	
+    	bookingRepository.flush();
+
+        restBookingMockMvc.perform(get("/api/bookingsDetails?userInfo=true&userId=8"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(1))
+            .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+            .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+            .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+            .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+            .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+            .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
+            .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+            .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        	.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
+        	.andExpect(jsonPath("$.[*].booking.userInfos").isArray());      
+    }
+    
     @Test
     @Transactional
     public void deleteBooking() throws Exception {

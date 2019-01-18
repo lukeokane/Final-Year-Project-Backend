@@ -35,4 +35,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select distinct booking from Booking booking join booking.userInfos u where u.id = :userId and booking.startTime between :startTime and :endTime",
     		countQuery = "select count(distinct booking) from Booking booking join booking.userInfos u where u.id = :userId and booking.startTime between :startTime and :endTime")
     Page<Booking> findUserBookingsInTimeFrame(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
+    
+    @Query(value = "select distinct booking from Booking booking join booking.userInfos u where u.id = :userId",
+    		countQuery = "select count(distinct booking) from Booking booking join booking.userInfos u where u.id = :userId")
+    Page<Booking> findUserBookings(Pageable pageable, @Param("userId") Long userId);
 }

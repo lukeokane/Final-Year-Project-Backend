@@ -2,14 +2,19 @@ package com.itlc.thelearningzone.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.itlc.thelearningzone.service.BookingService;
+import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.web.rest.errors.BadRequestAlertException;
 import com.itlc.thelearningzone.web.rest.util.HeaderUtil;
 import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
+import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
+import com.itlc.thelearningzone.service.dto.SubjectDTO;
+
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +25,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,9 +41,12 @@ public class BookingResource {
     private static final String ENTITY_NAME = "booking";
 
     private final BookingService bookingService;
+    
+    private final SubjectService subjectService;
 
-    public BookingResource(BookingService bookingService) {
+    public BookingResource(BookingService bookingService, SubjectService subjectService) {
         this.bookingService = bookingService;
+        this.subjectService = subjectService;
     }
 
     /**
@@ -229,9 +238,11 @@ public class BookingResource {
     		@RequestParam(required = false, defaultValue = "false") boolean eagerload, 
     		@RequestParam(required = false) Long startTimeMs,
     		@RequestParam(required = false) Long endTimeMs,
-    		@RequestParam(required = false) Long userId) {
+    		@RequestParam(required = false) Long userId, 
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
     	
     	log.debug("REST request to get a page of Bookings");
+    	
         Page<BookingDTO> page;
         
         // If start time and end time present, get bookings between the times
@@ -245,12 +256,96 @@ public class BookingResource {
         	else {
         	page = bookingService.findUserBookingsInTimeFrame(pageable, userId, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
         	}
+        // If userId is not null, get all user bookings
+        } else if (userId != null) {
+        	page = bookingService.findUserBookings(pageable, userId);
         } else if (eagerload) {
             page = bookingService.findAllWithEagerRelationships(pageable);
         } else {
             page = bookingService.findAll(pageable);
+        }       
+        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookings?eagerload=%b", eagerload));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsDetails : get all the bookings and include booking's subject.
+     *
+     * @param pageable the pagination information
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param endTime the bookings to return that begin before this time in milliseconds 
+     * @param allUserInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsDetails")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getAllBookingsDetails(Pageable pageable, 
+    		@RequestParam(required = false, defaultValue = "false") boolean eagerload, 
+    		@RequestParam(required = false) Long startTimeMs,
+    		@RequestParam(required = false) Long endTimeMs,
+    		@RequestParam(required = false) Long userId,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of Bookings with their Subjects");
+        Page<BookingDTO> bookings;
+        Page<BookingDetailsDTO> page;
+        
+        // If start time and end time present, get bookings between the times
+        if (startTimeMs != null && endTimeMs != null) {
+        	// No id passed, get all bookings
+        	if (userId == null)
+        	{
+        	bookings = bookingService.findAllInTimeFrame(pageable, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
+        	// If id is present, get bookings for particular user
+        	else {
+        	bookings = bookingService.findUserBookingsInTimeFrame(pageable, userId, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
+        // If userId is not null, get all user bookings
+        } else if (userId != null) {
+        	bookings = bookingService.findUserBookings(pageable, userId);
+        } else if (eagerload) {
+        	bookings = bookingService.findAllWithEagerRelationships(pageable);
+        } else {
+        	bookings = bookingService.findAll(pageable);
         }
         
+        // Convert Page to List
+    	List<BookingDTO> pageList = bookings.getContent();
+    	
+    	// Create ArrayList for BookingDetails
+    	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
+    	
+    	// Get size of list
+    	long pageListSize = pageList.size();
+    	log.debug("getAllBookingDetails - returned {} results", pageListSize);
+		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
+    	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
+    	for (int i = 0; i < pageListSize; i++) {
+    			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
+    			
+    			// Get booking and subject
+    			bdDTO.booking = pageList.get(i);
+    			
+    			// Get subject if booking containers subject ID
+    			if (pageList.get(i).getSubjectId() != null) {
+    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
+    			}
+    			
+    			// Do not return any list of UserInfo objects or BookingUserDetail objects 
+    			if (!userInfo)
+    			{
+    			bdDTO.booking.setUserInfos(null);
+    			bdDTO.booking.setBookingUserDetailsDTO(null);
+    			}
+    			
+    			bookingDetailsList.add(bdDTO);
+    		}
+    	
+    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+    	
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookings?eagerload=%b", eagerload));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

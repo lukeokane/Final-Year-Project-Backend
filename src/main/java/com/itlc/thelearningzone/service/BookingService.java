@@ -1,9 +1,11 @@
 package com.itlc.thelearningzone.service;
 
+import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -43,11 +45,20 @@ public interface BookingService {
      * Get all the bookings within a time frame associated with a user ID.
      *
      * @param pageable the pagination information
+     * @param userId ID of the user
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param endTime the bookings to return that begin before this time in milliseconds 
      * @return the list of entities
      */
     Page<BookingDTO> findUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime);
 
-
+    /**
+     * Get all the bookings associated with a user ID.
+     * @param pageable the pagination information
+     * @param userId ID of the user
+     */
+    Page<BookingDTO> findUserBookings(Pageable pageable, @Param("userId") Long userId);
+    
     /**
      * Get all the Booking with eager load of many-to-many relationships.
      *

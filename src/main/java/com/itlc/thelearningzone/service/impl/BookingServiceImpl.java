@@ -7,7 +7,6 @@ import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
-import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
 import com.itlc.thelearningzone.service.dto.UserInfoDTO;
 import com.itlc.thelearningzone.service.dto.NotificationDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,6 +78,12 @@ public class BookingServiceImpl implements BookingService {
 	public Page<BookingDTO> findUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime) {
 		log.debug("Request to get all Bookings between {0} and {1} for user {2}", Date.from(startTime), Date.from(endTime), userId);
 		return bookingRepository.findUserBookingsInTimeFrame(pageable, userId, startTime, endTime).map(bookingMapper::toDto);
+	}
+	
+	@Override
+	public Page<BookingDTO> findUserBookings(Pageable pageable, @Param("userId") Long userId) {
+		log.debug("Request to get all Bookings for user {}", userId);
+		return bookingRepository.findUserBookings(pageable, userId).map(bookingMapper::toDto);
 	}
 	
 	/**
