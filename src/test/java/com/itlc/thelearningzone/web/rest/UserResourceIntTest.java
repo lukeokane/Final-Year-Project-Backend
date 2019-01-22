@@ -501,6 +501,30 @@ public class UserResourceIntTest {
         List<User> userList = userRepository.findAll();
         assertThat(userList).hasSize(databaseSizeBeforeDelete - 1);
     }
+    
+    // @Test
+    // @Transactional
+    // public void deleteUserAndUserInfo() throws Exception {
+    //     // Initialize the database
+    //     userRepository.saveAndFlush(user);
+    //     int databaseSizeBeforeDelete = userRepository.findAll().size();
+        
+    //     // Delete the userInfo
+    //     restUserMockMvc.perform(delete("/api/user-infos/{id}", user.getId())
+    //         .accept(TestUtil.APPLICATION_JSON_UTF8))
+    //         .andExpect(status().isOk());
+
+    //     // Delete the user
+    //     restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
+    //         .accept(TestUtil.APPLICATION_JSON_UTF8))
+    //         .andExpect(status().isOk());
+  
+    //     assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
+
+    //     // Validate the database is empty
+    //     List<User> userList = userRepository.findAll();
+    //     assertThat(userList).hasSize(databaseSizeBeforeDelete - 1);
+    // }
 
     @Test
     @Transactional

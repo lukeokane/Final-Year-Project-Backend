@@ -142,18 +142,17 @@ public class UserService {
     	
     	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
     	
+    	// Create and save the UserInfo entity
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setSemesterGroup(semesterGroup.get());
+    	
     	if (!semesterGroup.isPresent()) {
     		throw new IllegalArgumentException("Semester Group ID is does not exist");
     	}
     	
     	User newUser = this.registerUser(userDTO, password);
-          
-        // Create and save the UserInfo entity
-        UserInfo newUserInfo = new UserInfo();
-        newUserInfo.setUser(newUser);
-        newUserInfo.setSemesterGroup(semesterGroup.get());
+    	newUserInfo.setUser(newUser);
         userInfoRepository.save(newUserInfo);
-               
         log.debug("Created Information for UserInfo: {}", newUserInfo);
         
         return newUser;
@@ -204,7 +203,6 @@ public class UserService {
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUser(user);
         userInfoRepository.save(newUserInfo);
-        //userInfoSearchRepository.save(newUserInfo);
         log.debug("Created Information for UserInfo: {}", newUserInfo);
         
         return user;
