@@ -42,6 +42,10 @@
             ]
         },
         {
+            "fieldName": "adminAcceptedId",
+            "fieldType": "Integer"
+        },
+        {
             "fieldName": "tutorAccepted",
             "fieldType": "Boolean"
         },

@@ -25,7 +25,20 @@ describe('Service Tests', () => {
             httpMock = injector.get(HttpTestingController);
             currentDate = moment();
 
-            elemDefault = new Booking(0, 'AAAAAAA', 'AAAAAAA', currentDate, currentDate, 'AAAAAAA', OrdinalScale.NONE, false, 0, 0, false);
+            elemDefault = new Booking(
+                0,
+                'AAAAAAA',
+                'AAAAAAA',
+                currentDate,
+                currentDate,
+                'AAAAAAA',
+                OrdinalScale.NONE,
+                0,
+                false,
+                0,
+                0,
+                false
+            );
         });
 
         describe('Service methods', async () => {
@@ -79,6 +92,7 @@ describe('Service Tests', () => {
                         endTime: currentDate.format(DATE_TIME_FORMAT),
                         userComments: 'BBBBBB',
                         importanceLevel: 'BBBBBB',
+                        adminAcceptedId: 1,
                         tutorAccepted: true,
                         tutorAcceptedId: 1,
                         tutorRejectedCount: 1,
@@ -111,6 +125,7 @@ describe('Service Tests', () => {
                         endTime: currentDate.format(DATE_TIME_FORMAT),
                         userComments: 'BBBBBB',
                         importanceLevel: 'BBBBBB',
+                        adminAcceptedId: 1,
                         tutorAccepted: true,
                         tutorAcceptedId: 1,
                         tutorRejectedCount: 1,

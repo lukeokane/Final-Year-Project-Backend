@@ -32,6 +32,8 @@ public class BookingDTO implements Serializable {
     @NotNull
     private OrdinalScale importanceLevel;
 
+    private Integer adminAcceptedId;
+
     private Boolean tutorAccepted;
 
     private Integer tutorAcceptedId;
@@ -53,7 +55,7 @@ public class BookingDTO implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public Set<BookingUserDetailsDTO> getBookingUserDetailsDTO() {
 		return bookingUserDetailsDTO;
 	}
@@ -62,7 +64,7 @@ public class BookingDTO implements Serializable {
 		this.bookingUserDetailsDTO = bookingUserDetailsDTO;
 	}
 
-	public String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -108,6 +110,14 @@ public class BookingDTO implements Serializable {
 
     public void setImportanceLevel(OrdinalScale importanceLevel) {
         this.importanceLevel = importanceLevel;
+    }
+
+    public Integer getAdminAcceptedId() {
+        return adminAcceptedId;
+    }
+
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
     }
 
     public Boolean isTutorAccepted() {
@@ -189,6 +199,7 @@ public class BookingDTO implements Serializable {
             ", endTime='" + getEndTime() + "'" +
             ", userComments='" + getUserComments() + "'" +
             ", importanceLevel='" + getImportanceLevel() + "'" +
+            ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
             ", tutorRejectedCount=" + getTutorRejectedCount() +

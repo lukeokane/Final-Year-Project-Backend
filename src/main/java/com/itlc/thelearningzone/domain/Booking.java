@@ -54,6 +54,9 @@ public class Booking implements Serializable {
     @Column(name = "importance_level", nullable = false)
     private OrdinalScale importanceLevel;
 
+    @Column(name = "admin_accepted_id")
+    private Integer adminAcceptedId;
+
     @Column(name = "tutor_accepted")
     private Boolean tutorAccepted;
 
@@ -168,6 +171,19 @@ public class Booking implements Serializable {
 
     public void setImportanceLevel(OrdinalScale importanceLevel) {
         this.importanceLevel = importanceLevel;
+    }
+
+    public Integer getAdminAcceptedId() {
+        return adminAcceptedId;
+    }
+
+    public Booking adminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
+        return this;
+    }
+
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
     }
 
     public Boolean isTutorAccepted() {
@@ -341,6 +357,7 @@ public class Booking implements Serializable {
             ", endTime='" + getEndTime() + "'" +
             ", userComments='" + getUserComments() + "'" +
             ", importanceLevel='" + getImportanceLevel() + "'" +
+            ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
             ", tutorRejectedCount=" + getTutorRejectedCount() +

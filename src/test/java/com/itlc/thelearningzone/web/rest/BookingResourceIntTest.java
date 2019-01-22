@@ -75,6 +75,9 @@ public class BookingResourceIntTest {
     private static final OrdinalScale DEFAULT_IMPORTANCE_LEVEL = OrdinalScale.NONE;
     private static final OrdinalScale UPDATED_IMPORTANCE_LEVEL = OrdinalScale.LOW;
 
+    private static final Integer DEFAULT_ADMIN_ACCEPTED_ID = 1;
+    private static final Integer UPDATED_ADMIN_ACCEPTED_ID = 2;
+    
     private static final Boolean DEFAULT_TUTOR_ACCEPTED = false;
     private static final Boolean UPDATED_TUTOR_ACCEPTED = true;
 
@@ -154,6 +157,7 @@ public class BookingResourceIntTest {
             .endTime(DEFAULT_END_TIME)
             .userComments(DEFAULT_USER_COMMENTS)
             .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+            .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
             .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
             .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -197,6 +201,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(DEFAULT_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(DEFAULT_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(DEFAULT_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(DEFAULT_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(DEFAULT_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(DEFAULT_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(DEFAULT_TUTOR_REJECTED_COUNT);
@@ -335,6 +340,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -391,6 +397,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.endTime").value(DEFAULT_END_TIME.toString()))
             .andExpect(jsonPath("$.userComments").value(DEFAULT_USER_COMMENTS.toString()))
             .andExpect(jsonPath("$.importanceLevel").value(DEFAULT_IMPORTANCE_LEVEL.toString()))
+            .andExpect(jsonPath("$.adminAcceptedId").value(DEFAULT_ADMIN_ACCEPTED_ID.intValue()))
             .andExpect(jsonPath("$.tutorAccepted").value(DEFAULT_TUTOR_ACCEPTED.booleanValue()))
             .andExpect(jsonPath("$.tutorAcceptedId").value(DEFAULT_TUTOR_ACCEPTED_ID))
             .andExpect(jsonPath("$.tutorRejectedCount").value(DEFAULT_TUTOR_REJECTED_COUNT))
@@ -424,6 +431,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -445,6 +453,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -470,6 +479,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -491,6 +501,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -516,6 +527,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -537,6 +549,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -562,6 +575,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -583,6 +597,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -608,6 +623,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -629,6 +645,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -654,6 +671,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -675,6 +693,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -701,6 +720,7 @@ public class BookingResourceIntTest {
             .endTime(UPDATED_END_TIME)
             .userComments(UPDATED_USER_COMMENTS)
             .importanceLevel(UPDATED_IMPORTANCE_LEVEL)
+            .adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
             .tutorAccepted(UPDATED_TUTOR_ACCEPTED)
             .tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
             .tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
@@ -722,6 +742,7 @@ public class BookingResourceIntTest {
         assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
         assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
         assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
+        assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
         assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
         assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
         assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
@@ -755,6 +776,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -838,6 +860,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -930,6 +953,7 @@ public class BookingResourceIntTest {
         .endTime(DEFAULT_END_TIME)
         .userComments(DEFAULT_USER_COMMENTS)
         .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
         .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
         .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
         .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -950,6 +974,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -985,6 +1010,7 @@ public class BookingResourceIntTest {
         .endTime(DEFAULT_END_TIME)
         .userComments(DEFAULT_USER_COMMENTS)
         .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
         .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
         .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
         .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1005,6 +1031,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -1040,6 +1067,7 @@ public class BookingResourceIntTest {
                 .endTime(DEFAULT_END_TIME)
                 .userComments(DEFAULT_USER_COMMENTS)
                 .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
                 .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
                 .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
                 .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1069,6 +1097,7 @@ public class BookingResourceIntTest {
         .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
         .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
         .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
         .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
         .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
         .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -1099,6 +1128,7 @@ public class BookingResourceIntTest {
                 .endTime(DEFAULT_END_TIME)
                 .userComments(DEFAULT_USER_COMMENTS)
                 .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
                 .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
                 .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
                 .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1149,6 +1179,7 @@ public class BookingResourceIntTest {
         .endTime(DEFAULT_END_TIME)
         .userComments(DEFAULT_USER_COMMENTS)
         .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
         .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
         .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
         .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1210,6 +1241,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -1315,6 +1347,7 @@ public class BookingResourceIntTest {
         .endTime(DEFAULT_END_TIME)
         .userComments(DEFAULT_USER_COMMENTS)
         .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
         .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
         .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
         .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1335,6 +1368,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
@@ -1368,6 +1402,7 @@ public class BookingResourceIntTest {
         .endTime(DEFAULT_END_TIME)
         .userComments(DEFAULT_USER_COMMENTS)
         .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+        .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
         .tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
         .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
         .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
@@ -1388,6 +1423,7 @@ public class BookingResourceIntTest {
             .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
             .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
             .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+            .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
             .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID)))
             .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))

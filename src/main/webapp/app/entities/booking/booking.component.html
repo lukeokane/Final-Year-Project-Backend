@@ -21,6 +21,7 @@
             <th jhiSortBy="endTime"><span>End Time</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="userComments"><span>User Comments</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="importanceLevel"><span>Importance Level</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="adminAcceptedId"><span>Admin Accepted Id</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorAccepted"><span>Tutor Accepted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorAcceptedId"><span>Tutor Accepted Id</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorRejectedCount"><span>Tutor Rejected Count</span> <fa-icon [icon]="'sort'"></fa-icon></th>
@@ -38,6 +39,7 @@
                 <td>{{booking.endTime | date:'medium'}}</td>
                 <td>{{booking.userComments}}</td>
                 <td>{{booking.importanceLevel}}</td>
+                <td>{{booking.adminAcceptedId}}</td>
                 <td>{{booking.tutorAccepted}}</td>
                 <td>{{booking.tutorAcceptedId}}</td>
                 <td>{{booking.tutorRejectedCount}}</td>

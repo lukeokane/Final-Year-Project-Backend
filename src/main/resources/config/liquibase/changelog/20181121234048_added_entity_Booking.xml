@@ -46,6 +46,10 @@
                 <constraints nullable="false" />
             </column>
 
+            <column name="admin_accepted_id" type="integer">
+                <constraints nullable="true" />
+            </column>
+
             <column name="tutor_accepted" type="bit">
                 <constraints nullable="true" />
             </column>

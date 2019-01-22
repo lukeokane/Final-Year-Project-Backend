@@ -18,6 +18,7 @@ export interface IBooking {
     endTime?: Moment;
     userComments?: string;
     importanceLevel?: OrdinalScale;
+    adminAcceptedId?: number;
     tutorAccepted?: boolean;
     tutorAcceptedId?: number;
     tutorRejectedCount?: number;
@@ -37,6 +38,7 @@ export class Booking implements IBooking {
         public endTime?: Moment,
         public userComments?: string,
         public importanceLevel?: OrdinalScale,
+        public adminAcceptedId?: number,
         public tutorAccepted?: boolean,
         public tutorAcceptedId?: number,
         public tutorRejectedCount?: number,
