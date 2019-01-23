@@ -86,6 +86,18 @@ public class BookingServiceImpl implements BookingService {
 		return bookingRepository.findUserBookings(pageable, userId).map(bookingMapper::toDto);
 	}
 	
+	@Override
+    public Page<BookingDTO> findUserBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
+		log.debug("Request to get all Bookings modified after {0} for user {1}", startTime, userId);
+		return bookingRepository.findUserBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+	}
+    
+    @Override
+    public Page<BookingDTO> findBookingsModifiedAfterTime(Pageable pageable, Instant startTime) {
+    	log.debug("Request to get all Bookings modified after {}", startTime);
+    	return bookingRepository.findBookingsModifiedAfterTime(pageable, startTime).map(bookingMapper::toDto);
+    }
+	
 	/**
 	 * Save a booking.
 	 *

@@ -349,6 +349,79 @@ public class BookingResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookings?eagerload=%b", eagerload));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    
+    /**
+     * GET  /bookingsDetailsChanges : get all the bookings and include booking's subject modified after the passed in time.
+     *
+     * @param pageable the pagination information
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param endTime the bookings to return that begin before this time in milliseconds 
+     * @param allUserInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsDetailsChanges")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getAllBookingsDetailsChanges(Pageable pageable, 
+    		Long startTimeMs,
+    		@RequestParam(required = false) Long userId,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of Bookings with their Subjects after {}", startTimeMs);
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        if (startTimeMs != null) {
+        	if (userId == null) {
+        		bookings = bookingService.findBookingsModifiedAfterTime(pageable, Instant.ofEpochMilli(startTimeMs));
+        	} else {
+        		bookings = bookingService.findUserBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        	}
+        }
+        else {
+        	throw new BadRequestAlertException("Missing required parameter(s)", ENTITY_NAME, "parameter startTimeMs is missing");
+        }
+             
+        
+        
+        // Convert Page to List
+    	List<BookingDTO> pageList = bookings.getContent();
+    	
+    	// Create ArrayList for BookingDetails
+    	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
+    	
+    	// Get size of list
+    	long pageListSize = pageList.size();
+    	log.debug("getAllBookingDetails - returned {} results", pageListSize);
+		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
+    	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
+    	for (int i = 0; i < pageListSize; i++) {
+    			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
+    			
+    			// Get booking and subject
+    			bdDTO.booking = pageList.get(i);
+    			
+    			// Get subject if booking containers subject ID
+    			if (pageList.get(i).getSubjectId() != null) {
+    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
+    			}
+    			
+    			// Do not return any list of UserInfo objects or BookingUserDetail objects 
+    			if (!userInfo)
+    			{
+    			bdDTO.booking.setUserInfos(null);
+    			bdDTO.booking.setBookingUserDetailsDTO(null);
+    			}
+    			
+    			bookingDetailsList.add(bdDTO);
+    		}
+    	
+    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsDetailsChanges"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
 
     /**
      * GET  /bookings/:id : get the "id" booking.

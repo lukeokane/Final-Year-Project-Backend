@@ -60,6 +60,26 @@ public interface BookingService {
     Page<BookingDTO> findUserBookings(Pageable pageable, @Param("userId") Long userId);
     
     /**
+     * Get all the bookings modified after a time associated with a user ID.
+     *
+     * @param pageable the pagination information
+     * @param userId ID of the user
+     * @param startTime the bookings to return that have been modified after this time in milliseconds 
+     * @return the list of entities
+     */
+    Page<BookingDTO> findUserBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime);
+    
+    /**
+     * Get all the bookings modified after a time.
+     *
+     * @param pageable the pagination information
+     * @param userId ID of the user
+     * @param startTime the bookings to return that have been modified after this time in milliseconds 
+     * @return the list of entities
+     */
+    Page<BookingDTO> findBookingsModifiedAfterTime(Pageable pageable, Instant startTime);
+    
+    /**
      * Get all the Booking with eager load of many-to-many relationships.
      *
      * @return the list of entities
