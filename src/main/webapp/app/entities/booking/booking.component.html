@@ -24,6 +24,7 @@
             <th jhiSortBy="adminAcceptedId"><span>Admin Accepted Id</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorAccepted"><span>Tutor Accepted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorAcceptedId"><span>Tutor Accepted Id</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="modifiedTimestamp"><span>Modified Timestamp</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorRejectedCount"><span>Tutor Rejected Count</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="cancelled"><span>Cancelled</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="subjectId"><span>Subject</span> <fa-icon [icon]="'sort'"></fa-icon></th>
@@ -42,6 +43,7 @@
                 <td>{{booking.adminAcceptedId}}</td>
                 <td>{{booking.tutorAccepted}}</td>
                 <td>{{booking.tutorAcceptedId}}</td>
+                <td>{{booking.modifiedTimestamp | date:'medium'}}</td>
                 <td>{{booking.tutorRejectedCount}}</td>
                 <td>{{booking.cancelled}}</td>
                 <td>

@@ -38,6 +38,8 @@ public class BookingDTO implements Serializable {
 
     private Integer tutorAcceptedId;
 
+    private Instant modifiedTimestamp;
+
     private Integer tutorRejectedCount;
 
     private Boolean cancelled;
@@ -136,6 +138,14 @@ public class BookingDTO implements Serializable {
         this.tutorAcceptedId = tutorAcceptedId;
     }
 
+    public Instant getModifiedTimestamp() {
+        return modifiedTimestamp;
+    }
+
+    public void setModifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
+    }
+
     public Integer getTutorRejectedCount() {
         return tutorRejectedCount;
     }
@@ -202,6 +212,7 @@ public class BookingDTO implements Serializable {
             ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
+            ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
             ", subject=" + getSubjectId() +

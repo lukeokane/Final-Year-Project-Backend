@@ -21,6 +21,7 @@ export interface IBooking {
     adminAcceptedId?: number;
     tutorAccepted?: boolean;
     tutorAcceptedId?: number;
+    modifiedTimestamp?: Moment;
     tutorRejectedCount?: number;
     cancelled?: boolean;
     bookingUserDetails?: IBookingUserDetails[];
@@ -41,6 +42,7 @@ export class Booking implements IBooking {
         public adminAcceptedId?: number,
         public tutorAccepted?: boolean,
         public tutorAcceptedId?: number,
+        public modifiedTimestamp?: Moment,
         public tutorRejectedCount?: number,
         public cancelled?: boolean,
         public bookingUserDetails?: IBookingUserDetails[],

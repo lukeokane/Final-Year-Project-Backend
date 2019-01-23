@@ -58,6 +58,10 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="modified_timestamp" type="datetime">
+                <constraints nullable="true" />
+            </column>
+
             <column name="tutor_rejected_count" type="integer">
                 <constraints nullable="true" />
             </column>
@@ -74,6 +78,7 @@
         </createTable>
         <dropDefaultValue tableName="booking" columnName="start_time" columnDataType="datetime"/>
         <dropDefaultValue tableName="booking" columnName="end_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="booking" columnName="modified_timestamp" columnDataType="datetime"/>
         
         <createTable tableName="booking_user_info">
             <column name="user_infos_id" type="bigint">

@@ -101,7 +101,9 @@ export class BookingService {
     protected convertDateFromClient(booking: IBooking): IBooking {
         const copy: IBooking = Object.assign({}, booking, {
             startTime: booking.startTime != null && booking.startTime.isValid() ? booking.startTime.toJSON() : null,
-            endTime: booking.endTime != null && booking.endTime.isValid() ? booking.endTime.toJSON() : null
+            endTime: booking.endTime != null && booking.endTime.isValid() ? booking.endTime.toJSON() : null,
+            modifiedTimestamp:
+                booking.modifiedTimestamp != null && booking.modifiedTimestamp.isValid() ? booking.modifiedTimestamp.toJSON() : null
         });
         return copy;
     }
@@ -110,6 +112,7 @@ export class BookingService {
         if (res.body) {
             res.body.startTime = res.body.startTime != null ? moment(res.body.startTime) : null;
             res.body.endTime = res.body.endTime != null ? moment(res.body.endTime) : null;
+            res.body.modifiedTimestamp = res.body.modifiedTimestamp != null ? moment(res.body.modifiedTimestamp) : null;
         }
         return res;
     }
@@ -119,6 +122,7 @@ export class BookingService {
             res.body.forEach((booking: IBooking) => {
                 booking.startTime = booking.startTime != null ? moment(booking.startTime) : null;
                 booking.endTime = booking.endTime != null ? moment(booking.endTime) : null;
+                booking.modifiedTimestamp = booking.modifiedTimestamp != null ? moment(booking.modifiedTimestamp) : null;
             });
         }
         return res;

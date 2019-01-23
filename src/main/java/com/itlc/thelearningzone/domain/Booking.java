@@ -63,6 +63,9 @@ public class Booking implements Serializable {
     @Column(name = "tutor_accepted_id")
     private Integer tutorAcceptedId;
 
+    @Column(name = "modified_timestamp")
+    private Instant modifiedTimestamp;
+
     @Column(name = "tutor_rejected_count")
     private Integer tutorRejectedCount;
 
@@ -210,6 +213,19 @@ public class Booking implements Serializable {
 
     public void setTutorAcceptedId(Integer tutorAcceptedId) {
         this.tutorAcceptedId = tutorAcceptedId;
+    }
+
+    public Instant getModifiedTimestamp() {
+        return modifiedTimestamp;
+    }
+
+    public Booking modifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
+        return this;
+    }
+
+    public void setModifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public Integer getTutorRejectedCount() {
@@ -360,6 +376,7 @@ public class Booking implements Serializable {
             ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
+            ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
             "}";

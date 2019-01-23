@@ -54,6 +54,10 @@
             "fieldType": "Integer"
         },
         {
+            "fieldName": "modifiedTimestamp",
+            "fieldType": "Instant"
+        },
+        {
             "fieldName": "tutorRejectedCount",
             "fieldType": "Integer"
         },

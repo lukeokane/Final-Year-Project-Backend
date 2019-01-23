@@ -1,0 +1,116 @@
+entity UserInfo {
+    tutorSkills String  
+}
+
+entity Booking {
+	title String required,
+	requestedBy String required,
+    startTime Instant required,
+    endTime Instant required,
+    userComments String,
+    importanceLevel OrdinalScale required,
+    adminAcceptedId Integer,
+    tutorAccepted Boolean,
+    tutorAcceptedId Integer,
+    modifiedTimestamp Instant,
+    tutorRejectedCount Integer,
+    cancelled Boolean
+    
+}
+
+entity BookingUserDetails {
+    userFeedback String,
+    userSatisfaction OrdinalScale,
+    usercheckInTime Instant,
+    usercheckOutTime Instant,
+    userCancelled Boolean,
+    tutorRejected Boolean  
+}
+
+entity Notification {
+	timestamp Instant required,
+    message String required,
+    senderImageURL String,
+    read Boolean
+
+}
+
+entity Course {
+	title String required
+    courseCode String required
+}
+
+entity CourseYear {
+	courseYear Integer required
+}
+
+entity Semester {
+    semesterNumber SemesterNumber required
+    semesterStartDate LocalDate
+    semesterEndDate LocalDate
+}
+
+entity SemesterGroup {
+	title String required
+	
+}
+
+entity Subject {
+	title String required,
+    subjectCode String required
+
+}
+
+entity Topic {
+	title String required
+    
+}
+
+entity Resource {
+	title String required, 
+    resourceURL String required
+    
+}
+
+enum OrdinalScale {
+	NONE, LOW, MEDIUM, HIGH
+}
+
+enum SemesterNumber {
+	NONE, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT
+}
+
+relationship OneToOne {
+	UserInfo{user} to User
+    
+}
+
+relationship ManyToOne {
+    Booking{subject} to Subject{booking},
+    BookingUserDetails{userInfo} to UserInfo{bookingUserDetails},
+    Notification{sender} to UserInfo{sentNotifications},
+	Notification{receiver} to UserInfo{receivedNotifications},
+	Notification{booking} to Booking{notification}
+}
+
+relationship OneToMany {    
+    Booking{bookingUserDetails} to BookingUserDetails{booking},
+    Topic{resource} to Resource{topic},
+    Course{courseYear} to CourseYear{course},
+    CourseYear{semester} to Semester{courseYear},
+    Semester{semesterGroup} to SemesterGroup{semester},
+    SemesterGroup{userInfo} to UserInfo{semesterGroup},
+}
+
+relationship ManyToMany {
+    Booking{userInfo} to UserInfo{booking},
+    Subject{topic} to Topic{subject},
+    SemesterGroup{subject} to Subject{semesterGroup}
+
+}
+
+dto * with mapstruct
+
+paginate * with pagination
+
+service all with serviceImpl

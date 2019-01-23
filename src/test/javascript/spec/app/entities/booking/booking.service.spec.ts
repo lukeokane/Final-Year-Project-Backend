@@ -36,6 +36,7 @@ describe('Service Tests', () => {
                 0,
                 false,
                 0,
+                currentDate,
                 0,
                 false
             );
@@ -46,7 +47,8 @@ describe('Service Tests', () => {
                 const returnedFromService = Object.assign(
                     {
                         startTime: currentDate.format(DATE_TIME_FORMAT),
-                        endTime: currentDate.format(DATE_TIME_FORMAT)
+                        endTime: currentDate.format(DATE_TIME_FORMAT),
+                        modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT)
                     },
                     elemDefault
                 );
@@ -64,14 +66,16 @@ describe('Service Tests', () => {
                     {
                         id: 0,
                         startTime: currentDate.format(DATE_TIME_FORMAT),
-                        endTime: currentDate.format(DATE_TIME_FORMAT)
+                        endTime: currentDate.format(DATE_TIME_FORMAT),
+                        modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT)
                     },
                     elemDefault
                 );
                 const expected = Object.assign(
                     {
                         startTime: currentDate,
-                        endTime: currentDate
+                        endTime: currentDate,
+                        modifiedTimestamp: currentDate
                     },
                     returnedFromService
                 );
@@ -95,6 +99,7 @@ describe('Service Tests', () => {
                         adminAcceptedId: 1,
                         tutorAccepted: true,
                         tutorAcceptedId: 1,
+                        modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
                         cancelled: true
                     },
@@ -104,7 +109,8 @@ describe('Service Tests', () => {
                 const expected = Object.assign(
                     {
                         startTime: currentDate,
-                        endTime: currentDate
+                        endTime: currentDate,
+                        modifiedTimestamp: currentDate
                     },
                     returnedFromService
                 );
@@ -128,6 +134,7 @@ describe('Service Tests', () => {
                         adminAcceptedId: 1,
                         tutorAccepted: true,
                         tutorAcceptedId: 1,
+                        modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
                         cancelled: true
                     },
@@ -136,7 +143,8 @@ describe('Service Tests', () => {
                 const expected = Object.assign(
                     {
                         startTime: currentDate,
-                        endTime: currentDate
+                        endTime: currentDate,
+                        modifiedTimestamp: currentDate
                     },
                     returnedFromService
                 );

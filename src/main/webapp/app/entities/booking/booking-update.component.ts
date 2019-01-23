@@ -26,6 +26,7 @@ export class BookingUpdateComponent implements OnInit {
     userinfos: IUserInfo[];
     startTime: string;
     endTime: string;
+    modifiedTimestamp: string;
 
     constructor(
         private jhiAlertService: JhiAlertService,
@@ -41,6 +42,8 @@ export class BookingUpdateComponent implements OnInit {
             this.booking = booking;
             this.startTime = this.booking.startTime != null ? this.booking.startTime.format(DATE_TIME_FORMAT) : null;
             this.endTime = this.booking.endTime != null ? this.booking.endTime.format(DATE_TIME_FORMAT) : null;
+            this.modifiedTimestamp =
+                this.booking.modifiedTimestamp != null ? this.booking.modifiedTimestamp.format(DATE_TIME_FORMAT) : null;
         });
         this.subjectService.query().subscribe(
             (res: HttpResponse<ISubject[]>) => {
@@ -64,6 +67,7 @@ export class BookingUpdateComponent implements OnInit {
         this.isSaving = true;
         this.booking.startTime = this.startTime != null ? moment(this.startTime, DATE_TIME_FORMAT) : null;
         this.booking.endTime = this.endTime != null ? moment(this.endTime, DATE_TIME_FORMAT) : null;
+        this.booking.modifiedTimestamp = this.modifiedTimestamp != null ? moment(this.modifiedTimestamp, DATE_TIME_FORMAT) : null;
         if (this.booking.id !== undefined) {
             this.subscribeToSaveResponse(this.bookingService.update(this.booking));
         } else {
