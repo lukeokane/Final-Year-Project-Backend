@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -108,13 +109,20 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDTO save(BookingDTO bookingDTO) {
 		log.debug("Request to save Booking : {}", bookingDTO);
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+				
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
 	
 	@Override
 	public void saveBookingWithAdminNotification(@Valid BookingDTO bookingDTO) {
-		
+
+		// booking updated so set modifiedTimestamp
+		bookingDTO.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+				
 		// Creating a notification for the admin that a student has requested a tutorial.
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
@@ -166,6 +174,10 @@ public class BookingServiceImpl implements BookingService {
 			notificationService.save(notification);
 		}
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 
@@ -208,6 +220,10 @@ public class BookingServiceImpl implements BookingService {
 		notificationService.save(notification);
 		
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 
@@ -236,6 +252,10 @@ public class BookingServiceImpl implements BookingService {
 		notificationService.save(notification);
 		
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
@@ -264,6 +284,10 @@ public class BookingServiceImpl implements BookingService {
 		notificationService.save(notification);
 		
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
@@ -291,6 +315,10 @@ public class BookingServiceImpl implements BookingService {
 		notificationService.save(notification);
 				
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+		
+		// booking updated so set modifiedTimestamp
+		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
