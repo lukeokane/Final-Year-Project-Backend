@@ -47,4 +47,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.modifiedTimestamp >= :startTime",
     		countQuery = "select count(distinct booking) from Booking booking join booking.userInfos u where booking.modifiedTimestamp >= :startTime")
     Page<Booking> findBookingsModifiedAfterTime(Pageable pageable, @Param("startTime") Instant startTime);
+    
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.modifiedTimestamp >= :startTime and booking.tutorAccepted = 0",
+    		countQuery = "select count(distinct booking) from Booking booking join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.modifiedTimestamp >= :startTime and booking.tutorAccepted = 0")
+    Page<Booking> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime);
 }

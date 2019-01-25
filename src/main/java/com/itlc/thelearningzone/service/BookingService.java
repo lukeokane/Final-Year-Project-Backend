@@ -1,6 +1,5 @@
 package com.itlc.thelearningzone.service;
 
-import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 
 import org.springframework.data.domain.Page;
@@ -78,6 +77,16 @@ public interface BookingService {
      * @return the list of entities
      */
     Page<BookingDTO> findBookingsModifiedAfterTime(Pageable pageable, Instant startTime);
+    
+    /**
+     * Get all the pending bookings of a tutor that are modified after a time.
+     *
+     * @param pageable the pagination information
+     * @param userId ID of the tutor 
+     * @param startTime the bookings to return that have been modified after this time in milliseconds 
+     * @return the list of entities
+     */
+    Page<BookingDTO> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime);
     
     /**
      * Get all the Booking with eager load of many-to-many relationships.

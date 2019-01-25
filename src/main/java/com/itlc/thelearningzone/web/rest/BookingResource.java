@@ -8,7 +8,6 @@ import com.itlc.thelearningzone.web.rest.util.HeaderUtil;
 import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
-import com.itlc.thelearningzone.service.dto.SubjectDTO;
 
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -380,7 +379,7 @@ public class BookingResource {
         	}
         }
         else {
-        	throw new BadRequestAlertException("Missing required parameter(s)", ENTITY_NAME, "parameter startTimeMs is missing");
+        	throw new BadRequestAlertException("Parameter startTimeMs is missing", ENTITY_NAME, "missing.required.parameters");
         }
              
         
@@ -420,6 +419,71 @@ public class BookingResource {
     	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
     	
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsDetailsChanges"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsDetailsChanges : get bookings for tutor that are pending acceptance after the modified time and include booking's subject modified after the passed in time.
+     *
+     * @param pageable the pagination information
+     * @param startTime the bookings to return that are modified after this time in milliseconds 
+     * @param userId the ID of the tutor/user to retrieve bookings pending their acceptance
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsTutorPendingChanges")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getTutorPendingBookingsDetailsChanges(Pageable pageable, 
+    		@RequestParam(required = false) Long startTimeMs,
+    		@RequestParam(required = true) Long userId,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of tutor pending Bookings with their Subjects modified after {} associated with user {}", startTimeMs, userId);
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        if (startTimeMs != null && userId != null) {
+        		bookings = bookingService.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        }
+        else {
+        	throw new BadRequestAlertException("Parameter startTimeMs or userId is missing", ENTITY_NAME, "missing.required.parameters");
+        }
+                           
+        // Convert Page to List
+    	List<BookingDTO> pageList = bookings.getContent();
+    	
+    	// Create ArrayList for BookingDetails
+    	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
+    	
+    	// Get size of list
+    	long pageListSize = pageList.size();
+    	log.debug("getAllBookingDetails - returned {} results", pageListSize);
+		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
+    	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
+    	for (int i = 0; i < pageListSize; i++) {
+    			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
+    			
+    			// Get booking and subject
+    			bdDTO.booking = pageList.get(i);
+    			
+    			// Get subject if booking containers subject ID
+    			if (pageList.get(i).getSubjectId() != null) {
+    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
+    			}
+    			
+    			// Do not return any list of UserInfo objects or BookingUserDetail objects 
+    			if (!userInfo)
+    			{
+    			bdDTO.booking.setUserInfos(null);
+    			bdDTO.booking.setBookingUserDetailsDTO(null);
+    			}
+    			
+    			bookingDetailsList.add(bdDTO);
+    		}
+    	
+    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingTutorPendingChanges"));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

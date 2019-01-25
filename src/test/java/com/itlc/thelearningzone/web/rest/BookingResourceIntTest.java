@@ -1659,7 +1659,7 @@ public class BookingResourceIntTest {
 
         // Set start time 1 second after modified timestamp rows
         Long startTimeMs = booking.getStartTime().plus(1, ChronoUnit.SECONDS).toEpochMilli();
-        Long userId = (Long) null;
+        Long userId = null;
         boolean userInfo = false;
                      
         // Get bookings with modifiedTimestamp after inputed start time, expect 0 results to be returned
@@ -1710,13 +1710,13 @@ public class BookingResourceIntTest {
 
         // Set start time 1 second before modified timestamp
         Long startTimeMs = null;
-        Long userId = (Long) null;
+        Long userId = null;
         boolean userInfo = false;
                      
         // Get bookings with modifiedTimestamp after inputed start time, expect 400 error to be thrown because no startTimeMs passed in
         restBookingMockMvc.perform(get("/api/bookingsDetailsChanges?startTimeMs=" + ((startTimeMs == null) ? "" : startTimeMs) + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message", is("error.parameter startTimeMs is missing")));
+        .andExpect(jsonPath("$.title", is("Parameter startTimeMs is missing")));
     }
     
     /*
@@ -1766,7 +1766,492 @@ public class BookingResourceIntTest {
         // Get bookings with modifiedTimestamp after inputed start time, expect 400 error to be thrown because no startTimeMs passed in
         restBookingMockMvc.perform(get("/api/bookingsDetailsChanges?startTimeMs=" + ((startTimeMs == null) ? "" : startTimeMs) + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message", is("error.parameter startTimeMs is missing")));
+        .andExpect(jsonPath("$.title", is("Parameter startTimeMs is missing")));
+    }
+    
+    /*
+     * Start time is set to 0
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges1() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to null
+        Long startTimeMs = 0L;
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = true;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 1 result to be returned
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+        .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+        .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+        .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+        .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
+        .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+        .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+    	.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO").isArray())
+    	.andExpect(jsonPath("$.[0].booking.userInfos").isArray());  
+    }
+    
+    /*
+     * Start time is set to minus 16 hours
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges2() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 16 hours less than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 1 result to be returned
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+        .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+        .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+        .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+        .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
+        .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+        .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        .andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
+    	.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));  
+    }
+    
+    /*
+     * Start time is set to null
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges3() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to null
+        Long startTimeMs = null;
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect error due to startTimeMs not passed
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + ((startTimeMs == null) ? "" : startTimeMs)  + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.title", is("Parameter startTimeMs or userId is missing")));
+
+    }
+    
+    
+    /*
+     * Start time is set to minus 16 hours
+     * user ID is set to null
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges4() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 16 hours less than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = null;
+        boolean userInfo = false;
+                     
+     // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect error due to userId not passed
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + ((startTimeMs == null) ? "" : startTimeMs)  + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.title", is("Parameter startTimeMs or userId is missing")));
+
+    }
+    
+    /*
+     * Start time is set to minus 16 hours
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges5() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+    	// Set subject to null
+    	booking.setSubject(null);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 16 hours less than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 1 result to be returned and subject to be null
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+        .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+        .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+        .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+        .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
+        .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+        .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        .andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
+    	.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()))
+        .andExpect(jsonPath("$.[0].subject", nullValue()));  
+
+    }
+    
+    /*
+     * Start time is set to plus 16 hours
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges6() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 16 hours more than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().plus(16, ChronoUnit.HOURS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 0 results to be returned
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(0));
+
+    }
+    
+    /*
+     * Start time is set to minus 1 second
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges7() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 1 second less than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().minus(1, ChronoUnit.SECONDS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 1 result to be returned
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$.[*].booking.id").value(hasItem(booking.getId().intValue())))
+        .andExpect(jsonPath("$.[*].booking.title").value(hasItem(DEFAULT_TITLE.toString())))
+        .andExpect(jsonPath("$.[*].booking.requestedBy").value(hasItem(DEFAULT_REQUESTED_BY.toString())))
+        .andExpect(jsonPath("$.[*].booking.startTime").value(hasItem(DEFAULT_START_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.endTime").value(hasItem(DEFAULT_END_TIME.toString())))
+        .andExpect(jsonPath("$.[*].booking.userComments").value(hasItem(DEFAULT_USER_COMMENTS.toString())))
+        .andExpect(jsonPath("$.[*].booking.importanceLevel").value(hasItem(DEFAULT_IMPORTANCE_LEVEL.toString())))
+        .andExpect(jsonPath("$.[*].booking.adminAcceptedId").value(hasItem(DEFAULT_ADMIN_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
+        .andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
+        .andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
+        .andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
+        .andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+        .andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
+    	.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
+
+    }
+    
+    /*
+     * Start time is set to plus 1 second
+     */
+    @Test
+    @Transactional
+    public void getTutorPendingBookingsDetailsChanges8() throws Exception {
+
+    	// Initialize userInfo database
+    	userInfoRepository.saveAndFlush(userInfo);
+    	
+    	// Create userInfos for booking
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);  
+ 
+    	// Set userInfos in booking
+    	booking.setUserInfos(userInfos);
+    	
+        // Initialize the database
+        bookingRepository.save(booking);
+    	
+        // Second booking has tutor accepted set to true, should not be returned
+    	Booking booking2 = new Booking()
+    			.title(DEFAULT_TITLE)
+                .requestedBy(DEFAULT_REQUESTED_BY)
+                .startTime(DEFAULT_START_TIME)
+                .endTime(DEFAULT_END_TIME)
+                .userComments(DEFAULT_USER_COMMENTS)
+                .importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+                .adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+                .tutorAccepted(true)
+                .tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+                .tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+                .modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+                .cancelled(DEFAULT_CANCELLED);
+       	
+    	bookingRepository.save(booking2);
+        bookingRepository.flush();
+
+        // Set start time to 1 second more than the bookings
+        Long startTimeMs = booking.getModifiedTimestamp().plus(1, ChronoUnit.SECONDS).toEpochMilli();
+        // Set userId to tutor accepted ID
+        Long userId = booking.getTutorAcceptedId();
+        boolean userInfo = false;
+                     
+        // Get pending tutor approval bookings with modifiedTimestamp after inputed start time for a tutor, expect 0 results to be returned
+        restBookingMockMvc.perform(get("/api/bookingsTutorPendingChanges?startTimeMs=" + startTimeMs + "&userId=" + ((userId == null) ? "" : userId) + "&userInfo=" + String.valueOf(userInfo)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.size()").value(0));
+
     }
     
     @Test

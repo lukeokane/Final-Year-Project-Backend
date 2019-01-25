@@ -99,6 +99,12 @@ public class BookingServiceImpl implements BookingService {
     	return bookingRepository.findBookingsModifiedAfterTime(pageable, startTime).map(bookingMapper::toDto);
     }
 	
+    @Override
+    public Page<BookingDTO> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
+    	log.debug("Request to get tutor Bookings pending tutor's acceptance after {} for user {}", startTime, userId);
+    	return bookingRepository.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+    }
+    
 	/**
 	 * Save a booking.
 	 *
