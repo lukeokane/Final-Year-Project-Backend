@@ -152,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
 			// Sending a cancellation of tutorial Email to every user that registered for the tutorial
 			Long id = userInfoDTO.getUserId();
 			User user = userRepository.getOne(id);
-			Integer idTut = bookingDTO.getTutorAcceptedId();
+			Long idTut = bookingDTO.getTutorAcceptedId();
 			Long tutorID = Long.valueOf(idTut.longValue());
 			User tutorUser = userRepository.getOne(tutorID);
 //			Booking booking = bookingMapper.toEntity(bookingDTO);
@@ -191,7 +191,7 @@ public class BookingServiceImpl implements BookingService {
 		// BookingUserDetailsDTO bookingUserDetailsDTO =
 		// bookingDTO.getBookingUserDetailsDTO().iterator().next();
 		// User user = userRepository.getOne(bookingUserDetailsDTO.getId());
-		// Integer id = bookingDTO.getTutorAcceptedId();
+		// Long id = bookingDTO.getTutorAcceptedId();
 		// Long tutorID = Long.valueOf(id.longValue());
 		// User tutorUser = userRepository.getOne(tutorID);
 		// Booking booking = bookingMapper.toEntity(bookingDTO);
@@ -208,7 +208,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender id
-		Integer idTut = bookingDTO.getTutorAcceptedId();
+		Long idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		User tutorUser = userRepository.getOne(tutorID);
 		notification.setSenderId(tutorID);
@@ -244,7 +244,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setSenderId(ADMIN_ID);
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
-		Integer idTut = bookingDTO.getTutorAcceptedId();
+		Long idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		notification.setReceiverId(tutorID);
 		notification.setBookingId(bookingDTO.getId());
@@ -272,7 +272,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setRead(false);
 		
 		// getting sender
-		Integer idTut = bookingDTO.getTutorAcceptedId();
+		Long idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);
