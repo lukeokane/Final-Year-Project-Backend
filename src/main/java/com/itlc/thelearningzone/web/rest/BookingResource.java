@@ -275,7 +275,7 @@ public class BookingResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
      * @param startTime the bookings to return that begin after this time in milliseconds 
      * @param endTime the bookings to return that begin before this time in milliseconds 
-     * @param allUserInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
      * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
      */
     @GetMapping("/bookingsDetails")
@@ -311,59 +311,24 @@ public class BookingResource {
         	bookings = bookingService.findAll(pageable);
         }
         
-        // Convert Page to List
-    	List<BookingDTO> pageList = bookings.getContent();
-    	
-    	// Create ArrayList for BookingDetails
-    	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
-    	
-    	// Get size of list
-    	long pageListSize = pageList.size();
-    	log.debug("getAllBookingDetails - returned {} results", pageListSize);
-		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
-    	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
-    	for (int i = 0; i < pageListSize; i++) {
-    			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
-    			
-    			// Get booking and subject
-    			bdDTO.booking = pageList.get(i);
-    			
-    			// Get subject if booking containers subject ID
-    			if (pageList.get(i).getSubjectId() != null) {
-    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
-    			}
-    			
-    			// Do not return any list of UserInfo objects or BookingUserDetail objects 
-    			if (!userInfo)
-    			{
-    			bdDTO.booking.setUserInfos(null);
-    			bdDTO.booking.setBookingUserDetailsDTO(null);
-    			}
-    			
-    			bookingDetailsList.add(bdDTO);
-    		}
-    	
-    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
     	
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookings?eagerload=%b", eagerload));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
     
-    
     /**
-     * GET  /bookingsDetailsChanges : get all the bookings and include booking's subject modified after the passed in time.
+     * GET  /bookingsDetailsLatestChanges : get all the bookings and include booking's subject modified after the passed in time.
      *
      * @param pageable the pagination information
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
      * @param startTime the bookings to return that begin after this time in milliseconds 
-     * @param endTime the bookings to return that begin before this time in milliseconds 
-     * @param allUserInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
      * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
      */
-    @GetMapping("/bookingsDetailsChanges")
+    @GetMapping("/bookingsLatestDetailsChanges")
     @Timed
-    public ResponseEntity<List<BookingDetailsDTO>> getAllBookingsDetailsChanges(Pageable pageable, 
-    		Long startTimeMs,
+    public ResponseEntity<List<BookingDetailsDTO>> getBookingsLatestDetailsChanges(Pageable pageable, 
+    		@RequestParam(required = true) Long startTimeMs,
     		@RequestParam(required = false) Long userId,
     		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
     	
@@ -382,48 +347,150 @@ public class BookingResource {
         	throw new BadRequestAlertException("Parameter startTimeMs is missing", ENTITY_NAME, "missing.required.parameters");
         }
              
-        
-        
-        // Convert Page to List
-    	List<BookingDTO> pageList = bookings.getContent();
-    	
-    	// Create ArrayList for BookingDetails
-    	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
-    	
-    	// Get size of list
-    	long pageListSize = pageList.size();
-    	log.debug("getAllBookingDetails - returned {} results", pageListSize);
-		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
-    	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
-    	for (int i = 0; i < pageListSize; i++) {
-    			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
-    			
-    			// Get booking and subject
-    			bdDTO.booking = pageList.get(i);
-    			
-    			// Get subject if booking containers subject ID
-    			if (pageList.get(i).getSubjectId() != null) {
-    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
-    			}
-    			
-    			// Do not return any list of UserInfo objects or BookingUserDetail objects 
-    			if (!userInfo)
-    			{
-    			bdDTO.booking.setUserInfos(null);
-    			bdDTO.booking.setBookingUserDetailsDTO(null);
-    			}
-    			
-    			bookingDetailsList.add(bdDTO);
-    		}
-    	
-    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
     	
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsDetailsChanges"));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
     
     /**
-     * GET  /bookingsDetailsChanges : get bookings for tutor that are pending acceptance after the modified time and include booking's subject modified after the passed in time.
+     * GET  /bookingsConfirmed : get all confirmed bookings.
+     *
+     * @param pageable the pagination information
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param endTime the bookings to return that begin before this time in milliseconds
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsConfirmed")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getConfirmedBookings(Pageable pageable, 
+    		@RequestParam(required = false) Long startTimeMs,
+    		@RequestParam(required = false) Long endTimeMs,
+    		@RequestParam(required = false) Long userId, 
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of confirmed Bookings");
+    	
+        Page<BookingDTO> bookings;
+        
+        // If start time and end time present, get bookings between the times
+        if (startTimeMs != null && endTimeMs != null) {
+        	// No id passed, get all bookings
+        	if (userId == null)
+        	{
+        	bookings = bookingService.findConfirmedInTimeFrame(pageable, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
+        	// If id is present, get bookings for particular user.
+        	else {
+        	bookings = bookingService.findConfirmedUserBookingsInTimeFrame(pageable, userId, Instant.ofEpochMilli(startTimeMs), Instant.ofEpochMilli(endTimeMs));
+        	}
+        // If userId is not null, get all user bookings
+        } else if (userId != null) {
+        	bookings = bookingService.findUserConfirmedBookings(pageable, userId);
+        } else { 
+        	bookings = bookingService.findConfirmedBookings(pageable);
+        }       
+        
+        Page<BookingDetailsDTO> page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsConfirmed"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsDetailsChanges : get all the bookings and include booking's subject modified after the passed in time.
+     *
+     * @param pageable the pagination information
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsLatestConfirmedChanges")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getBookingsLatestConfirmedChanges(Pageable pageable, 
+    		@RequestParam(required = true) Long startTimeMs,
+    		@RequestParam(required = false) Long userId,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of confirmed Bookings with their Subjects after {}", startTimeMs);
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        if (startTimeMs != null) {
+        	if (userId == null) {
+        		bookings = bookingService.findConfirmedBookingsModifiedAfterTime(pageable, Instant.ofEpochMilli(startTimeMs));
+        	} else {
+        		bookings = bookingService.findUserConfirmedBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        	}
+        }
+        else {
+        	throw new BadRequestAlertException("Parameter startTimeMs is missing", ENTITY_NAME, "missing.required.parameters");
+        }
+             
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsConfirmedLatestChanges"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsPendingApproval : get all the bookings pending admin approval and include booking's subject.
+     *
+     * @param pageable the pagination information
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsPendingApproval")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getBookingsPendingAdminApproval(Pageable pageable, 
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of Bookings pending admin approval with their Subjects");
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        bookings = bookingService.findBookingsPendingAdminApproval(pageable);
+   
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsPendingApproval"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsPendingApprovalLatestChanges : get all the bookings pending admin approval and include booking's subject modified after the passed in time.
+     *
+     * @param pageable the pagination information
+     * @param startTime the bookings to return that begin after this time in milliseconds 
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsLatestPendingApprovalChanges")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getBookingsPendingAdminApprovalChanges(Pageable pageable, 
+    		@RequestParam(required = true) Long startTimeMs,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of Bookings pending admin approval with their Subjects after {}", startTimeMs);
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        if (startTimeMs != null) {
+        		bookings = bookingService.findBookingsPendingAdminApprovalModifiedAfterTime(pageable, Instant.ofEpochMilli(startTimeMs));
+        }
+        else {
+        	throw new BadRequestAlertException("Parameter startTimeMs is missing", ENTITY_NAME, "missing.required.parameters");
+        }
+             
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsPendingApprovalLatestChanges"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsTutors : get bookings for a tutor including booking's subject modified after the passed in time.
      *
      * @param pageable the pagination information
      * @param startTime the bookings to return that are modified after this time in milliseconds 
@@ -431,10 +498,54 @@ public class BookingResource {
      * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
      * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
      */
-    @GetMapping("/bookingsTutorPendingChanges")
+    @GetMapping("/bookingsTutors")
     @Timed
-    public ResponseEntity<List<BookingDetailsDTO>> getTutorPendingBookingsDetailsChanges(Pageable pageable, 
-    		@RequestParam(required = false) Long startTimeMs,
+    public ResponseEntity<List<BookingDetailsDTO>> getTutorBookings(Pageable pageable,
+    		@RequestParam(required = false, defaultValue = "false") boolean pending,
+    		@RequestParam(required = true) Long userId,
+    		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
+    	
+    	log.debug("REST request to get a page of tutor pending Bookings with their Subjects associated with user {}", userId);
+        Page<BookingDTO> bookings = null;
+        Page<BookingDetailsDTO> page;
+        
+        if (userId == null)
+        {
+        	throw new BadRequestAlertException("Parameter userId is missing", ENTITY_NAME, "missing.required.parameters");
+        }
+        
+        if (pending == false)
+        {
+        	// get all confirmed tutor bookings
+        	bookings = bookingService.findTutorBookings(pageable, userId);
+        }
+        else {
+        	// get all pending tutor bookings
+        	bookings = bookingService.findTutorPendingRequestsBookings(pageable, userId);
+        }
+        
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+        
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsTutors"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * GET  /bookingsTutorLatestChanges : get bookings for tutor (pending or not pending) and include booking's subject modified after the passed in time.
+     *
+     * @param pageable the pagination information
+     * @param startTime the bookings to return that are modified after this time in milliseconds
+     * @param pending the flag to determine whether to get booking pending or confirmed for a tutor  
+     * @param userId the ID of the tutor/user to retrieve bookings pending their acceptance
+     * @param userInfo flag to decide whether to return all user information (UserInfos & BookingUserDetails)
+     * @return the ResponseEntity with status 200 (OK) and the list of bookings in body
+     */
+    @GetMapping("/bookingsLatestTutorChanges")
+    @Timed
+    public ResponseEntity<List<BookingDetailsDTO>> getBookingsLatestTutorChanges(Pageable pageable,
+    		@RequestParam(required = true) Long startTimeMs,
+    		@RequestParam(required = false, defaultValue = "false") boolean pending,
     		@RequestParam(required = true) Long userId,
     		@RequestParam(required = false, defaultValue = "false") boolean userInfo) {
     	
@@ -442,21 +553,36 @@ public class BookingResource {
         Page<BookingDTO> bookings = null;
         Page<BookingDetailsDTO> page;
         
-        if (startTimeMs != null && userId != null) {
-        		bookings = bookingService.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
-        }
-        else {
+        if (startTimeMs == null || userId == null)
+        {
         	throw new BadRequestAlertException("Parameter startTimeMs or userId is missing", ENTITY_NAME, "missing.required.parameters");
         }
-                           
-        // Convert Page to List
-    	List<BookingDTO> pageList = bookings.getContent();
+        
+        if (pending == false)
+        {
+        	// get all confirmed tutor bookings after the time passed in
+        	bookings = bookingService.findTutorBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        }
+        else {
+        	// get all pending tutor bookings after the time passed in
+        	bookings = bookingService.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        }
+        
+        page = BookingsDetailsDTOHandler(bookings.getContent(), userInfo);
+        
+    	
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingsTutorLatestChanges"));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    public Page<BookingDetailsDTO> BookingsDetailsDTOHandler(List<BookingDTO> bookingsDTOList, boolean userInfo) {
+    	
     	
     	// Create ArrayList for BookingDetails
     	List<BookingDetailsDTO> bookingDetailsList = new ArrayList<BookingDetailsDTO>();
     	
     	// Get size of list
-    	long pageListSize = pageList.size();
+    	long pageListSize = bookingsDTOList.size();
     	log.debug("getAllBookingDetails - returned {} results", pageListSize);
 		log.debug("getAllBookingDetails - userInfo set to {}", userInfo);
     	// Iterate through bookings, get booking subject, add both to BookingDetailsDTO
@@ -464,11 +590,11 @@ public class BookingResource {
     			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
     			
     			// Get booking and subject
-    			bdDTO.booking = pageList.get(i);
+    			bdDTO.booking = bookingsDTOList.get(i);
     			
     			// Get subject if booking containers subject ID
-    			if (pageList.get(i).getSubjectId() != null) {
-    				bdDTO.subject = subjectService.findOne(pageList.get(i).getId()).get();
+    			if (bookingsDTOList.get(i).getSubjectId() != null) {
+    				bdDTO.subject = subjectService.findOne(bookingsDTOList.get(i).getId()).get();
     			}
     			
     			// Do not return any list of UserInfo objects or BookingUserDetail objects 
@@ -481,10 +607,7 @@ public class BookingResource {
     			bookingDetailsList.add(bdDTO);
     		}
     	
-    	page = new PageImpl<BookingDetailsDTO>(bookingDetailsList);
-    	
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/bookingTutorPendingChanges"));
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    	return new PageImpl<BookingDetailsDTO>(bookingDetailsList);
     }
 
     /**

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -156,5 +156,33 @@ public class NotificationResource {
         log.debug("REST request to delete Notification : {}", id);
         notificationService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+    
+    /**
+     * GET  /notifications/:id : get the "id" notification.
+     *
+     * @param id the id of the notificationDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the notificationDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/notifications/latest")
+    @Timed
+    public ResponseEntity<List<NotificationDTO>> getLatestNotifications1(Pageable pageable,
+    	@RequestParam(required = true) Long userId,
+    	@RequestParam(required = true) Long startTimeMs)
+    {
+        log.debug("REST request to get Notifications for user {} after time {}", startTimeMs, userId);
+        
+        Page<NotificationDTO> page;
+        
+        if (userId != null && startTimeMs != null)
+        {
+        	page = notificationService.findUserNotificationsAfterTime(pageable, userId, Instant.ofEpochMilli(startTimeMs));
+        }
+        else {
+        	throw new BadRequestAlertException("Parameter startTimeMs or userId is missing", ENTITY_NAME, "missing.required.parameters");
+        }
+        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/notifications/latest");
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

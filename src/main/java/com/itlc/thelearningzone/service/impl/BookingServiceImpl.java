@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,38 +70,104 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public Page<BookingDTO> findAllInTimeFrame(Pageable pageable, Instant startTime, Instant endTime) {
-		log.debug("Request to get all Bookings between {0} and {1}", Date.from(startTime), Date.from(endTime));
+		log.debug("Request to get all Bookings between {} and {}", Date.from(startTime), Date.from(endTime));
 		return bookingRepository.findAllInTimeFrame(pageable, startTime, endTime).map(bookingMapper::toDto);
 	}
 	
 	@Override
 	public Page<BookingDTO> findUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime) {
-		log.debug("Request to get all Bookings between {0} and {1} for user {2}", Date.from(startTime), Date.from(endTime), userId);
+		log.debug("Request to get all Bookings between {} and {} for user {}", Date.from(startTime), Date.from(endTime), userId);
 		return bookingRepository.findUserBookingsInTimeFrame(pageable, userId, startTime, endTime).map(bookingMapper::toDto);
 	}
 	
 	@Override
-	public Page<BookingDTO> findUserBookings(Pageable pageable, @Param("userId") Long userId) {
+	public Page<BookingDTO> findUserBookings(Pageable pageable, Long userId) {
 		log.debug("Request to get all Bookings for user {}", userId);
 		return bookingRepository.findUserBookings(pageable, userId).map(bookingMapper::toDto);
 	}
 	
 	@Override
     public Page<BookingDTO> findUserBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
-		log.debug("Request to get all Bookings modified after {0} for user {1}", startTime, userId);
+		log.debug("Request to get all Bookings modified after {0} for user {1}", Date.from(startTime), userId);
 		return bookingRepository.findUserBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
 	}
     
     @Override
     public Page<BookingDTO> findBookingsModifiedAfterTime(Pageable pageable, Instant startTime) {
-    	log.debug("Request to get all Bookings modified after {}", startTime);
+    	log.debug("Request to get all Bookings modified after {}", Date.from(startTime));
     	return bookingRepository.findBookingsModifiedAfterTime(pageable, startTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findTutorBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
+    	log.debug("Request to get all tutor Bookings modified after {} for user {}", Date.from(startTime), userId);
+    	return bookingRepository.findTutorBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
     }
 	
     @Override
     public Page<BookingDTO> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
-    	log.debug("Request to get tutor Bookings pending tutor's acceptance after {} for user {}", startTime, userId);
+    	log.debug("Request to get tutor Bookings pending tutor's acceptance after {} for user {}", Date.from(startTime), userId);
     	return bookingRepository.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findTutorBookings(Pageable pageable, Long userId) {
+    	log.debug("Request to get tutor Bookings for user {}", userId);
+    	return bookingRepository.findTutorBookings(pageable, userId).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findTutorPendingRequestsBookings(Pageable pageable, Long userId) {
+    	log.debug("Request to get tutor pending Bookings for user {}", userId);
+    	return bookingRepository.findTutorPendingRequestsBookings(pageable, userId).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findConfirmedInTimeFrame(Pageable pageable, Instant startTime, Instant endTime) {
+    	log.debug("Request to get confirmed Bookings between {} and {}", Date.from(startTime), Date.from(endTime));
+    	return bookingRepository.findConfirmedInTimeFrame(pageable, startTime, endTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findConfirmedUserBookingsInTimeFrame(Pageable pageable, Long userId, Instant startTime, Instant endTime) {
+    	log.debug("Request to get confirmed Bookings between {} and {} for user {}", Date.from(startTime), Date.from(endTime), userId);
+    	return bookingRepository.findConfirmedUserBookingsInTimeFrame(pageable, userId, startTime, endTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findUserConfirmedBookings(Pageable pageable, Long userId) {
+    	log.debug("Request to get confirmed Bookings for user {}", userId);
+    	return bookingRepository.findUserConfirmedBookings(pageable, userId).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findConfirmedBookings(Pageable pageable) {
+    	log.debug("Request to get confirmed Bookings");
+    	return bookingRepository.findConfirmedBookings(pageable).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findConfirmedBookingsModifiedAfterTime(Pageable pageable, Instant startTime) {
+    	log.debug("Request to get confirmed Bookings after {}", Date.from(startTime));
+    	return bookingRepository.findConfirmedBookingsModifiedAfterTime(pageable, startTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findUserConfirmedBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
+    	log.debug("Request to get confirmed Bookings after {} for user {}", Date.from(startTime), userId);
+    	return bookingRepository.findUserConfirmedBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+    }
+    
+    @Override
+    public Page<BookingDTO> findBookingsPendingAdminApproval(Pageable pageable) {
+    	log.debug("Request to get Bookings not accepted by an admin");
+    	return bookingRepository.findBookingsPendingAdminApproval(pageable).map(bookingMapper::toDto);
+    }
+
+    @Override
+    public Page<BookingDTO> findBookingsPendingAdminApprovalModifiedAfterTime(Pageable pageable, Instant startTime) {
+    	log.debug("Request to get Bookings not accepted by an admin after {}", Date.from(startTime));
+    	return bookingRepository.findBookingsPendingAdminApprovalChanges(pageable, startTime).map(bookingMapper::toDto);
     }
     
 	/**
@@ -374,10 +439,5 @@ public class BookingServiceImpl implements BookingService {
 		log.debug("Request to delete Booking : {}", id);
 		bookingRepository.deleteById(id);
 	}
-
-	
-
-	
-	
 
 }

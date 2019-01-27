@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,6 +113,12 @@ public class NotificationServiceImpl implements NotificationService {
 			list.add(notificationMapper.toDto(p));
 
 		return list;
+	}
+	
+	@Override
+	public Page<NotificationDTO> findUserNotificationsAfterTime(Pageable pageable, Long userId, Instant startTime) {
+		log.debug("Request to get notifications for user {} after time {}", userId, startTime);
+		return notificationRepository.findUserNotificationsAfterTime(pageable, userId, startTime).map(notificationMapper::toDto);
 	}
 	
 
