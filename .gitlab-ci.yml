@@ -73,7 +73,7 @@ maven-package:
              - target/*.war
          expire_in: 1 day
 
-# Uncomment the following line to use gitlabs container registry. You need to adapt the REGISTRY_URL in case you are not using gitlab.com
+## Uncomment the following line to use gitlabs container registry. You need to adapt the REGISTRY_URL in case you are not using gitlab.com
 docker-push:
     image: docker:latest
     services:
