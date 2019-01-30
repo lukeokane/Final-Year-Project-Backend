@@ -66,7 +66,8 @@ frontend-test:
 maven-package:
      stage: package
      script:
-         - ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
+         #- ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
+         - ./mvnw package -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
      artifacts:
          paths:
              - target/*.war
