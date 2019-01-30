@@ -90,6 +90,6 @@ docker-push:
         - docker info
         - cp target/*.war src/main/docker
     script:
-        - docker login -u "KU9hxpdoqEPz5JXYkjxL" -p "$CI_BUILD_TOKEN" $REGISTRY_URL
+        - docker login -u "gitlab-ci-token" -p "KU9hxpdoqEPz5JXYkjxL" $REGISTRY_URL
         - docker build -f src/main/docker/Dockerfile -t $IMAGE_TAG src/main/docker
         - docker push $IMAGE_TAG
