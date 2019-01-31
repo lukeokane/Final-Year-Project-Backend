@@ -197,6 +197,21 @@ public class CourseResourceIntTest {
     
     @Test
     @Transactional
+    public void getAllCoursesList() throws Exception {
+        // Initialize the database
+        courseRepository.saveAndFlush(course);
+
+        // Get all the courseList
+        restCourseMockMvc.perform(get("/api/courses?sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(course.getId().intValue())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].courseCode").value(hasItem(DEFAULT_COURSE_CODE.toString())));
+    }
+    
+    @Test
+    @Transactional
     public void getCourse() throws Exception {
         // Initialize the database
         courseRepository.saveAndFlush(course);

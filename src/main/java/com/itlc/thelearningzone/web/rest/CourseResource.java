@@ -96,6 +96,20 @@ public class CourseResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/courses");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    /**
+     * GET  /courses : get all the courses in a list
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of courses in body
+     */
+	@GetMapping("/courses/findAllCoursesList")
+	@Timed
+	public ResponseEntity<List<CourseDTO>> getAllCoursesList() {
+		log.debug("REST request to get all the courses");
+		List<CourseDTO> courses = courseService.findAllCoursesList();
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(courses));
+	}
 
     /**
      * GET  /courses/:id : get the "id" course.
