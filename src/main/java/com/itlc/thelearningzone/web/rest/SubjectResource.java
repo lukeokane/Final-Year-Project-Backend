@@ -102,6 +102,20 @@ public class SubjectResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/subjects?eagerload=%b", eagerload));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    /**
+     * GET  /courses : get all the Subjects in a list
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of courses in body
+     */
+	@GetMapping("/subjects/findAllSubjectsList")
+	@Timed
+	public ResponseEntity<List<SubjectDTO>> getAllSubjectsList() {
+		log.debug("REST request to get all the courses");
+		List<SubjectDTO> subjects = subjectService.findAllSubjectsList();
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(subjects));
+	}
 
     /**
      * GET  /subjects/:id : get the "id" subject.

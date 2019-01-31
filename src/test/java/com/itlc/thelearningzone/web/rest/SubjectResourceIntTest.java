@@ -206,6 +206,21 @@ public class SubjectResourceIntTest {
             .andExpect(jsonPath("$.[*].subjectCode").value(hasItem(DEFAULT_SUBJECT_CODE.toString())));
     }
     
+    @Test
+    @Transactional
+    public void getAllSubjectsList() throws Exception {
+        // Initialize the database
+        subjectRepository.saveAndFlush(subject);
+
+        // Get all the subjectList
+        restSubjectMockMvc.perform(get("/api/subjects?sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(subject.getId().intValue())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+            .andExpect(jsonPath("$.[*].subjectCode").value(hasItem(DEFAULT_SUBJECT_CODE.toString())));
+    }
+    
     @SuppressWarnings({"unchecked"})
     public void getAllSubjectsWithEagerRelationshipsIsEnabled() throws Exception {
         SubjectResource subjectResource = new SubjectResource(subjectServiceMock);
