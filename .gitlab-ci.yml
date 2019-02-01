@@ -7,7 +7,7 @@ cache:
 stages:
     - build
     - test
-    #- analyze
+    - analyze
     - package
     - release
     # - deploy
