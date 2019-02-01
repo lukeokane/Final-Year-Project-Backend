@@ -49,19 +49,16 @@ frontend-test:
         paths:
             - target/test-results
         expire_in: 1 day
-#sonar-analyze:
-    #stage: analyze
-    #dependencies:
-        #- maven-test
-        #- frontend-test
-    #script:
-        #- ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
-        #- ./mvnw verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=ce45b3a7f6437c5b22db728bc3c96ddd590bd3aa -Dsonar.exclusions=src/main/java/** -Dsonar.projectKey=ce45b3a7f6437c5b22db728bc3c96ddd590bd3aa -D"sonar.organization=thelearningzone -Dsonar.password="
-        #- ./mvnw -Pprod clean test sonar:sonar
-        #- ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
-        #- ./mvnw verify org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.exclusions=src/main/java/** -Dsonar.projectKey=ce45b3a7f6437c5b22db728bc3c96ddd590bd3aa -Dsonar.organization=thelearningzone -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=cc1e4f80289ac40cd025d85ef72a53f77a290d08 -Dmaven.repo.local=$MAVEN_USER_HOME
 
-    #allow_failure: true
+sonar-analyze:
+    stage: analyze
+    dependencies:
+        - maven-test
+        - frontend-test
+    script:
+        - ./mvnw compile -Dmaven.repo.local=$MAVEN_USER_HOME
+        - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=agt -Dsonar.projectKey=12e5511654376144861e1bd1cc68755b1b4d45dd -Dmaven.repo.local=$MAVEN_USER_HOME
+    allow_failure: true
 
 maven-package:
      stage: package
