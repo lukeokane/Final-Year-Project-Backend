@@ -43,7 +43,7 @@
         },
         {
             "fieldName": "adminAcceptedId",
-            "fieldType": "Long"
+            "fieldType": "Integer"
         },
         {
             "fieldName": "tutorAccepted",
@@ -51,7 +51,7 @@
         },
         {
             "fieldName": "tutorAcceptedId",
-            "fieldType": "Long"
+            "fieldType": "Integer"
         },
         {
             "fieldName": "modifiedTimestamp",

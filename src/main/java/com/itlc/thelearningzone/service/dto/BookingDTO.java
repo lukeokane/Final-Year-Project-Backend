@@ -32,11 +32,11 @@ public class BookingDTO implements Serializable {
     @NotNull
     private OrdinalScale importanceLevel;
 
-    private Long adminAcceptedId;
+    private Integer adminAcceptedId;
 
     private Boolean tutorAccepted;
 
-    private Long tutorAcceptedId;
+    private Integer tutorAcceptedId;
 
     private Instant modifiedTimestamp;
 
@@ -114,11 +114,11 @@ public class BookingDTO implements Serializable {
         this.importanceLevel = importanceLevel;
     }
 
-    public Long getAdminAcceptedId() {
+    public Integer getAdminAcceptedId() {
         return adminAcceptedId;
     }
 
-    public void setAdminAcceptedId(Long adminAcceptedId) {
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
         this.adminAcceptedId = adminAcceptedId;
     }
 
@@ -130,11 +130,11 @@ public class BookingDTO implements Serializable {
         this.tutorAccepted = tutorAccepted;
     }
 
-    public Long getTutorAcceptedId() {
+    public Integer getTutorAcceptedId() {
         return tutorAcceptedId;
     }
 
-    public void setTutorAcceptedId(Long tutorAcceptedId) {
+    public void setTutorAcceptedId(Integer tutorAcceptedId) {
         this.tutorAcceptedId = tutorAcceptedId;
     }
 

@@ -76,14 +76,14 @@ public class BookingResourceIntTest {
 	private static final OrdinalScale DEFAULT_IMPORTANCE_LEVEL = OrdinalScale.NONE;
 	private static final OrdinalScale UPDATED_IMPORTANCE_LEVEL = OrdinalScale.LOW;
 
-	private static final Long DEFAULT_ADMIN_ACCEPTED_ID = 1L;
-	private static final Long UPDATED_ADMIN_ACCEPTED_ID = 2L;
+	private static final Integer DEFAULT_ADMIN_ACCEPTED_ID = 1;
+	private static final Integer UPDATED_ADMIN_ACCEPTED_ID = 2;
 
 	private static final Boolean DEFAULT_TUTOR_ACCEPTED = false;
 	private static final Boolean UPDATED_TUTOR_ACCEPTED = true;
 
-	private static final Long DEFAULT_TUTOR_ACCEPTED_ID = 1L;
-	private static final Long UPDATED_TUTOR_ACCEPTED_ID = 2L;
+	private static final Integer DEFAULT_TUTOR_ACCEPTED_ID = 1;
+	private static final Integer UPDATED_TUTOR_ACCEPTED_ID = 2;
 
 	private static final Instant DEFAULT_MODIFIED_TIMESTAMP = Instant.ofEpochMilli(0L);
 	private static final Instant UPDATED_MODIFIED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -2365,7 +2365,7 @@ public class BookingResourceIntTest {
 		// Set start time to null
 		Long startTimeMs = 0L;
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = true;
 
@@ -2439,7 +2439,7 @@ public class BookingResourceIntTest {
 		// Set start time to 16 hours less than the bookings
 		Long startTimeMs = booking.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2517,7 +2517,7 @@ public class BookingResourceIntTest {
 		// Set start time to null
 		Long startTimeMs = null;
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2644,7 +2644,7 @@ public class BookingResourceIntTest {
 		// Set start time to 16 hours less than the bookings
 		Long startTimeMs = booking.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2722,7 +2722,7 @@ public class BookingResourceIntTest {
 		// Set start time to 16 hours more than the bookings
 		Long startTimeMs = booking.getModifiedTimestamp().plus(16, ChronoUnit.HOURS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2784,7 +2784,7 @@ public class BookingResourceIntTest {
 		// Set start time to 1 second less than the bookings
 		Long startTimeMs = booking.getModifiedTimestamp().minus(1, ChronoUnit.SECONDS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2861,7 +2861,7 @@ public class BookingResourceIntTest {
 		// Set start time to 1 second more than the bookings
 		Long startTimeMs = booking.getModifiedTimestamp().plus(1, ChronoUnit.SECONDS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -2925,7 +2925,7 @@ public class BookingResourceIntTest {
 		// Set start time to 16 hours less than the bookings
 		Long startTimeMs = booking2.getModifiedTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		// Set userId to tutor accepted ID
-		Long userId = booking2.getTutorAcceptedId();
+		Integer userId = booking2.getTutorAcceptedId();
 		boolean pending = false;
 		boolean userInfo = false;
 
@@ -3741,7 +3741,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = false;
 		boolean userInfo = false;
 
@@ -3867,7 +3867,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		// Set userId to tutor accepted ID
-		Long userId = booking2.getTutorAcceptedId();
+		Integer userId = booking2.getTutorAcceptedId();
 		boolean pending = false;
 		boolean userInfo = false;
 
@@ -3878,22 +3878,6 @@ public class BookingResourceIntTest {
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 			.andExpect(jsonPath("$.size()").value(0));
 
-	}
-
-	@Test
-	@Transactional
-	public void deleteBooking() throws Exception {
-		// Initialize the database
-		bookingRepository.saveAndFlush(booking);
-
-		int databaseSizeBeforeDelete = bookingRepository.findAll().size();
-
-		// Get the booking
-		restBookingMockMvc.perform(delete("/api/bookings/{id}", booking.getId()).accept(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
-
-		// Validate the database is empty
-		List<Booking> bookingList = bookingRepository.findAll();
-		assertThat(bookingList).hasSize(databaseSizeBeforeDelete - 1);
 	}
 
 	/*
@@ -3941,7 +3925,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		// Set userId to tutor accepted ID
-		Long userId = booking2.getTutorAcceptedId();
+		Integer userId = booking2.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -4012,7 +3996,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		// Set userId to tutor accepted ID
-		Long userId = booking.getTutorAcceptedId();
+		Integer userId = booking.getTutorAcceptedId();
 		boolean pending = true;
 		boolean userInfo = false;
 
@@ -4629,6 +4613,22 @@ public class BookingResourceIntTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.title", is("Parameter startTimeMs is missing")));
 
+	}
+	
+	@Test
+	@Transactional
+	public void deleteBooking() throws Exception {
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+
+		int databaseSizeBeforeDelete = bookingRepository.findAll().size();
+
+		// Get the booking
+		restBookingMockMvc.perform(delete("/api/bookings/{id}", booking.getId()).accept(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
+
+		// Validate the database is empty
+		List<Booking> bookingList = bookingRepository.findAll();
+		assertThat(bookingList).hasSize(databaseSizeBeforeDelete - 1);
 	}
 	
 	@Test

@@ -101,25 +101,25 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Page<BookingDTO> findTutorBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
     	log.debug("Request to get all tutor Bookings modified after {} for user {}", Date.from(startTime), userId);
-    	return bookingRepository.findTutorBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+    	return bookingRepository.findTutorBookingsModifiedAfterTime(pageable, Math.toIntExact(userId), startTime).map(bookingMapper::toDto);
     }
 	
     @Override
     public Page<BookingDTO> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
     	log.debug("Request to get tutor Bookings pending tutor's acceptance after {} for user {}", Date.from(startTime), userId);
-    	return bookingRepository.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
+    	return bookingRepository.findTutorPendingRequestsBookingsModifiedAfterTime(pageable, Math.toIntExact(userId), startTime).map(bookingMapper::toDto);
     }
     
     @Override
     public Page<BookingDTO> findTutorBookings(Pageable pageable, Long userId) {
     	log.debug("Request to get tutor Bookings for user {}", userId);
-    	return bookingRepository.findTutorBookings(pageable, userId).map(bookingMapper::toDto);
+    	return bookingRepository.findTutorBookings(pageable, Math.toIntExact(userId)).map(bookingMapper::toDto);
     }
     
     @Override
     public Page<BookingDTO> findTutorPendingRequestsBookings(Pageable pageable, Long userId) {
     	log.debug("Request to get tutor pending Bookings for user {}", userId);
-    	return bookingRepository.findTutorPendingRequestsBookings(pageable, userId).map(bookingMapper::toDto);
+    	return bookingRepository.findTutorPendingRequestsBookings(pageable, Math.toIntExact(userId)).map(bookingMapper::toDto);
     }
     
     @Override
@@ -223,7 +223,7 @@ public class BookingServiceImpl implements BookingService {
 			// Sending a cancellation of tutorial Email to every user that registered for the tutorial
 			Long id = userInfoDTO.getUserId();
 			User user = userRepository.getOne(id);
-			Long idTut = bookingDTO.getTutorAcceptedId();
+			Integer idTut = bookingDTO.getTutorAcceptedId();
 			Long tutorID = Long.valueOf(idTut.longValue());
 			User tutorUser = userRepository.getOne(tutorID);
 //			Booking booking = bookingMapper.toEntity(bookingDTO);
@@ -279,7 +279,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender id
-		Long idTut = bookingDTO.getTutorAcceptedId();
+		Integer idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		User tutorUser = userRepository.getOne(tutorID);
 		notification.setSenderId(tutorID);
@@ -315,7 +315,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setSenderId(ADMIN_ID);
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
-		Long idTut = bookingDTO.getTutorAcceptedId();
+		Integer idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		notification.setReceiverId(tutorID);
 		notification.setBookingId(bookingDTO.getId());
@@ -343,7 +343,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setRead(false);
 		
 		// getting sender
-		Long idTut = bookingDTO.getTutorAcceptedId();
+		Integer idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);

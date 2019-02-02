@@ -55,13 +55,13 @@ public class Booking implements Serializable {
     private OrdinalScale importanceLevel;
 
     @Column(name = "admin_accepted_id")
-    private Long adminAcceptedId;
+    private Integer adminAcceptedId;
 
     @Column(name = "tutor_accepted")
     private Boolean tutorAccepted;
 
     @Column(name = "tutor_accepted_id")
-    private Long tutorAcceptedId;
+    private Integer tutorAcceptedId;
 
     @Column(name = "modified_timestamp")
     private Instant modifiedTimestamp;
@@ -176,16 +176,16 @@ public class Booking implements Serializable {
         this.importanceLevel = importanceLevel;
     }
 
-    public Long getAdminAcceptedId() {
+    public Integer getAdminAcceptedId() {
         return adminAcceptedId;
     }
 
-    public Booking adminAcceptedId(Long adminAcceptedId) {
+    public Booking adminAcceptedId(Integer adminAcceptedId) {
         this.adminAcceptedId = adminAcceptedId;
         return this;
     }
 
-    public void setAdminAcceptedId(Long adminAcceptedId) {
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
         this.adminAcceptedId = adminAcceptedId;
     }
 
@@ -202,16 +202,16 @@ public class Booking implements Serializable {
         this.tutorAccepted = tutorAccepted;
     }
 
-    public Long getTutorAcceptedId() {
+    public Integer getTutorAcceptedId() {
         return tutorAcceptedId;
     }
 
-    public Booking tutorAcceptedId(Long tutorAcceptedId) {
+    public Booking tutorAcceptedId(Integer tutorAcceptedId) {
         this.tutorAcceptedId = tutorAcceptedId;
         return this;
     }
 
-    public void setTutorAcceptedId(Long tutorAcceptedId) {
+    public void setTutorAcceptedId(Integer tutorAcceptedId) {
         this.tutorAcceptedId = tutorAcceptedId;
     }
 

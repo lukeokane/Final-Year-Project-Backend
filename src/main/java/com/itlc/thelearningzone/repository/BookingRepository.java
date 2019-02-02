@@ -50,19 +50,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 1 and booking.modifiedTimestamp >= :startTime and booking.cancelled = 0",
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.modifiedTimestamp >= :startTime and booking.cancelled = 0")
-    Page<Booking> findTutorBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime);
+    Page<Booking> findTutorBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Integer userId, @Param("startTime") Instant startTime);
     
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.modifiedTimestamp >= :startTime",
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.modifiedTimestamp >= :startTime")
-    Page<Booking> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime);
+    Page<Booking> findTutorPendingRequestsBookingsModifiedAfterTime(Pageable pageable, @Param("userId") Integer userId, @Param("startTime") Instant startTime);
     
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 1 and booking.cancelled = 0",
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.cancelled = 0")
-    Page<Booking> findTutorBookings(Pageable pageable, @Param("userId") Long userId);
+    Page<Booking> findTutorBookings(Pageable pageable, @Param("userId") Integer userId);
     
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.cancelled = 0",
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where booking.tutorAcceptedId = :userId and booking.tutorAccepted = 0 and booking.cancelled = 0")
-    Page<Booking> findTutorPendingRequestsBookings(Pageable pageable, @Param("userId") Long userId);
+    Page<Booking> findTutorPendingRequestsBookings(Pageable pageable, @Param("userId") Integer userId);
     
     @Query(value = "select distinct booking from Booking booking left join fetch booking.userInfos where booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0 and booking.startTime between :startTime and :endTime",
     		countQuery = "select count(distinct booking) from Booking booking where booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0 and booking.startTime between :startTime and :endTime")

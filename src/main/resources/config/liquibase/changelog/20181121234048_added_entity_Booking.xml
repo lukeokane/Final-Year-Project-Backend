@@ -46,7 +46,7 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="admin_accepted_id" type="bigint">
+            <column name="admin_accepted_id" type="integer">
                 <constraints nullable="true" />
             </column>
 
@@ -54,7 +54,7 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="tutor_accepted_id" type="bigint">
+            <column name="tutor_accepted_id" type="integer">
                 <constraints nullable="true" />
             </column>
 
