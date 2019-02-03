@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service Implementation for managing BookingUserDetails.
@@ -87,4 +89,13 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
         log.debug("Request to delete BookingUserDetails : {}", id);
         bookingUserDetailsRepository.deleteById(id);
     }
+
+	@Override
+	public Set<BookingUserDetailsDTO> findAllByBookingId(Long id) {
+		Set<BookingUserDetailsDTO> list = new HashSet<BookingUserDetailsDTO>();
+		Set<BookingUserDetails> ps = bookingUserDetailsRepository.findAlltest(id);
+		for (BookingUserDetails p : ps)
+			list.add(bookingUserDetailsMapper.toDto(p));
+		return list;
+	}
 }

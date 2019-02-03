@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service Interface for managing BookingUserDetails.
@@ -43,4 +44,6 @@ public interface BookingUserDetailsService {
      * @param id the id of the entity
      */
     void delete(Long id);
+
+	Set<BookingUserDetailsDTO> findAllByBookingId(Long id);
 }

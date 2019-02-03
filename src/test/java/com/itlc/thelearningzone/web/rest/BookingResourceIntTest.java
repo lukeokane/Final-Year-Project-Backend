@@ -8,6 +8,7 @@ import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.SubjectService;
+import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
@@ -108,6 +109,9 @@ public class BookingResourceIntTest {
 
 	@Autowired
 	private BookingService bookingService;
+	
+	@Mock
+	private BookingUserDetailsService bookingUserDetailsService;
 
 	@Mock
 	private SubjectService subjectServiceMock;
@@ -139,7 +143,7 @@ public class BookingResourceIntTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		final BookingResource bookingResource = new BookingResource(bookingService, subjectService);
+		final BookingResource bookingResource = new BookingResource(bookingService, subjectService, bookingUserDetailsService);
 		this.restBookingMockMvc = MockMvcBuilders
 			.standaloneSetup(bookingResource)
 			.setCustomArgumentResolvers(pageableArgumentResolver)
@@ -350,7 +354,7 @@ public class BookingResourceIntTest {
 
 	@SuppressWarnings({ "unchecked" })
 	public void getAllBookingsWithEagerRelationshipsIsEnabled() throws Exception {
-		BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService);
+		BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService, bookingUserDetailsService);
 		when(bookingServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
 		MockMvc restBookingMockMvc = MockMvcBuilders
@@ -368,7 +372,7 @@ public class BookingResourceIntTest {
 
 	@SuppressWarnings({ "unchecked" })
 	public void getAllBookingsWithEagerRelationshipsIsNotEnabled() throws Exception {
-		BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService);
+		BookingResource bookingResource = new BookingResource(bookingServiceMock, subjectService, bookingUserDetailsService);
 		when(bookingServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 		MockMvc restBookingMockMvc = MockMvcBuilders
 			.standaloneSetup(bookingResource)

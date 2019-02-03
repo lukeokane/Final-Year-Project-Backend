@@ -2,12 +2,14 @@ package com.itlc.thelearningzone.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.itlc.thelearningzone.service.BookingService;
+import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.web.rest.errors.BadRequestAlertException;
 import com.itlc.thelearningzone.web.rest.util.HeaderUtil;
 import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
+import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
 
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -25,8 +27,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * REST controller for managing Booking.
@@ -43,9 +47,12 @@ public class BookingResource {
     
     private final SubjectService subjectService;
 
-    public BookingResource(BookingService bookingService, SubjectService subjectService) {
+    private final BookingUserDetailsService bookingUserDetailsService;
+
+    public BookingResource(BookingService bookingService, SubjectService subjectService, BookingUserDetailsService bookingUserDetailsService) {
         this.bookingService = bookingService;
         this.subjectService = subjectService;
+        this.bookingUserDetailsService = bookingUserDetailsService;
     }
 
     /**
@@ -608,6 +615,28 @@ public class BookingResource {
     		}
     	
     	return new PageImpl<BookingDetailsDTO>(bookingDetailsList);
+    }
+    
+    
+    /**
+     * GET  /bookings/ get all the bookings in a list form
+     *
+     * @param id the id of the bookingDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/bookings/findAllBookingsList")
+    @Timed
+    public ResponseEntity<List<BookingDTO>> findAllBookingsList() {
+        log.debug("REST request to get Booking list form");
+        List<BookingDTO> bookings = bookingService.findAllBookingsList();
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
+        }
+        
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
 
     /**

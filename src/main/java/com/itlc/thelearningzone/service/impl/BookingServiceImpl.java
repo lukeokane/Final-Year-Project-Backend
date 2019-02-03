@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
+
 
 import javax.validation.Valid;
 
@@ -393,6 +396,18 @@ public class BookingServiceImpl implements BookingService {
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}
+	
+	
+	
+	@Override
+	public List<BookingDTO> findAllBookingsList() {
+		List<BookingDTO> list = new ArrayList<BookingDTO>();
+		List<Booking> ps = bookingRepository.findAll();
+		for (Booking p : ps)
+			list.add(bookingMapper.toDto(p));
+
+		return list;
+	}
 
 	/**
 	 * Get all the bookings.
@@ -439,5 +454,6 @@ public class BookingServiceImpl implements BookingService {
 		log.debug("Request to delete Booking : {}", id);
 		bookingRepository.deleteById(id);
 	}
+
 
 }
