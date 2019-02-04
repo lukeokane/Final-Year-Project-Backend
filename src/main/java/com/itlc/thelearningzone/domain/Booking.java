@@ -72,6 +72,9 @@ public class Booking implements Serializable {
     @Column(name = "cancelled")
     private Boolean cancelled;
 
+    @Column(name = "request_times")
+    private String requestTimes;
+
     @OneToMany(mappedBy = "booking")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<BookingUserDetails> bookingUserDetails = new HashSet<>();
@@ -254,6 +257,19 @@ public class Booking implements Serializable {
         this.cancelled = cancelled;
     }
 
+    public String getRequestTimes() {
+        return requestTimes;
+    }
+
+    public Booking requestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+        return this;
+    }
+
+    public void setRequestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+    }
+
     public Set<BookingUserDetails> getBookingUserDetails() {
         return bookingUserDetails;
     }
@@ -379,6 +395,7 @@ public class Booking implements Serializable {
             ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
+            ", requestTimes='" + getRequestTimes() + "'" +
             "}";
     }
 }

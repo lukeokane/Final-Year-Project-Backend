@@ -24,6 +24,7 @@ export interface IBooking {
     modifiedTimestamp?: Moment;
     tutorRejectedCount?: number;
     cancelled?: boolean;
+    requestTimes?: string;
     bookingUserDetails?: IBookingUserDetails[];
     subjectId?: number;
     userInfos?: IUserInfo[];
@@ -45,6 +46,7 @@ export class Booking implements IBooking {
         public modifiedTimestamp?: Moment,
         public tutorRejectedCount?: number,
         public cancelled?: boolean,
+        public requestTimes?: string,
         public bookingUserDetails?: IBookingUserDetails[],
         public subjectId?: number,
         public userInfos?: IUserInfo[],

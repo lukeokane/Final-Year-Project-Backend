@@ -70,6 +70,10 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="request_times" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
             <column name="subject_id" type="bigint">
                 <constraints nullable="true" />
             </column>

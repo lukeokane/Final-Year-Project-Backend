@@ -64,6 +64,10 @@
         {
             "fieldName": "cancelled",
             "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "requestTimes",
+            "fieldType": "String"
         }
     ],
     "relationships": [
