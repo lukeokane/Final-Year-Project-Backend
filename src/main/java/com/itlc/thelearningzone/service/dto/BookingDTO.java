@@ -44,6 +44,8 @@ public class BookingDTO implements Serializable {
 
     private Boolean cancelled;
 
+    private String requestTimes;
+
     private Long subjectId;
 
     private Set<UserInfoDTO> userInfos = new HashSet<>();
@@ -162,6 +164,14 @@ public class BookingDTO implements Serializable {
         this.cancelled = cancelled;
     }
 
+    public String getRequestTimes() {
+        return requestTimes;
+    }
+
+    public void setRequestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+    }
+
     public Long getSubjectId() {
         return subjectId;
     }
@@ -215,6 +225,7 @@ public class BookingDTO implements Serializable {
             ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
+            ", requestTimes='" + getRequestTimes() + "'" +
             ", subject=" + getSubjectId() +
             "}";
     }

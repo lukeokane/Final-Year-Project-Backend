@@ -27,6 +27,7 @@
             <th jhiSortBy="modifiedTimestamp"><span>Modified Timestamp</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorRejectedCount"><span>Tutor Rejected Count</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="cancelled"><span>Cancelled</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="requestTimes"><span>Request Times</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="subjectId"><span>Subject</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
@@ -46,6 +47,7 @@
                 <td>{{booking.modifiedTimestamp | date:'medium'}}</td>
                 <td>{{booking.tutorRejectedCount}}</td>
                 <td>{{booking.cancelled}}</td>
+                <td>{{booking.requestTimes}}</td>
                 <td>
                     <div *ngIf="booking.subjectId">
                         <a [routerLink]="['../subject', booking.subjectId , 'view' ]" >{{booking.subjectId}}</a>

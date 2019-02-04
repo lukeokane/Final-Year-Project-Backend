@@ -38,7 +38,8 @@ describe('Service Tests', () => {
                 0,
                 currentDate,
                 0,
-                false
+                false,
+                'AAAAAAA'
             );
         });
 
@@ -101,7 +102,8 @@ describe('Service Tests', () => {
                         tutorAcceptedId: 1,
                         modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
-                        cancelled: true
+                        cancelled: true,
+                        requestTimes: 'BBBBBB'
                     },
                     elemDefault
                 );
@@ -136,7 +138,8 @@ describe('Service Tests', () => {
                         tutorAcceptedId: 1,
                         modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
-                        cancelled: true
+                        cancelled: true,
+                        requestTimes: 'BBBBBB'
                     },
                     elemDefault
                 );
