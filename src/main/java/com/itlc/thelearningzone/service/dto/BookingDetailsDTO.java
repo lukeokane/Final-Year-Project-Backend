@@ -7,7 +7,25 @@ import java.io.Serializable;
  */
 public class BookingDetailsDTO implements Serializable {
 
-   public BookingDTO booking;
+   private BookingDTO booking;
    
-   public SubjectDTO subject;
+   private SubjectDTO subject;
+
+	public BookingDTO getBooking() {
+		return booking;
+	}
+	
+	public void setBooking(BookingDTO booking) {
+		this.booking = booking;
+	}
+	
+	public SubjectDTO getSubject() {
+		return subject;
+	}
+	
+	public void setSubject(SubjectDTO subject) {
+		this.subject = subject;
+	}
+   
+   
 }

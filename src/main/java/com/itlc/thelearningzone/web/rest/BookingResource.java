@@ -597,18 +597,18 @@ public class BookingResource {
     			BookingDetailsDTO bdDTO = new BookingDetailsDTO();
     			
     			// Get booking and subject
-    			bdDTO.booking = bookingsDTOList.get(i);
+    			bdDTO.setBooking(bookingsDTOList.get(i));
     			
     			// Get subject if booking containers subject ID
     			if (bookingsDTOList.get(i).getSubjectId() != null) {
-    				bdDTO.subject = subjectService.findOne(bookingsDTOList.get(i).getId()).get();
+    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getId()).get());
     			}
     			
     			// Do not return any list of UserInfo objects or BookingUserDetail objects 
     			if (!userInfo)
     			{
-    			bdDTO.booking.setUserInfos(null);
-    			bdDTO.booking.setBookingUserDetailsDTO(null);
+    			bdDTO.getBooking().setUserInfos(null);
+    			bdDTO.getBooking().setBookingUserDetailsDTO(null);
     			}
     			
     			bookingDetailsList.add(bdDTO);
