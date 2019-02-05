@@ -225,5 +225,5 @@ public interface BookingService {
 	
 	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO);
 
-	List<BookingDTO> findAllBookingsList();
+	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
 }

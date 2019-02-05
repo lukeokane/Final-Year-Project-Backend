@@ -96,7 +96,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where booking.adminAcceptedId IS NULL and booking.cancelled = 0 and booking.modifiedTimestamp >= :startTime")
     Page<Booking> findBookingsPendingAdminApprovalChanges(Pageable pageable, @Param("startTime") Instant startTime);
     
-    @Query(value = "select distinct booking from Booking booking join booking.bookingUserDetails where booking.cancelled = 0")
-    List<Booking> findAllWithBookingUserDetails();
+    @Query(value = "select distinct booking from Booking booking join booking.bookingUserDetails where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate")
+	List<Booking> findAllWithBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
     
 }

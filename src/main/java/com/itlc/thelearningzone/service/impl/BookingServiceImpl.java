@@ -400,9 +400,9 @@ public class BookingServiceImpl implements BookingService {
 	
 	
 	@Override
-	public List<BookingDTO> findAllBookingsList() {
+	public List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate) {
 		List<BookingDTO> list = new ArrayList<BookingDTO>();
-		List<Booking> ps = bookingRepository.findAll();
+		List<Booking> ps = bookingRepository.findAllWithBookingUserDetails(instantFromDate, instantToDate);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
 

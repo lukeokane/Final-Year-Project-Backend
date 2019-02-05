@@ -624,11 +624,18 @@ public class BookingResource {
      * @param id the id of the bookingDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/bookings/findAllBookingsList")
+    @GetMapping("/bookings/findAllBookingsList/{fromDate}/toDate/{toDate}")
     @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsList() {
+    public ResponseEntity<List<BookingDTO>> findAllBookingsList(@PathVariable String fromDate,
+			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
-        List<BookingDTO> bookings = bookingService.findAllBookingsList();
+
+        fromDate= fromDate + "T00:00:00Z";
+        toDate = toDate + ("T00:00:00Z");
+        Instant instantFromDate = Instant.parse(fromDate);
+        Instant instantToDate = Instant.parse(toDate);
+            
+        List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
         	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
