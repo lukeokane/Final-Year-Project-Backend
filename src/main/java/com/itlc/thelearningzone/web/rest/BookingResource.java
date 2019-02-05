@@ -619,22 +619,22 @@ public class BookingResource {
     
     
     /**
-     * GET  /bookings/ get all the bookings in a list form
+     * GET  /bookings/ get all the bookings in a list form between a start date and end date booking user details are populated
      *
      * @param id the id of the bookingDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
      */
     @GetMapping("/bookings/findAllBookingsList/{fromDate}/toDate/{toDate}")
     @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsList(@PathVariable String fromDate,
+    public ResponseEntity<List<BookingDTO>> findAllBookingsListWithUserDetails(@PathVariable String fromDate,
 			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
 
         fromDate= fromDate + "T00:00:00Z";
-        toDate = toDate + ("T00:00:00Z");
+        toDate = toDate + "T00:00:00Z";
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
-            
+        
         List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
@@ -642,6 +642,27 @@ public class BookingResource {
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         }
+        
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
+    }
+    
+    /**
+     * GET  /bookings/ get all the bookings in a list form between a start date and end date with no booking user details are populated
+     *
+     * @param id the id of the bookingDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/bookings/findAllBookingsDistrubutionList/{fromDate}/toDate/{toDate}")
+    @Timed
+    public ResponseEntity<List<BookingDTO>> findAllBookingsDistributionList(@PathVariable String fromDate,
+			@PathVariable String toDate) {
+        log.debug("REST request to get Booking list form");
+
+        fromDate= fromDate + "T00:00:00Z";
+        toDate = toDate + "T00:00:00Z";
+        Instant instantFromDate = Instant.parse(fromDate);
+        Instant instantToDate = Instant.parse(toDate);
+        List<BookingDTO> bookings = bookingService.findAllBookingsDistributionList(instantFromDate,instantToDate);
         
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }

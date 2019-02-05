@@ -408,6 +408,16 @@ public class BookingServiceImpl implements BookingService {
 
 		return list;
 	}
+	
+	@Override
+	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
+		List<BookingDTO> list = new ArrayList<BookingDTO>();
+		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
+		for (Booking p : ps)
+			list.add(bookingMapper.toDto(p));
+
+		return list;
+	}
 
 	/**
 	 * Get all the bookings.

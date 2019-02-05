@@ -98,5 +98,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     
     @Query(value = "select distinct booking from Booking booking join booking.bookingUserDetails where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate")
 	List<Booking> findAllWithBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
+
+    @Query(value = "select distinct booking from Booking booking join booking.bookingUserDetails where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate")
+    List<Booking> findAllWithoutBookingUserDetails(Instant instantFromDate, Instant instantToDate);
     
 }
