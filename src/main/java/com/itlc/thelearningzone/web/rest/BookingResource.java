@@ -652,7 +652,7 @@ public class BookingResource {
      * @param id the id of the bookingDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/bookings/findAllBookingsDistrubutionList/{fromDate}/toDate/{toDate}")
+    @GetMapping("/bookings/findAllBookingsDistributionList/{fromDate}/toDate/{toDate}")
     @Timed
     public ResponseEntity<List<BookingDTO>> findAllBookingsDistributionList(@PathVariable String fromDate,
 			@PathVariable String toDate) {
