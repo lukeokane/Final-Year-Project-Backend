@@ -28,6 +28,9 @@ public class UserInfo implements Serializable {
     @Column(name = "tutor_skills")
     private String tutorSkills;
 
+    @Column(name = "profile_image_url")
+    private String profileImageURL;
+
     @OneToOne
     @JoinColumn(name = "id")
     @MapsId
@@ -71,6 +74,19 @@ public class UserInfo implements Serializable {
 
     public void setTutorSkills(String tutorSkills) {
         this.tutorSkills = tutorSkills;
+    }
+
+    public String getProfileImageURL() {
+        return profileImageURL;
+    }
+
+    public UserInfo profileImageURL(String profileImageURL) {
+        this.profileImageURL = profileImageURL;
+        return this;
+    }
+
+    public void setProfileImageURL(String profileImageURL) {
+        this.profileImageURL = profileImageURL;
     }
 
     public User getUser() {
@@ -225,6 +241,7 @@ public class UserInfo implements Serializable {
         return "UserInfo{" +
             "id=" + getId() +
             ", tutorSkills='" + getTutorSkills() + "'" +
+            ", profileImageURL='" + getProfileImageURL() + "'" +
             "}";
     }
 }

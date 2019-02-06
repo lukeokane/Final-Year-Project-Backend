@@ -5,6 +5,7 @@ import { IBooking } from 'app/shared/model//booking.model';
 export interface IUserInfo {
     id?: number;
     tutorSkills?: string;
+    profileImageURL?: string;
     userId?: number;
     semesterGroupId?: number;
     bookingUserDetails?: IBookingUserDetails[];
@@ -17,6 +18,7 @@ export class UserInfo implements IUserInfo {
     constructor(
         public id?: number,
         public tutorSkills?: string,
+        public profileImageURL?: string,
         public userId?: number,
         public semesterGroupId?: number,
         public bookingUserDetails?: IBookingUserDetails[],

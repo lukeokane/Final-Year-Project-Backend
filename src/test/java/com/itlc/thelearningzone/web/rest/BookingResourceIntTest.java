@@ -94,6 +94,12 @@ public class BookingResourceIntTest {
 
 	private static final Boolean DEFAULT_CANCELLED = false;
 	private static final Boolean UPDATED_CANCELLED = true;
+	
+	private static final String DEFAULT_REQUEST_TIMES = "AAAAAAAAAA";
+	private static final String UPDATED_REQUEST_TIMES = "BBBBBBBBBB";
+	
+	private static final Boolean DEFAULT_READ_BY_ADMIN = false;
+	private static final Boolean UPDATED_READ_BY_ADMIN = true;
 
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -172,7 +178,10 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
+		
 		return booking;
 	}
 
@@ -215,6 +224,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(DEFAULT_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(DEFAULT_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(DEFAULT_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(DEFAULT_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(DEFAULT_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -491,7 +502,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -513,6 +526,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test

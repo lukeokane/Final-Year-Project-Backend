@@ -68,6 +68,10 @@
         {
             "fieldName": "requestTimes",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "readByAdmin",
+            "fieldType": "Boolean"
         }
     ],
     "relationships": [

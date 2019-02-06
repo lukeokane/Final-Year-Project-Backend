@@ -4,6 +4,10 @@
         {
             "fieldName": "tutorSkills",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "profileImageURL",
+            "fieldType": "String"
         }
     ],
     "relationships": [

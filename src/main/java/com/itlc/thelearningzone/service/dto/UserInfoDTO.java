@@ -12,6 +12,8 @@ public class UserInfoDTO implements Serializable {
 
     private String tutorSkills;
 
+    private String profileImageURL;
+
     private Long userId;
 
     private Long semesterGroupId;
@@ -30,6 +32,14 @@ public class UserInfoDTO implements Serializable {
 
     public void setTutorSkills(String tutorSkills) {
         this.tutorSkills = tutorSkills;
+    }
+
+    public String getProfileImageURL() {
+        return profileImageURL;
+    }
+
+    public void setProfileImageURL(String profileImageURL) {
+        this.profileImageURL = profileImageURL;
     }
 
     public Long getUserId() {
@@ -74,6 +84,7 @@ public class UserInfoDTO implements Serializable {
         return "UserInfoDTO{" +
             "id=" + getId() +
             ", tutorSkills='" + getTutorSkills() + "'" +
+            ", profileImageURL='" + getProfileImageURL() + "'" +
             ", user=" + getUserId() +
             ", semesterGroup=" + getSemesterGroupId() +
             "}";

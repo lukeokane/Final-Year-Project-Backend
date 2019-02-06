@@ -74,6 +74,10 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="read_by_admin" type="bit">
+                <constraints nullable="true" />
+            </column>
+
             <column name="subject_id" type="bigint">
                 <constraints nullable="true" />
             </column>

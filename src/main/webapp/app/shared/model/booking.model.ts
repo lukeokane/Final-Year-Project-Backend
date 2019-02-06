@@ -25,6 +25,7 @@ export interface IBooking {
     tutorRejectedCount?: number;
     cancelled?: boolean;
     requestTimes?: string;
+    readByAdmin?: boolean;
     bookingUserDetails?: IBookingUserDetails[];
     subjectId?: number;
     userInfos?: IUserInfo[];
@@ -47,6 +48,7 @@ export class Booking implements IBooking {
         public tutorRejectedCount?: number,
         public cancelled?: boolean,
         public requestTimes?: string,
+        public readByAdmin?: boolean,
         public bookingUserDetails?: IBookingUserDetails[],
         public subjectId?: number,
         public userInfos?: IUserInfo[],
@@ -54,5 +56,6 @@ export class Booking implements IBooking {
     ) {
         this.tutorAccepted = this.tutorAccepted || false;
         this.cancelled = this.cancelled || false;
+        this.readByAdmin = this.readByAdmin || false;
     }
 }

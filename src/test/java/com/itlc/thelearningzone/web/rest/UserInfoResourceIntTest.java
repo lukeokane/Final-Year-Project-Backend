@@ -45,6 +45,9 @@ public class UserInfoResourceIntTest {
     private static final String DEFAULT_TUTOR_SKILLS = "AAAAAAAAAA";
     private static final String UPDATED_TUTOR_SKILLS = "BBBBBBBBBB";
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "AAAAAAAAAA";
+    private static final String UPDATED_PROFILE_IMAGE_URL = "BBBBBBBBBB";
+
     @Autowired
     private UserInfoRepository userInfoRepository;
 
@@ -89,7 +92,8 @@ public class UserInfoResourceIntTest {
      */
     public static UserInfo createEntity(EntityManager em) {
         UserInfo userInfo = new UserInfo()
-            .tutorSkills(DEFAULT_TUTOR_SKILLS);
+            .tutorSkills(DEFAULT_TUTOR_SKILLS)
+            .profileImageURL(DEFAULT_PROFILE_IMAGE_URL);
         return userInfo;
     }
 
@@ -115,6 +119,7 @@ public class UserInfoResourceIntTest {
 //        assertThat(userInfoList).hasSize(databaseSizeBeforeCreate + 1);
 //        UserInfo testUserInfo = userInfoList.get(userInfoList.size() - 1);
 //        assertThat(testUserInfo.getTutorSkills()).isEqualTo(DEFAULT_TUTOR_SKILLS);
+//        assertThat(testUserInfo.getProfileImageURL()).isEqualTo(DEFAULT_PROFILE_IMAGE_URL);
 //    }
 
     @Test
@@ -148,7 +153,8 @@ public class UserInfoResourceIntTest {
 //            .andExpect(status().isOk())
 //            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 //            .andExpect(jsonPath("$.[*].id").value(hasItem(userInfo.getId().intValue())))
-//            .andExpect(jsonPath("$.[*].tutorSkills").value(hasItem(DEFAULT_TUTOR_SKILLS.toString())));
+//            .andExpect(jsonPath("$.[*].tutorSkills").value(hasItem(DEFAULT_TUTOR_SKILLS.toString())))
+//            .andExpect(jsonPath("$.[*].profileImageURL").value(hasItem(DEFAULT_PROFILE_IMAGE_URL.toString())));
 //    }
     
 //    @Test
@@ -162,7 +168,8 @@ public class UserInfoResourceIntTest {
 //            .andExpect(status().isOk())
 //            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 //            .andExpect(jsonPath("$.id").value(userInfo.getId().intValue()))
-//            .andExpect(jsonPath("$.tutorSkills").value(DEFAULT_TUTOR_SKILLS.toString()));
+//            .andExpect(jsonPath("$.tutorSkills").value(DEFAULT_TUTOR_SKILLS.toString()))
+//            .andExpect(jsonPath("$.profileImageURL").value(DEFAULT_PROFILE_IMAGE_URL.toString()));
 //    }
 
     @Test
@@ -173,11 +180,11 @@ public class UserInfoResourceIntTest {
             .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    @Transactional
-//    public void updateUserInfo() throws Exception {
-//        // Initialize the database
-//        userInfoRepository.saveAndFlush(userInfo);
+//   @Test
+//   @Transactional
+//   public void updateUserInfo() throws Exception {
+//       // Initialize the database
+//       userInfoRepository.saveAndFlush(userInfo);
 //
 //        int databaseSizeBeforeUpdate = userInfoRepository.findAll().size();
 //
@@ -186,7 +193,8 @@ public class UserInfoResourceIntTest {
 //        // Disconnect from session so that the updates on updatedUserInfo are not directly saved in db
 //        em.detach(updatedUserInfo);
 //        updatedUserInfo
-//            .tutorSkills(UPDATED_TUTOR_SKILLS);
+//            .tutorSkills(UPDATED_TUTOR_SKILLS)
+//            .profileImageURL(UPDATED_PROFILE_IMAGE_URL);
 //        UserInfoDTO userInfoDTO = userInfoMapper.toDto(updatedUserInfo);
 //
 //        restUserInfoMockMvc.perform(put("/api/user-infos")
@@ -196,9 +204,10 @@ public class UserInfoResourceIntTest {
 //
 //        // Validate the UserInfo in the database
 //        List<UserInfo> userInfoList = userInfoRepository.findAll();
-//        assertThat(userInfoList).hasSize(databaseSizeBeforeUpdate);
+//       assertThat(userInfoList).hasSize(databaseSizeBeforeUpdate);
 //        UserInfo testUserInfo = userInfoList.get(userInfoList.size() - 1);
 //        assertThat(testUserInfo.getTutorSkills()).isEqualTo(UPDATED_TUTOR_SKILLS);
+//        assertThat(testUserInfo.getProfileImageURL()).isEqualTo(UPDATED_PROFILE_IMAGE_URL);
 //    }
 
     @Test

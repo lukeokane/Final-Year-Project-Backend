@@ -39,7 +39,8 @@ describe('Service Tests', () => {
                 currentDate,
                 0,
                 false,
-                'AAAAAAA'
+                'AAAAAAA',
+                false
             );
         });
 
@@ -103,7 +104,8 @@ describe('Service Tests', () => {
                         modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
                         cancelled: true,
-                        requestTimes: 'BBBBBB'
+                        requestTimes: 'BBBBBB',
+                        readByAdmin: true
                     },
                     elemDefault
                 );
@@ -139,7 +141,8 @@ describe('Service Tests', () => {
                         modifiedTimestamp: currentDate.format(DATE_TIME_FORMAT),
                         tutorRejectedCount: 1,
                         cancelled: true,
-                        requestTimes: 'BBBBBB'
+                        requestTimes: 'BBBBBB',
+                        readByAdmin: true
                     },
                     elemDefault
                 );

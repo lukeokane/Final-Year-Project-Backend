@@ -25,6 +25,10 @@
             <column name="tutor_skills" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+
+            <column name="profile_image_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="user_id" type="bigint">
                 <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_info_user_id" />
             </column>

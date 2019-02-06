@@ -16,6 +16,7 @@
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
             <th jhiSortBy="id"><span>ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="tutorSkills"><span>Tutor Skills</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="profileImageURL"><span>Profile Image URL</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="userId"><span>User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="semesterGroupId"><span>Semester Group</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
@@ -25,6 +26,7 @@
             <tr *ngFor="let userInfo of userInfos ;trackBy: trackId">
                 <td><a [routerLink]="['/user-info', userInfo.id, 'view' ]">{{userInfo.id}}</a></td>
                 <td>{{userInfo.tutorSkills}}</td>
+                <td>{{userInfo.profileImageURL}}</td>
                 <td>
                     {{userInfo.userId}}
                 </td>
