@@ -360,7 +360,9 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
 			.andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
-			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())));
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -420,7 +422,9 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.tutorAccepted").value(DEFAULT_TUTOR_ACCEPTED.booleanValue()))
 			.andExpect(jsonPath("$.tutorAcceptedId").value(DEFAULT_TUTOR_ACCEPTED_ID))
 			.andExpect(jsonPath("$.tutorRejectedCount").value(DEFAULT_TUTOR_REJECTED_COUNT))
-			.andExpect(jsonPath("$.cancelled").value(DEFAULT_CANCELLED.booleanValue()));
+			.andExpect(jsonPath("$.cancelled").value(DEFAULT_CANCELLED.booleanValue()))
+			.andExpect(jsonPath("$.requestTimes").value(DEFAULT_REQUEST_TIMES.toString()))
+			.andExpect(jsonPath("$.readByAdmin").value(DEFAULT_READ_BY_ADMIN.booleanValue()));
 	}
 
 	@Test
@@ -454,7 +458,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -476,6 +482,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -554,7 +562,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -576,6 +586,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -602,7 +614,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -624,6 +638,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -650,7 +666,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -672,6 +690,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -698,7 +718,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -720,6 +742,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	@Test
@@ -746,7 +770,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED);
+			.cancelled(UPDATED_CANCELLED)
+			.requestTimes(UPDATED_REQUEST_TIMES)
+			.readByAdmin(UPDATED_READ_BY_ADMIN);
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
@@ -768,6 +794,8 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
 		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
 		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
+		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
 	/*
@@ -801,7 +829,9 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
 			.andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
-			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())));
 	}
 
 	/*
@@ -885,7 +915,9 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].tutorAccepted").value(hasItem(DEFAULT_TUTOR_ACCEPTED.booleanValue())))
 			.andExpect(jsonPath("$.[*].tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
-			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())));
+			.andExpect(jsonPath("$.[*].cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())));
 	}
 
 	/*
@@ -977,7 +1009,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking);
 
@@ -1000,6 +1034,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1035,8 +1071,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
-
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 		bookingRepository.save(booking);
 
 		bookingRepository.flush();
@@ -1058,6 +1095,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1092,8 +1131,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
-
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 		bookingRepository.save(booking2);
 		// Initialize the database
 		bookingRepository.save(booking);
@@ -1124,6 +1164,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1153,7 +1195,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		// Initialize the database
@@ -1204,7 +1248,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1268,6 +1314,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1373,7 +1421,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1396,6 +1446,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -1429,7 +1481,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1452,6 +1506,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1490,7 +1546,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1513,6 +1571,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1551,7 +1611,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking);
 
@@ -1574,6 +1636,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1611,7 +1675,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		// Initialize the database
@@ -1644,6 +1710,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1676,7 +1744,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		// Initialize the database
@@ -1730,7 +1800,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1796,6 +1868,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -1910,7 +1984,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1933,6 +2009,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -1969,7 +2047,9 @@ public class BookingResourceIntTest {
 			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -1992,6 +2072,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.tutorAcceptedId").value(hasItem(DEFAULT_TUTOR_ACCEPTED_ID.intValue())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 	}
@@ -2030,7 +2112,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2059,6 +2143,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -2095,7 +2181,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2146,7 +2234,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2175,6 +2265,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -2211,7 +2303,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2263,7 +2357,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2319,7 +2415,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2376,7 +2474,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2413,6 +2513,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[0].booking.userInfos").isArray());
 	}
@@ -2450,7 +2552,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2489,6 +2593,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -2528,7 +2634,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2589,7 +2697,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2655,7 +2765,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2694,6 +2806,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()))
 			.andExpect(jsonPath("$.[0].subject", nullValue()));
@@ -2733,7 +2847,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2795,7 +2911,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2834,6 +2952,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -2872,7 +2992,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2936,7 +3058,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -2975,6 +3099,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(booking2.getTutorRejectedCount().intValue()))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3012,7 +3138,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3045,6 +3173,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[0].booking.userInfos").isArray());
 	}
@@ -3079,7 +3209,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3114,6 +3246,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 	}
@@ -3150,7 +3284,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3214,7 +3350,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3253,6 +3391,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3293,7 +3433,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3328,6 +3470,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()))
 			.andExpect(jsonPath("$.[0].subject", nullValue()));
@@ -3364,7 +3508,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3419,7 +3565,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3454,6 +3602,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(DEFAULT_MODIFIED_TIMESTAMP.toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(DEFAULT_TUTOR_REJECTED_COUNT)))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(DEFAULT_CANCELLED.booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(DEFAULT_REQUEST_TIMES.toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(DEFAULT_READ_BY_ADMIN.booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3489,7 +3639,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_CANCELLED);
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3546,7 +3698,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3581,6 +3735,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(booking2.getTutorRejectedCount().intValue()))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3619,7 +3775,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -3654,6 +3812,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3697,7 +3857,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -3754,7 +3916,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -3783,6 +3947,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(booking.getTutorRejectedCount().intValue()))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[0].booking.bookingUserDetailsDTO", nullValue()))
 			.andExpect(jsonPath("$.[0].booking.userInfos", nullValue()));
 
@@ -3825,7 +3991,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -3880,7 +4048,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -3938,7 +4108,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -3967,6 +4139,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(booking2.getTutorRejectedCount().intValue()))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").isArray())
 			.andExpect(jsonPath("$.[*].booking.userInfos").isArray());
 
@@ -4009,7 +4183,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 		bookingRepository.flush();
@@ -4065,7 +4241,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -4082,7 +4260,9 @@ public class BookingResourceIntTest {
 				.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 				.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 				.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-				.cancelled(false);
+				.cancelled(false)
+				.requestTimes(DEFAULT_REQUEST_TIMES)
+				.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking3);
 
@@ -4109,6 +4289,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking2.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").value(hasItem(nullValue())))
 			.andExpect(jsonPath("$.[*].booking.userInfos").value(hasItem(nullValue())));
 	}
@@ -4150,7 +4332,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(false);
+			.cancelled(false)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking2);
 
@@ -4167,7 +4351,9 @@ public class BookingResourceIntTest {
 				.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 				.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 				.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-				.cancelled(false);
+				.cancelled(false)
+				.requestTimes(DEFAULT_REQUEST_TIMES)
+				.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		bookingRepository.save(booking3);
 
@@ -4194,6 +4380,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking2.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").value(hasItem(new ArrayList<>())))
 			.andExpect(jsonPath("$.[*].booking.userInfos").value(hasItem(new ArrayList<>())));
 	}
@@ -4247,7 +4435,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4278,6 +4468,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking2.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").value(hasItem(nullValue())))
 			.andExpect(jsonPath("$.[*].booking.userInfos").value(hasItem(nullValue())));
 
@@ -4313,7 +4505,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4364,7 +4558,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4395,6 +4591,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking2.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").value(hasItem(nullValue())))
 			.andExpect(jsonPath("$.[*].booking.userInfos").value(hasItem(nullValue())));
 		
@@ -4431,7 +4629,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4462,6 +4662,8 @@ public class BookingResourceIntTest {
 			.andExpect(jsonPath("$.[*].booking.modifiedTimestamp").value(hasItem(booking2.getModifiedTimestamp().toString())))
 			.andExpect(jsonPath("$.[*].booking.tutorRejectedCount").value(hasItem(booking2.getTutorRejectedCount().intValue())))
 			.andExpect(jsonPath("$.[*].booking.cancelled").value(hasItem(booking2.isCancelled().booleanValue())))
+			.andExpect(jsonPath("$.[*].booking.requestTimes").value(hasItem(booking2.getRequestTimes().toString())))
+			.andExpect(jsonPath("$.[*].booking.readByAdmin").value(hasItem(booking2.isReadByAdmin().booleanValue())))
 			.andExpect(jsonPath("$.[*].booking.bookingUserDetailsDTO").value(hasItem(nullValue())))
 			.andExpect(jsonPath("$.[*].booking.userInfos").value(hasItem(nullValue())));
 
@@ -4497,7 +4699,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4563,7 +4767,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
@@ -4614,7 +4820,9 @@ public class BookingResourceIntTest {
 			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
 			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
 			.modifiedTimestamp(UPDATED_MODIFIED_TIMESTAMP)
-			.cancelled(DEFAULT_TUTOR_ACCEPTED);
+			.cancelled(DEFAULT_TUTOR_ACCEPTED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
 		// Set userInfos in booking
 		booking2.setUserInfos(userInfos);
