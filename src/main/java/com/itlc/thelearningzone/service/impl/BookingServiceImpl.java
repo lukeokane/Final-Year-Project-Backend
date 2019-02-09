@@ -24,9 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ArrayList;
 
@@ -59,6 +63,8 @@ public class BookingServiceImpl implements BookingService {
     private final String SENDER_URL = "../../content/images/";
 	
 	private final String IMAGE_FORMAT = ".png";
+	
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
 			UserRepository userRepository, MailService mailService, NotificationService notificationService, UserInfoRepository userInfoRepository,UserService userService) {
@@ -201,14 +207,15 @@ public class BookingServiceImpl implements BookingService {
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
-		String notificationMessage = "New tutorial request";
-		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender 
 		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
-		}		
+		}
+		// setting message
+		String notificationMessage = "New tutorial request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+		notification.setMessage(notificationMessage);
 		notification.setBookingId(bookingDTO.getId());
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver 
@@ -235,7 +242,8 @@ public class BookingServiceImpl implements BookingService {
 //			mailService.sendBookingCancelledEmail(booking, user, tutorUser);
 
 			// Creating the tutorial cancellation notifications for all the users that registered for the tutorial
-			String notificationMessage = "Your tutorial has been cancelled";
+			String date = formatter.format(bookingDTO.getStartTime());
+			String notificationMessage = "Your tutorial on ".concat(" ").concat(bookingDTO.getTitle().concat(" at ").concat(date).concat(" has been cancelled"));
 			NotificationDTO notification = new NotificationDTO();
 			Instant instant = Instant.now();
 			notification.setTimestamp(instant);
@@ -278,8 +286,6 @@ public class BookingServiceImpl implements BookingService {
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
-		String notificationMessage = "Your tutorial request has been accepted";
-		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender id
 		Integer idTut = bookingDTO.getTutorAcceptedId();
@@ -287,6 +293,10 @@ public class BookingServiceImpl implements BookingService {
 		User tutorUser = userRepository.getOne(tutorID);
 		notification.setSenderId(tutorID);
 		notification.setSenderImageURL(SENDER_URL.concat(tutorUser.getLogin()).concat(IMAGE_FORMAT));
+		// setting the message
+		String date = formatter.format(bookingDTO.getStartTime());
+		String notificationMessage = "Your tutorial request ".concat(bookingDTO.getTitle().concat(" on ").concat(date).concat(" with ").concat(tutorUser.getFirstName().concat(tutorUser.getLastName().concat(" has been accepted"))));
+		notification.setMessage(notificationMessage);
 		// getting receiverID
 		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		notification.setReceiverId(reveiver.get().getId());
@@ -310,13 +320,15 @@ public class BookingServiceImpl implements BookingService {
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
-		String notificationMessage = "New tutorial offer";
-		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		// getting sender 
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		notification.setSenderId(ADMIN_ID);
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		// setting the notification message
+		String date = formatter.format(bookingDTO.getStartTime());
+		String notificationMessage = "New tutorial offer on ".concat(bookingDTO.getTitle().concat(" by student ").concat(bookingDTO.getRequestedBy().concat(" on ").concat(date)));
+		notification.setMessage(notificationMessage);
 		// getting receiver
 		Integer idTut = bookingDTO.getTutorAcceptedId();
 		Long tutorID = Long.valueOf(idTut.longValue());
@@ -335,14 +347,12 @@ public class BookingServiceImpl implements BookingService {
 	}
 	
 	@Override
-	public BookingDTO updateBookingRejected(@Valid BookingDTO bookingDTO) {
+	public BookingDTO updateBookingRejectedByTutor(@Valid BookingDTO bookingDTO) {
 		
 		// Creating a notification for the admin that a tutor has rejected a tutorial
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
-		String notificationMessage = "Tutorial offer rejected";
-		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 		
 		// getting sender
@@ -352,6 +362,9 @@ public class BookingServiceImpl implements BookingService {
 		notification.setSenderId(tutorID);
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		notification.setBookingId(bookingDTO.getId());
+		// setting the notification message
+		String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+		notification.setMessage(notificationMessage);
 		// getting receiver
 		Optional<User> receiver = userRepository.findById(ADMIN_ID);
 		notification.setReceiverId(receiver.get().getId());
@@ -373,8 +386,6 @@ public class BookingServiceImpl implements BookingService {
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
-		String notificationMessage = "Sorry no available tutorials based on your available times, please request a tutorial with different times";
-		notification.setMessage(notificationMessage);
 		notification.setRead(false);
 				
 		// getting sender
@@ -385,6 +396,10 @@ public class BookingServiceImpl implements BookingService {
 		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		notification.setReceiverId(reveiver.get().getId());
 		notification.setBookingId(bookingDTO.getId());
+		
+		// setting the notification message
+		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(" there are no tutorials on ").concat(bookingDTO.getTitle().concat(" based on the times you selected please request again"));;
+		notification.setMessage(notificationMessage);
 		
 		notificationService.save(notification);
 				

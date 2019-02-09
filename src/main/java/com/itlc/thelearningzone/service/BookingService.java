@@ -221,7 +221,7 @@ public interface BookingService {
 
 	BookingDTO updateBookingAssignedTutor(@Valid BookingDTO bookingDTO);
 
-	BookingDTO updateBookingRejected(@Valid BookingDTO bookingDTO);
+	BookingDTO updateBookingRejectedByTutor(@Valid BookingDTO bookingDTO);
 	
 	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO);
 

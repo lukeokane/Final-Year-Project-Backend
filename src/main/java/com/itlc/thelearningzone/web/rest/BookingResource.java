@@ -179,7 +179,7 @@ public class BookingResource {
         if (bookingDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        BookingDTO result = bookingService.updateBookingRejected(bookingDTO);
+        BookingDTO result = bookingService.updateBookingRejectedByTutor(bookingDTO);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
             .body(result);
