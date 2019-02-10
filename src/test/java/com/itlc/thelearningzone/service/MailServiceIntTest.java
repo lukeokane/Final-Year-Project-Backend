@@ -247,6 +247,26 @@ public class MailServiceIntTest {
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
          
     }
+    
+    @Test
+    public void testSendBookingRequestRejectedByAdminEmail() throws Exception {
+        User user = new User();
+        Booking booking = new Booking();
+        user.setLangKey(Constants.DEFAULT_LANGUAGE);
+        user.setLogin("john");
+        user.setEmail("john.doe@example.com");
+        booking.setRequestedBy("John Doe");
+        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
+        booking.setTitle("Java");
+        mailService.sendBookingRequestRejectedByAdminEmail(booking, user);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+         
+    }
 
     @Test
     public void testSendEmailWithException() throws Exception {

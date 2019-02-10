@@ -402,8 +402,12 @@ public class BookingServiceImpl implements BookingService {
 		notification.setMessage(notificationMessage);
 		
 		notificationService.save(notification);
-				
+		
+		//sending email to student
 		Booking booking = bookingMapper.toEntity(bookingDTO);
+//		User student = userRepository.getOne(reveiver.get().getId());
+//		mailService.sendBookingRequestRejectedByAdminEmail(booking, student);
+		
 		
 		// booking updated so set modifiedTimestamp
 		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
