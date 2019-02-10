@@ -132,6 +132,19 @@ public class MailService {
 		String subject = messageSource.getMessage(titleKey, null, locale);
 		sendEmail(user.getEmail(), subject, content, false, true);			
 	}
+    
+    @Async
+    private void sendBookingRequestRejectedByAdminFromTemplate(Booking booking, User user, String templateName,
+			String titleKey) {	
+    	Locale locale = Locale.forLanguageTag(user.getLangKey());
+		Context context = new Context(locale);
+		context.setVariable(USER, user);
+		context.setVariable(BOOKING, booking);
+		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+		String content = templateEngine.process(templateName, context);
+		String subject = messageSource.getMessage(titleKey, null, locale);
+		sendEmail(user.getEmail(), subject, content, false, true);			
+	}
 
     @Async
     public void sendActivationEmail(User user) {
@@ -168,6 +181,12 @@ public class MailService {
 		log.debug("Sending notification to '{}'", user.getEmail());
 		sendBookingEditedByAdminFromTemplate(booking, user, tutorUser, "mail/bookingEditedByAdminEmail", "email.edit.title");
 	}
+    
+    @Async
+   	public void sendBookingRequestRejectedByAdminEmail(Booking booking, User user) {
+   		log.debug("Sending notification to '{}'", user.getEmail());
+   		sendBookingRequestRejectedByAdminFromTemplate(booking, user, "mail/bookingRequestRejectedByAdminEmail", "email.reject.title");
+   	}
 
 	
 	

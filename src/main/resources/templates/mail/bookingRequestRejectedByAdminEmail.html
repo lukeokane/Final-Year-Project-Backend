@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="#{email.reject.title}">Booking Request - No Available Tutorials</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.reject.greeting(${booking.requestedBy})}">
+            Dear
+        </p>
+          </p>
+         <p>
+        <span th:text="#{email.reject.booking(${booking.title})}">
+           title
+        </span>
+        </p>
+        <p>
+            <span th:text="#{email.reject.text3}">Regards, </span>
+            <br/>
+            <br/>
+            <em th:text="#{email.addy1}">IT Learning Centre</em>
+            <em th:text="#{email.addy2}">PJ Carroll Building.</em>
+            <em th:text="#{email.phoneNumAndExt}">Phone & ext</em>
+            <em th:text="#{email.ItlcEmail}">Email</em>
+        </p>
+    </body>
+</html>
