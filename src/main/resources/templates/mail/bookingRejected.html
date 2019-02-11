@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="#{email.rejected.title(${booking.title})}"></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.rejected.greeting(${booking.requestedBy})}">
+            Dear
+        </p>
+         <p>
+        <span th:text="#{email.rejected.booking1}">
+           unfortunately, your tutorial on 
+        </span> 
+        <b th:text="${booking.title}"> booking title </b>   
+        <span th:text="#{email.rejected.booking2}">
+           could not be accepted
+        </span> 
+        </p>
+        
+        <div th:if="${#lists.size(resources) > 0}">
+        <p  th:text="'We have some resources available that might be useful to you:'"></p>
+        </div>
+       
+	   		<div th:each="resource: ${resources}">
+	    <div th:if="${(resourceStat.index - 1 >= 0 && resources[resourceStat.index - 1].topic.id != resources[resourceStat.index].topic.id) || resourceStat.index == 0}">
+	    	<b th:text="${resources[resourceStat.index].topic.title}"></b>
+	    </div>
+    <div><a th:href="${resources[resourceStat.index].resourceURL}"><span th:text="${resources[resourceStat.index].title}"></span></a></div>
+	</div>
+       		
+       	<p th:text="#{email.contactinfo}"></p>	
+       		
+        <p>
+            <span th:text="#{email.cancelled.text3}">Regards, </span>
+            <br/>
+            <div th:text="#{email.addy1}"></div>
+            <div th:text="#{email.addy2}"></div>
+            <div><b th:text="'T:'"></b> <a th:href="'tel:' + #{email.phoneNum}"><span th:text="#{email.phoneNum}"></span></a> <span th:text="#{email.phoneExtension}"></span></div>
+            <div><b th:text="'E:'"></b> <span th:text="#{email.ItlcEmail}"></span></div>
+            <div><b th:text="'W:'"></b> <a th:href="#{email.website}"><span th:text="#{email.website}"></span></a></div>
+        </p>
+    </body>
+</html>

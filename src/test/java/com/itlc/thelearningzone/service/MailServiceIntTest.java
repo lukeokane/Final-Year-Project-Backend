@@ -3,7 +3,10 @@ import com.itlc.thelearningzone.config.Constants;
 
 import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Resource;
+import com.itlc.thelearningzone.domain.Topic;
 
 import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
@@ -27,6 +30,10 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -247,25 +254,70 @@ public class MailServiceIntTest {
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
          
     }
-    
+     
+	/*
+	 * Check that booking
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
     @Test
-    public void testSendBookingRequestRejectedByAdminEmail() throws Exception {
-        User user = new User();
+    public void testSendBookingRejectedEmail() throws Exception {
+    	
+    	/* Create user */
+    	User bookingUser = new User();
+    	bookingUser.setFirstName("John");
+    	bookingUser.setLastName("Doe");
+    	bookingUser.setEmail("lukecjokane@gmail.com");
+    	bookingUser.setLangKey("en");
+    	UserInfo bookingUserInfo = new UserInfo();
+    	bookingUserInfo.setUser(bookingUser);
+    	
+    	/* Create booking */
         Booking booking = new Booking();
-        user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setLogin("john");
-        user.setEmail("john.doe@example.com");
-        booking.setRequestedBy("John Doe");
-        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
-        booking.setTitle("Java");
-        mailService.sendBookingRequestRejectedByAdminEmail(booking, user);
+        booking.setRequestedBy(bookingUser.getFirstName() + " " + bookingUser.getLastName());
+        booking.setTitle("Object Oriented Programming");
+        
+        /* Create topics under booking */
+        Topic topic = new Topic();
+        topic.setId(1L);
+        topic.setTitle("Topic 1 Title");
+        
+        /* Create resources under booking */
+        Resource resource1 = new Resource();
+        resource1.setId(1L);
+        resource1.setTitle("Resource 1 Title");
+        resource1.setResourceURL("www.example.com");
+        resource1.setTopic(topic);
+        
+        Resource resource2 = new Resource();
+        resource2.setId(2L);
+        resource2.setTitle("Resource 2 Title");
+        resource2.setResourceURL("www.dkit.ie");
+        resource2.setTopic(topic);
+     
+        /* Add resources to a list */
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.add(resource1);
+        resources.add(resource2);
+        
+        /* Add user to a set */      
+        Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
+        bookingUsers.add(bookingUserInfo);
+        
+        mailService.sendBookingRejectedEmail(booking, bookingUsers, resources);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
-        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
         assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
         assertThat(message.getContent().toString()).isNotEmpty();
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
-         
+        
+        /* Check booking title, the topic and it's resources are present in email */
+        String emailBody = message.getContent().toString();
+        
+        assertThat(emailBody).contains(booking.getTitle());  
+        assertThat(emailBody).contains(topic.getTitle());
+        assertThat(emailBody).contains(resource2.getTitle());        
     }
 
     @Test

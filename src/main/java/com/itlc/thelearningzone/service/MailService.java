@@ -1,14 +1,20 @@
 package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 
 import io.github.jhipster.config.JHipsterProperties;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
 import javax.mail.internet.MimeMessage;
 
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -147,6 +153,22 @@ public class MailService {
 	}
 
     @Async
+    public void sendBookingRejectedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
+			String titleKey) {    	
+    	for (UserInfo user : bookingUsers) {
+    		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
+        	Context context = new Context(locale);
+    		context.setVariable(USER, user);
+    		context.setVariable(BOOKING, booking);
+    		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+    		context.setVariable("resources", resources);
+    		String content = templateEngine.process(templateName, context);
+    		String subject = messageSource.getMessage(titleKey, null, locale).replace("{0}", booking.getTitle());
+    		sendEmail(user.getUser().getEmail(), subject, content, false, true);
+    	}
+    }
+    
+    @Async
     public void sendActivationEmail(User user) {
         log.debug("Sending activation email to '{}'", user.getEmail());
         sendEmailFromTemplate(user, "mail/activationEmail", "email.activation.title");
@@ -181,13 +203,10 @@ public class MailService {
 		log.debug("Sending notification to '{}'", user.getEmail());
 		sendBookingEditedByAdminFromTemplate(booking, user, tutorUser, "mail/bookingEditedByAdminEmail", "email.edit.title");
 	}
-    
+	
     @Async
-   	public void sendBookingRequestRejectedByAdminEmail(Booking booking, User user) {
-   		log.debug("Sending notification to '{}'", user.getEmail());
-   		sendBookingRequestRejectedByAdminFromTemplate(booking, user, "mail/bookingRequestRejectedByAdminEmail", "email.reject.title");
-   	}
-
-	
-	
+    public void sendBookingRejectedEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
+		// log.debug("Sending booking rejected notification to '{}'", user.getEmail());
+		sendBookingRejectedEmailFromTemplate(booking, bookingUsers, resources, "mail/bookingRejected", "email.rejected.title");
+	}
 }

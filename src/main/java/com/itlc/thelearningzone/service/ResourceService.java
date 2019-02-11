@@ -1,17 +1,27 @@
 package com.itlc.thelearningzone.service;
 
+import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.service.dto.ResourceDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Service Interface for managing Resource.
  */
 public interface ResourceService {
-
+	
+	/**
+	 * Get all the resources associated with a subject
+	 * 
+	 * @param subjectId the id of the subject to retrieve all resources for
+	 * @return the list of entities
+	 */
+	List<Resource> findAllResourcesInSubject(Long subjectId);
+	
     /**
      * Save a resource.
      *
