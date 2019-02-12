@@ -123,4 +123,17 @@ public class BookingUserDetailsResource {
         bookingUserDetailsService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+    
+    @PutMapping("/booking-user-details/cancelAttendanceWithCard/{bookingID}/{studentNumber}")
+    @Timed
+    public ResponseEntity<BookingUserDetailsDTO> updateBookingUserDetailsForCancelledAttendance(@PathVariable Long bookingID, @PathVariable String studentNumber) throws URISyntaxException {
+        log.debug("REST request to update BookingUserDetails for Booking with ID: " + bookingID + ": {}", studentNumber);
+        if (bookingID == null) {
+            throw new BadRequestAlertException("Invalid id", "Booking", "idnull");
+        }
+        BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendanceWithCard(bookingID, studentNumber);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
 }
