@@ -215,14 +215,19 @@ public class BookingServiceImpl implements BookingService {
 			notification.setSenderId(userInfoDTO.getId());
 		}
 		// setting message
-		String notificationMessage = "New booking request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
-		notification.setMessage(notificationMessage);
+		if(sender.isPresent()) {	
+		   String notificationMessage = "New booking request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+	       notification.setMessage(notificationMessage);   
+		}
 		notification.setBookingId(bookingDTO.getId());
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver 
-         Optional<User> receiver = userRepository.findById(ADMIN_ID);
-         notification.setReceiverId(receiver.get().getId());
-		 notificationService.save(notification);
+           Optional<User> receiver = userRepository.findById(ADMIN_ID);
+        if(receiver.isPresent()) {
+           notification.setReceiverId(receiver.get().getId());
+		}
+		
+		notificationService.save(notification);
 				
 	}
 
@@ -282,8 +287,10 @@ public class BookingServiceImpl implements BookingService {
 		String notificationMessage = "Your booking request ".concat(bookingDTO.getTitle().concat(" on ").concat(date).concat(" with ").concat(tutorUser.getFirstName().concat(tutorUser.getLastName().concat(" has been accepted"))));
 		notification.setMessage(notificationMessage);
 		// getting receiverID
-		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-		notification.setReceiverId(reveiver.get().getId());
+		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		if(receiver.isPresent()) {
+		   notification.setReceiverId(receiver.get().getId());
+		}
 		notification.setBookingId(bookingDTO.getId());
 		notificationService.save(notification);
 		
@@ -346,14 +353,18 @@ public class BookingServiceImpl implements BookingService {
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);
-		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		if(sender.isPresent()) {
+		   notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		}
 		notification.setBookingId(bookingDTO.getId());
 		// setting the notification message
 		String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
 		notification.setMessage(notificationMessage);
 		// getting receiver
 		Optional<User> receiver = userRepository.findById(ADMIN_ID);
-		notification.setReceiverId(receiver.get().getId());
+		if(receiver.isPresent()) {
+		   notification.setReceiverId(receiver.get().getId());
+		}
 		notificationService.save(notification);
 		
 		Booking booking = bookingMapper.toEntity(bookingDTO);
@@ -376,11 +387,15 @@ public class BookingServiceImpl implements BookingService {
 				
 		// getting sender
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
-		notification.setSenderId(sender.get().getId());
+		if(sender.isPresent()) {
+		  notification.setSenderId(sender.get().getId());
+		}
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
 		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-		notification.setReceiverId(reveiver.get().getId());
+		if(sender.isPresent()) {
+		  notification.setReceiverId(reveiver.get().getId());
+		}
 		notification.setBookingId(bookingDTO.getId());
 		
 		// setting the notification message
