@@ -4,7 +4,6 @@ import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
-import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
@@ -53,8 +52,6 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingMapper bookingMapper;
 
 	private final UserRepository userRepository;
-	
-	private final UserService userService;
 
 	private final MailService mailService;
 	
@@ -62,23 +59,22 @@ public class BookingServiceImpl implements BookingService {
 
 	private final NotificationService notificationService;
 	
-	private final Long ADMIN_ID = (long) 8; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
+	private static final Long ADMIN_ID = 8L; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
 	
-    private final String SENDER_URL = "../../content/images/";
+    private static final String SENDER_URL = "../../content/images/";
 	
-	private final String IMAGE_FORMAT = ".png";
+	private static final String IMAGE_FORMAT = ".png";
 	
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, ResourceService resourceService, NotificationService notificationService, UserInfoRepository userInfoRepository,UserService userService) {
+			UserRepository userRepository, MailService mailService, ResourceService resourceService, NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.userRepository = userRepository;
 		this.mailService = mailService;
 		this.resourceService = resourceService;
 		this.notificationService = notificationService;
-		this.userService = userService;
 
 	}
 
@@ -241,10 +237,8 @@ public class BookingServiceImpl implements BookingService {
 			Integer idTut = bookingDTO.getTutorAcceptedId();
 			Long tutorID = Long.valueOf(idTut.longValue());
 			User tutorUser = userRepository.getOne(tutorID);
-//			Booking booking = bookingMapper.toEntity(bookingDTO);
 			String langKey = "en";
 			user.setLangKey(langKey);
-//			mailService.sendBookingCancelledEmail(booking, user, tutorUser);
 
 			// Creating the booking cancellation notifications for all the users that registered for the booking
 			String date = formatter.format(bookingDTO.getStartTime());
@@ -271,22 +265,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO) {
-		
-		// When a tutor accepts a request from the ITLC Admin, A confirmation Email is
-		// sent to the itlc user who requesting the booking
-		// BookingUserDetailsDTO bookingUserDetailsDTO =
-		// bookingDTO.getBookingUserDetailsDTO().iterator().next();
-		// User user = userRepository.getOne(bookingUserDetailsDTO.getId());
-		// Long id = bookingDTO.getTutorAcceptedId();
-		// Long tutorID = Long.valueOf(id.longValue());
-		// User tutorUser = userRepository.getOne(tutorID);
-		// Booking booking = bookingMapper.toEntity(bookingDTO);
-		// String langKey = "en";
-		// user.setLangKey(langKey);
-		// mailService.sendBookingAcceptedByTutorEmail(booking, user, tutorUser);
-		
-		
+	public BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO) {			
 		// Creating the booking acceptance notification for the user that requested the booking.	
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
@@ -410,9 +389,6 @@ public class BookingServiceImpl implements BookingService {
 		
 		//sending email to student
 		Booking booking = bookingMapper.toEntity(bookingDTO);
-//		User student = userRepository.getOne(reveiver.get().getId());
-//		mailService.sendBookingRequestRejectedByAdminEmail(booking, student);
-		
 		
 		// booking updated so set modifiedTimestamp
 		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));

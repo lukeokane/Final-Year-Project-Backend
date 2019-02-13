@@ -2,7 +2,6 @@ package com.itlc.thelearningzone.repository;
 
 import com.itlc.thelearningzone.domain.BookingUserDetails;
 
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.*;

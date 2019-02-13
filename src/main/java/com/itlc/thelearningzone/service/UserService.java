@@ -263,25 +263,41 @@ public class UserService {
 
     // Added delete UserInfo functionality before parent entity (User) is deleted
     public void deleteUser(String login) {
-    	Optional<User> user = userRepository.findOneByLogin(login);
-    	if (user.isPresent()) {
-    		Optional<UserInfo> userInfo = userInfoRepository.findById(user.get().getId());
-    		if (userInfo.isPresent())
-    		{
-    			// Delete the UserInfo
-    			userInfoService.delete(userInfo.get().getId());
+    	if (userRepository.findOneByLogin(login).isPresent()) {
+    		userInfoService.findOne(userRepository.findOneByLogin(login).get().getId()).ifPresent(userInfo -> {
+                userInfoService.delete(userInfo.getId());
                 log.debug("Deleted UserInfo: {}", userInfo);
-                // Delete the User and clear caches
-                userRepository.deleteById(user.get().getId());
-                this.clearUserCaches(user.get());
+            });
+    		userRepository.findOneByLogin(login).ifPresent(user -> {
+                userRepository.delete(user);
+                this.clearUserCaches(user);
                 log.debug("Deleted User: {}", user);
-    		} else {
-        		throw new IllegalArgumentException("UserInfo ID does not exist");
-        	}
+            });
     	} else {
     		throw new IllegalArgumentException("User login does not exist");
     	}
     }
+    
+ // Added delete UserInfo functionality before parent entity (User) is deleted
+//    public void deleteUser(String login) {
+//    	Optional<User> user = userRepository.findOneByLogin(login);
+//    	if (user.isPresent()) {
+//    		Optional<UserInfo> userInfo = userInfoRepository.findById(user.get().getId());
+//    		if (userInfo.isPresent())
+//    		{	// Delete the UserInfo
+//    			userInfoService.delete(userInfo.get().getId());
+//                log.debug("Deleted UserInfo: {}", userInfo);
+//                // Delete the User and clear caches
+//                userRepository.deleteById(user.get().getId());
+//                this.clearUserCaches(user.get());
+//                log.debug("Deleted User: {}", user);
+//    		} else {
+//        		throw new IllegalArgumentException("UserInfo ID does not exist");
+//        	}
+//    	} else {
+//    		throw new IllegalArgumentException("User login does not exist");
+//    	}
+//    }
 
     public void changePassword(String currentClearTextPassword, String newPassword) {
         SecurityUtils.getCurrentUserLogin()

@@ -3,7 +3,6 @@ package com.itlc.thelearningzone.service.impl;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.User;
-import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
@@ -99,7 +98,7 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
 
 	@Override
 	public Set<BookingUserDetailsDTO> findAllByBookingId(Long id) {
-		Set<BookingUserDetailsDTO> list = new HashSet<BookingUserDetailsDTO>();
+		Set<BookingUserDetailsDTO> list = new HashSet<>();
 		Set<BookingUserDetails> ps = bookingUserDetailsRepository.findAlltest(id);
 		for (BookingUserDetails p : ps)
 			list.add(bookingUserDetailsMapper.toDto(p));
