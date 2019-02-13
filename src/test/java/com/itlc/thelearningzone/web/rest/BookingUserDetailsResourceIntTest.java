@@ -14,6 +14,7 @@ import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
 import com.itlc.thelearningzone.service.mapper.BookingUserDetailsMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,7 +140,7 @@ public class BookingUserDetailsResourceIntTest {
     public static User createUserEntity(EntityManager em) {
 		User user = new User();
 		user.setLogin("D00187490");
-		user.setPassword("$2a$10$gSAhZrxMllrbgj/kkK9UceBPpChGWJA7SYIb1Mqo.n5aNLq1/oRrC");
+		user.setPassword(RandomStringUtils.random(60));
 		user.setId(8L);
 
 		return user;
@@ -172,9 +173,14 @@ public class BookingUserDetailsResourceIntTest {
         bookingUserDetails = createEntity(em);
     }
     
+    /**
+     * Check that an existing BookingUserDetails entity has been updated to cancelled
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
     @Test
 	@Transactional
-	public void cancelAttendanceWithCard() throws Exception
+	public void cancelAttendanceWithCard1() throws Exception
 	{
     	userInfo.setUser(user);
 		booking.getUserInfos().add(userInfo);

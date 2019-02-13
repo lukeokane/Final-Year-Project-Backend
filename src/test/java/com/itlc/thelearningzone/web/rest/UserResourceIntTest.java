@@ -3,9 +3,12 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.domain.Authority;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.service.MailService;
+import com.itlc.thelearningzone.service.UserInfoService;
 import com.itlc.thelearningzone.service.UserService;
 import com.itlc.thelearningzone.service.dto.UserDTO;
 import com.itlc.thelearningzone.service.mapper.UserMapper;
@@ -30,6 +33,7 @@ import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.util.*;
 
+import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasItem;
@@ -70,12 +74,18 @@ public class UserResourceIntTest {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private UserInfoRepository userInfoRepository;
 
     @Autowired
     private MailService mailService;
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Autowired
     private UserMapper userMapper;
@@ -96,8 +106,12 @@ public class UserResourceIntTest {
     private CacheManager cacheManager;
 
     private MockMvc restUserMockMvc;
+    
+    private MockMvc restUserInfoMockMvc;
 
     private User user;
+    
+    private UserInfo userInfo;
 
     @Before
     public void setup() {
@@ -110,6 +124,13 @@ public class UserResourceIntTest {
             .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter)
             .build();
+        
+        final UserInfoResource userInfoResource = new UserInfoResource(userInfoService);
+        this.restUserInfoMockMvc = MockMvcBuilders.standaloneSetup(userInfoResource)
+            .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
+            .setMessageConverters(jacksonMessageConverter).build();
     }
 
     /**
@@ -120,6 +141,7 @@ public class UserResourceIntTest {
      */
     public static User createEntity(EntityManager em) {
         User user = new User();
+        user.setId(8L);
         user.setLogin(DEFAULT_LOGIN + RandomStringUtils.randomAlphabetic(5));
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
@@ -130,12 +152,19 @@ public class UserResourceIntTest {
         user.setLangKey(DEFAULT_LANGKEY);
         return user;
     }
+    
+    public static UserInfo createUserInfoEntity(EntityManager em) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(8L);
+        return userInfo;
+    }
 
     @Before
     public void initTest() {
         user = createEntity(em);
         user.setLogin(DEFAULT_LOGIN);
         user.setEmail(DEFAULT_EMAIL);
+        userInfo = createUserInfoEntity(em);
     }
 
     @Test
@@ -483,13 +512,27 @@ public class UserResourceIntTest {
             .andExpect(status().isBadRequest());
     }
 
+    /**
+     * Check that an existing User entity and its associated UserInfo entity has been deleted
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
     @Test
     @Transactional
     public void deleteUser() throws Exception {
+    	userInfo.setUser(user);
+    	
         // Initialize the database
-        userRepository.saveAndFlush(user);
-        int databaseSizeBeforeDelete = userRepository.findAll().size();
+    	userRepository.saveAndFlush(user);
+    	userInfoRepository.saveAndFlush(userInfo);
+        int userDatabaseSizeBeforeDelete = userRepository.findAll().size();
+        int userInfoDatabaseSizeBeforeDelete = userInfoRepository.findAll().size();
 
+        // Delete the userInfo
+        restUserInfoMockMvc.perform(delete("/api/user-infos/{id}", userInfo.getId())
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+        
         // Delete the user
         restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
@@ -498,33 +541,11 @@ public class UserResourceIntTest {
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Validate the database is empty
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        assertThat(userInfoList).hasSize(userInfoDatabaseSizeBeforeDelete - 1);
         List<User> userList = userRepository.findAll();
-        assertThat(userList).hasSize(databaseSizeBeforeDelete - 1);
+        assertThat(userList).hasSize(userDatabaseSizeBeforeDelete - 1);
     }
-    
-    // @Test
-    // @Transactional
-    // public void deleteUserAndUserInfo() throws Exception {
-    //     // Initialize the database
-    //     userRepository.saveAndFlush(user);
-    //     int databaseSizeBeforeDelete = userRepository.findAll().size();
-        
-    //     // Delete the userInfo
-    //     restUserMockMvc.perform(delete("/api/user-infos/{id}", user.getId())
-    //         .accept(TestUtil.APPLICATION_JSON_UTF8))
-    //         .andExpect(status().isOk());
-
-    //     // Delete the user
-    //     restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
-    //         .accept(TestUtil.APPLICATION_JSON_UTF8))
-    //         .andExpect(status().isOk());
-  
-    //     assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
-
-    //     // Validate the database is empty
-    //     List<User> userList = userRepository.findAll();
-    //     assertThat(userList).hasSize(databaseSizeBeforeDelete - 1);
-    // }
 
     @Test
     @Transactional
