@@ -1,9 +1,14 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.itlc.thelearningzone.ThelearningzoneApp;
-
+import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.domain.BookingUserDetails;
+import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
+import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
+import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
 import com.itlc.thelearningzone.service.mapper.BookingUserDetailsMapper;
@@ -67,6 +72,15 @@ public class BookingUserDetailsResourceIntTest {
     private BookingUserDetailsRepository bookingUserDetailsRepository;
 
     @Autowired
+    private BookingRepository bookingRepository;
+    
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private BookingUserDetailsMapper bookingUserDetailsMapper;
 
     @Autowired
@@ -87,6 +101,12 @@ public class BookingUserDetailsResourceIntTest {
     private MockMvc restBookingUserDetailsMockMvc;
 
     private BookingUserDetails bookingUserDetails;
+    
+    private User user;
+    
+    private UserInfo userInfo;
+    
+    private Booking booking;
 
     @Before
     public void setup() {
@@ -115,11 +135,83 @@ public class BookingUserDetailsResourceIntTest {
             .tutorRejected(DEFAULT_TUTOR_REJECTED);
         return bookingUserDetails;
     }
+    
+    public static User createUserEntity(EntityManager em) {
+		User user = new User();
+		user.setLogin("D00187490");
+		user.setPassword("$2a$10$gSAhZrxMllrbgj/kkK9UceBPpChGWJA7SYIb1Mqo.n5aNLq1/oRrC");
+		user.setId(8L);
+
+		return user;
+	}
+    
+    public static UserInfo createUserInfoEntity(EntityManager em) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setId(8L);
+
+		return userInfo;
+	}
+    
+    public static Booking createBookingEntity(EntityManager em) {
+		Booking booking = new Booking()
+			.title("test booking")
+			.importanceLevel(DEFAULT_USER_SATISFACTION)
+			.requestedBy("test user")
+			.startTime(Instant.ofEpochMilli(0L))
+			.endTime(Instant.now().truncatedTo(ChronoUnit.MILLIS))
+			.cancelled(false);
+		
+		return booking;
+	}
 
     @Before
     public void initTest() {
+    	user = createUserEntity(em);
+    	userInfo = createUserInfoEntity(em);
+    	booking = createBookingEntity(em);
         bookingUserDetails = createEntity(em);
     }
+    
+    @Test
+	@Transactional
+	public void cancelAttendanceWithCard() throws Exception
+	{
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+        userInfoRepository.saveAndFlush(userInfo);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + booking.getId() + "/" + user.getLogin())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+            .andExpect(status().isOk());
+
+        // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+        BookingUserDetails testBookingUserDetails = bookingUserDetailsList.get(bookingUserDetailsList.size() - 1);
+        assertThat(testBookingUserDetails.isUserCancelled()).isEqualTo(UPDATED_USER_CANCELLED);
+	}
 
     @Test
     @Transactional

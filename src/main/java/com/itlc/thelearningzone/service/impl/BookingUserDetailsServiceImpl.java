@@ -2,7 +2,9 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.domain.BookingUserDetails;
+import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
+import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
 import com.itlc.thelearningzone.service.mapper.BookingUserDetailsMapper;
 import org.slf4j.Logger;
@@ -30,9 +32,13 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
 
     private final BookingUserDetailsMapper bookingUserDetailsMapper;
 
-    public BookingUserDetailsServiceImpl(BookingUserDetailsRepository bookingUserDetailsRepository, BookingUserDetailsMapper bookingUserDetailsMapper) {
+    private final UserRepository userRepository;
+
+    public BookingUserDetailsServiceImpl(BookingUserDetailsRepository bookingUserDetailsRepository, BookingUserDetailsMapper bookingUserDetailsMapper,
+    		UserRepository userRepository) {
         this.bookingUserDetailsRepository = bookingUserDetailsRepository;
         this.bookingUserDetailsMapper = bookingUserDetailsMapper;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -92,10 +98,33 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
 
 	@Override
 	public Set<BookingUserDetailsDTO> findAllByBookingId(Long id) {
-		Set<BookingUserDetailsDTO> list = new HashSet<BookingUserDetailsDTO>();
+		Set<BookingUserDetailsDTO> list = new HashSet<>();
 		Set<BookingUserDetails> ps = bookingUserDetailsRepository.findAlltest(id);
 		for (BookingUserDetails p : ps)
 			list.add(bookingUserDetailsMapper.toDto(p));
 		return list;
 	}
+	
+	/**
+     * Cancel tutorial attendance with student card.
+     *
+     * @param bookingID the booking belonging to the bookingUserDetails entity
+     * @param studentNumber the student number retrieved from the student card scanner
+     * @return the persisted entity
+     */
+	@Override
+    public BookingUserDetailsDTO cancelAttendanceWithCard(Long bookingID, String studentNumber) {
+        log.debug("Request to cancel attendance for Student : {}", studentNumber);
+        
+        Optional<User> user = userRepository.findOneByLogin(studentNumber);
+        if (user.isPresent()) {
+        	BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndStudentNumber(bookingID, user.get().getId());
+            bookingUserDetails.setUserCancelled(true);
+            bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
+            log.debug("Created Information for BookingUserDetails: {}", bookingUserDetails);
+            return bookingUserDetailsMapper.toDto(bookingUserDetails);
+    	} else {
+    		throw new IllegalArgumentException("User login does not exist");
+    	}
+    }
 }

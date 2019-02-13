@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,7 +33,18 @@ public class ResourceServiceImpl implements ResourceService {
         this.resourceRepository = resourceRepository;
         this.resourceMapper = resourceMapper;
     }
-
+    
+    /**
+	 * Get all the resources associated with a subject
+	 * 
+	 * @param subjectId the id of the subject to retrieve all resources for
+	 * @return the list of entities
+	 */
+    @Override
+    public List<Resource> findAllResourcesInSubject(Long subjectId) {
+    	return resourceRepository.findAllResourcesInSubject(subjectId);
+    }
+    
     /**
      * Save a resource.
      *

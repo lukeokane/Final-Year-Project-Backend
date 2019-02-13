@@ -2,8 +2,8 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
-import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
@@ -14,6 +14,7 @@ import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.MailService;
 import com.itlc.thelearningzone.service.NotificationService;
 import com.itlc.thelearningzone.service.UserService;
+import com.itlc.thelearningzone.service.ResourceService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,29 +52,29 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingMapper bookingMapper;
 
 	private final UserRepository userRepository;
-	
-	private final UserService userService;
 
 	private final MailService mailService;
+	
+	private final ResourceService resourceService;
 
 	private final NotificationService notificationService;
 	
-	private final Long ADMIN_ID = (long) 8; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
+	private static final Long ADMIN_ID = 8L; // be sure admin has a userInfo id otherwise constraint violation when creating a notification
 	
-    private final String SENDER_URL = "../../content/images/";
+    private static final String SENDER_URL = "../../content/images/";
 	
-	private final String IMAGE_FORMAT = ".png";
+	private static final String IMAGE_FORMAT = ".png";
 	
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, NotificationService notificationService, UserInfoRepository userInfoRepository,UserService userService) {
+			UserRepository userRepository, MailService mailService, ResourceService resourceService, NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.userRepository = userRepository;
 		this.mailService = mailService;
+		this.resourceService = resourceService;
 		this.notificationService = notificationService;
-		this.userService = userService;
 
 	}
 
@@ -203,7 +204,7 @@ public class BookingServiceImpl implements BookingService {
 		// booking updated so set modifiedTimestamp
 		bookingDTO.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
 				
-		// Creating a notification for the admin that a student has requested a tutorial.
+		// Creating a notification for the admin that a student has requested a booking.
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
@@ -214,7 +215,7 @@ public class BookingServiceImpl implements BookingService {
 			notification.setSenderId(userInfoDTO.getId());
 		}
 		// setting message
-		String notificationMessage = "New tutorial request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+		String notificationMessage = "New booking request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
 		notification.setMessage(notificationMessage);
 		notification.setBookingId(bookingDTO.getId());
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
@@ -230,20 +231,18 @@ public class BookingServiceImpl implements BookingService {
 
 		for (UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 
-			// Sending a cancellation of tutorial Email to every user that registered for the tutorial
+			// Sending a cancellation of booking Email to every user that registered for the booking
 			Long id = userInfoDTO.getUserId();
 			User user = userRepository.getOne(id);
 			Integer idTut = bookingDTO.getTutorAcceptedId();
 			Long tutorID = Long.valueOf(idTut.longValue());
 			User tutorUser = userRepository.getOne(tutorID);
-//			Booking booking = bookingMapper.toEntity(bookingDTO);
 			String langKey = "en";
 			user.setLangKey(langKey);
-//			mailService.sendBookingCancelledEmail(booking, user, tutorUser);
 
-			// Creating the tutorial cancellation notifications for all the users that registered for the tutorial
+			// Creating the booking cancellation notifications for all the users that registered for the booking
 			String date = formatter.format(bookingDTO.getStartTime());
-			String notificationMessage = "Your tutorial on ".concat(" ").concat(bookingDTO.getTitle().concat(" at ").concat(date).concat(" has been cancelled"));
+			String notificationMessage = "Your booking on ".concat(" ").concat(bookingDTO.getTitle().concat(" at ").concat(date).concat(" has been cancelled"));
 			NotificationDTO notification = new NotificationDTO();
 			Instant instant = Instant.now();
 			notification.setTimestamp(instant);
@@ -266,23 +265,8 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO) {
-		
-		// When a tutor accepts a request from the ITLC Admin, A confirmation Email is
-		// sent to the itlc user who requesting the booking
-		// BookingUserDetailsDTO bookingUserDetailsDTO =
-		// bookingDTO.getBookingUserDetailsDTO().iterator().next();
-		// User user = userRepository.getOne(bookingUserDetailsDTO.getId());
-		// Long id = bookingDTO.getTutorAcceptedId();
-		// Long tutorID = Long.valueOf(id.longValue());
-		// User tutorUser = userRepository.getOne(tutorID);
-		// Booking booking = bookingMapper.toEntity(bookingDTO);
-		// String langKey = "en";
-		// user.setLangKey(langKey);
-		// mailService.sendBookingAcceptedByTutorEmail(booking, user, tutorUser);
-		
-		
-		// Creating the tutorial acceptance notification for the user that requested the tutorial.	
+	public BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO) {			
+		// Creating the booking acceptance notification for the user that requested the booking.	
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
@@ -295,7 +279,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setSenderImageURL(SENDER_URL.concat(tutorUser.getLogin()).concat(IMAGE_FORMAT));
 		// setting the message
 		String date = formatter.format(bookingDTO.getStartTime());
-		String notificationMessage = "Your tutorial request ".concat(bookingDTO.getTitle().concat(" on ").concat(date).concat(" with ").concat(tutorUser.getFirstName().concat(tutorUser.getLastName().concat(" has been accepted"))));
+		String notificationMessage = "Your booking request ".concat(bookingDTO.getTitle().concat(" on ").concat(date).concat(" with ").concat(tutorUser.getFirstName().concat(tutorUser.getLastName().concat(" has been accepted"))));
 		notification.setMessage(notificationMessage);
 		// getting receiverID
 		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
@@ -316,7 +300,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDTO updateBookingAssignedTutor(@Valid BookingDTO bookingDTO) {
 		
-		// Creating a notification for the tutor that the admin has assigned a tutorial to him/her
+		// Creating a notification for the tutor that the admin has assigned a booking to him/her
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
@@ -327,7 +311,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// setting the notification message
 		String date = formatter.format(bookingDTO.getStartTime());
-		String notificationMessage = "New tutorial offer on ".concat(bookingDTO.getTitle().concat(" by student ").concat(bookingDTO.getRequestedBy().concat(" on ").concat(date)));
+		String notificationMessage = "New booking offer on ".concat(bookingDTO.getTitle().concat(" by student ").concat(bookingDTO.getRequestedBy().concat(" on ").concat(date)));
 		notification.setMessage(notificationMessage);
 		// getting receiver
 		Integer idTut = bookingDTO.getTutorAcceptedId();
@@ -349,7 +333,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDTO updateBookingRejectedByTutor(@Valid BookingDTO bookingDTO) {
 		
-		// Creating a notification for the admin that a tutor has rejected a tutorial
+		// Creating a notification for the admin that a tutor has rejected a booking
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
@@ -382,7 +366,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO) {
 		
-		// Creating a notification for the student that requested a tutorial that there request is rejected. notification comes from the admin
+		// Creating a notification for the student that requested a booking that there request is rejected. notification comes from the admin
 		NotificationDTO notification = new NotificationDTO();
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
@@ -398,21 +382,29 @@ public class BookingServiceImpl implements BookingService {
 		notification.setBookingId(bookingDTO.getId());
 		
 		// setting the notification message
-		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(" there are no tutorials on ").concat(bookingDTO.getTitle().concat(" based on the times you selected please request again"));;
+		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
 		notification.setMessage(notificationMessage);
 		
 		notificationService.save(notification);
 		
 		//sending email to student
 		Booking booking = bookingMapper.toEntity(bookingDTO);
-//		User student = userRepository.getOne(reveiver.get().getId());
-//		mailService.sendBookingRequestRejectedByAdminEmail(booking, student);
-		
 		
 		// booking updated so set modifiedTimestamp
 		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
 		
 		booking = bookingRepository.save(booking);
+		
+		/* Begin email notification */
+		List<Resource> resources = new ArrayList<>();
+		
+		// Booking not be a booking request; no subject
+		if (booking.getSubject().getId() != null) {
+		resources = resourceService.findAllResourcesInSubject(booking.getSubject().getId());
+		}
+		// Send booking rejected email to user
+		mailService.sendBookingRejectedEmail(booking, booking.getUserInfos(), resources);
+		
 		return bookingMapper.toDto(booking);
 	}
 	

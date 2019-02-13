@@ -2,7 +2,6 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.service.TopicService;
-import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.domain.Topic;
 import com.itlc.thelearningzone.repository.TopicRepository;
 import com.itlc.thelearningzone.service.dto.SubjectDTO;

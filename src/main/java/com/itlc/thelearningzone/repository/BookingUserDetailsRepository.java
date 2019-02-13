@@ -18,5 +18,8 @@ public interface BookingUserDetailsRepository extends JpaRepository<BookingUserD
 
 	@Query("select distinct bookingUserDetails from BookingUserDetails bookingUserDetails where bookingUserDetails.booking.id =:id")
 	Set<BookingUserDetails> findAlltest(@Param("id") Long id);
+	
+	@Query("select bookingUserDetails from BookingUserDetails bookingUserDetails where bookingUserDetails.booking.id =:bookingID and bookingUserDetails.userInfo.id =:userInfoID")
+	BookingUserDetails findOneByBookingIdAndStudentNumber(@Param("bookingID") Long bookingID, @Param("userInfoID") Long userInfoID);
 
 }

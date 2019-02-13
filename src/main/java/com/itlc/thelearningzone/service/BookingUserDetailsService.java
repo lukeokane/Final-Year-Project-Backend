@@ -46,4 +46,13 @@ public interface BookingUserDetailsService {
     void delete(Long id);
 
 	Set<BookingUserDetailsDTO> findAllByBookingId(Long id);
+
+	/**
+     * Cancel tutorial attendance with student card.
+     *
+     * @param bookingID the booking belonging to the bookingUserDetails entity
+     * @param studentNumber the student number retrieved from the student card scanner
+     * @return the persisted entity
+     */
+	BookingUserDetailsDTO cancelAttendanceWithCard(Long bookingID, String studentNumber);
 }
