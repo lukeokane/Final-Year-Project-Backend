@@ -308,7 +308,9 @@ public class BookingServiceImpl implements BookingService {
 		// getting sender 
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		notification.setSenderId(ADMIN_ID);
-		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		if(sender.isPresent()) {
+			notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		}
 		// setting the notification message
 		String date = formatter.format(bookingDTO.getStartTime());
 		String notificationMessage = "New booking offer on ".concat(bookingDTO.getTitle().concat(" by student ").concat(bookingDTO.getRequestedBy().concat(" on ").concat(date)));
