@@ -108,11 +108,14 @@ public class TopicServiceImpl implements TopicService {
 
     	for(int i =0; i < subjectsId.length;i++) {
     		Optional<SubjectDTO> optS = subjectService.findOne(subjectsId[i]);
+    		if (optS.isPresent()) {
     		SubjectDTO s=optS.get();
-    		List<TopicDTO> tempDTO = new ArrayList<>();
-    		for (TopicDTO t : s.getTopics())
-    			tempDTO.add(t);
-    		topics.addAll(tempDTO);
+        	List<TopicDTO> tempDTO = new ArrayList<>();
+        	for (TopicDTO t : s.getTopics())
+        		tempDTO.add(t);
+        	topics.addAll(tempDTO);
+        	}
+    	
     	}
     	return topics;
 
