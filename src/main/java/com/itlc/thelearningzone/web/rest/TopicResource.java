@@ -110,8 +110,6 @@ public class TopicResource {
     public ResponseEntity<List<TopicDTO>> getAllTopicsBySubjectId(@RequestParam("ids") Long[] paramValues){
         log.debug("REST request to get a page of Topics");
         List<TopicDTO> topics = topicService.findTopicsList(paramValues);
-        log.debug(topics.toString());
-
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(topics));
     }
 
