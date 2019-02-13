@@ -47,6 +47,8 @@ public class BookingResource {
     private final SubjectService subjectService;
 
     private final BookingUserDetailsService bookingUserDetailsService;
+    
+    private final String dateParse = "T00:00:00Z";
 
     public BookingResource(BookingService bookingService, SubjectService subjectService, BookingUserDetailsService bookingUserDetailsService) {
         this.bookingService = bookingService;
@@ -629,15 +631,16 @@ public class BookingResource {
 			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + "T00:00:00Z";
-        toDate = toDate + "T00:00:00Z";
+        fromDate= fromDate + dateParse;
+        toDate = toDate + dateParse;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         
         List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet <BookingUserDetailsDTO>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         }
@@ -657,8 +660,8 @@ public class BookingResource {
 			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + "T00:00:00Z";
-        toDate = toDate + "T00:00:00Z";
+        fromDate= fromDate + dateParse;
+        toDate = toDate + dateParse;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         List<BookingDTO> bookings = bookingService.findAllBookingsDistributionList(instantFromDate,instantToDate);
