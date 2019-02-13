@@ -3,6 +3,7 @@ package com.itlc.thelearningzone.service.impl;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
@@ -115,11 +116,16 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
 	@Override
     public BookingUserDetailsDTO cancelAttendanceWithCard(Long bookingID, String studentNumber) {
         log.debug("Request to cancel attendance for Student : {}", studentNumber);
-
-        Optional<User> user = userRepository.findOneByLogin(studentNumber); 
-        BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndStudentNumber(bookingID, user.get().getId());
-        bookingUserDetails.setUserCancelled(true);
-        bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
-        return bookingUserDetailsMapper.toDto(bookingUserDetails);
+        
+        Optional<User> user = userRepository.findOneByLogin(studentNumber);
+        if (user.isPresent()) {
+        	BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndStudentNumber(bookingID, user.get().getId());
+            bookingUserDetails.setUserCancelled(true);
+            bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
+            log.debug("Created Information for BookingUserDetails: {}", bookingUserDetails);
+            return bookingUserDetailsMapper.toDto(bookingUserDetails);
+    	} else {
+    		throw new IllegalArgumentException("User login does not exist");
+    	}
     }
 }

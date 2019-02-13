@@ -139,25 +139,21 @@ public class UserService {
     }
     
     public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
-    	
     	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
-    	
-    	// Create and save the UserInfo entity
-        UserInfo newUserInfo = new UserInfo();
-        newUserInfo.setSemesterGroup(semesterGroup.get());
-    	
-    	if (!semesterGroup.isPresent()) {
+        if (semesterGroup.isPresent()) {
+        	// Create and save the UserInfo entity
+            UserInfo newUserInfo = new UserInfo();
+        	newUserInfo.setSemesterGroup(semesterGroup.get());
+        	
+        	User newUser = this.registerUser(userDTO, password);
+        	newUserInfo.setUser(newUser);
+            userInfoRepository.save(newUserInfo);
+            log.debug("Created Information for UserInfo: {}", newUserInfo);
+            return newUser;
+    	} else {
     		throw new IllegalArgumentException("Semester Group ID is does not exist");
     	}
-    	
-    	User newUser = this.registerUser(userDTO, password);
-    	newUserInfo.setUser(newUser);
-        userInfoRepository.save(newUserInfo);
-        log.debug("Created Information for UserInfo: {}", newUserInfo);
-        
-        return newUser;
     }
-    
     
     private boolean removeNonActivatedUser(User existingUser){
         if (existingUser.getActivated()) {
@@ -267,15 +263,19 @@ public class UserService {
 
     // Added delete UserInfo functionality before parent entity (User) is deleted
     public void deleteUser(String login) {
-    	userInfoService.findOne(userRepository.findOneByLogin(login).get().getId()).ifPresent(userInfo -> {
-            userInfoService.delete(userInfo.getId());
-            log.debug("Deleted UserInfo: {}", userInfo);
-        });
-        userRepository.findOneByLogin(login).ifPresent(user -> {
-            userRepository.delete(user);
-            this.clearUserCaches(user);
-            log.debug("Deleted User: {}", user);
-        });
+    	if (userRepository.findOneByLogin(login).isPresent()) {
+    		userInfoService.findOne(userRepository.findOneByLogin(login).get().getId()).ifPresent(userInfo -> {
+                userInfoService.delete(userInfo.getId());
+                log.debug("Deleted UserInfo: {}", userInfo);
+            });
+    		userRepository.findOneByLogin(login).ifPresent(user -> {
+                userRepository.delete(user);
+                this.clearUserCaches(user);
+                log.debug("Deleted User: {}", user);
+            });
+    	} else {
+    		throw new IllegalArgumentException("User login does not exist");
+    	}
     }
 
     public void changePassword(String currentClearTextPassword, String newPassword) {
