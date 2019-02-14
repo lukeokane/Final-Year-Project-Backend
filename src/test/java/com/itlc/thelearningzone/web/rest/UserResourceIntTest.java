@@ -4,11 +4,9 @@ import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.domain.Authority;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
-import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.service.MailService;
-import com.itlc.thelearningzone.service.UserInfoService;
 import com.itlc.thelearningzone.service.UserService;
 import com.itlc.thelearningzone.service.dto.UserDTO;
 import com.itlc.thelearningzone.service.mapper.UserMapper;
@@ -33,7 +31,6 @@ import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.util.*;
 
-import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasItem;
@@ -74,18 +71,12 @@ public class UserResourceIntTest {
 
     @Autowired
     private UserRepository userRepository;
-    
-    @Autowired
-    private UserInfoRepository userInfoRepository;
 
     @Autowired
     private MailService mailService;
 
     @Autowired
     private UserService userService;
-    
-    @Autowired
-    private UserInfoService userInfoService;
 
     @Autowired
     private UserMapper userMapper;
@@ -106,12 +97,8 @@ public class UserResourceIntTest {
     private CacheManager cacheManager;
 
     private MockMvc restUserMockMvc;
-    
-    private MockMvc restUserInfoMockMvc;
 
     private User user;
-    
-    private UserInfo userInfo;
 
     @Before
     public void setup() {
@@ -124,13 +111,6 @@ public class UserResourceIntTest {
             .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter)
             .build();
-        
-        final UserInfoResource userInfoResource = new UserInfoResource(userInfoService);
-        this.restUserInfoMockMvc = MockMvcBuilders.standaloneSetup(userInfoResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
     }
 
     /**
@@ -141,7 +121,6 @@ public class UserResourceIntTest {
      */
     public static User createEntity(EntityManager em) {
         User user = new User();
-        user.setId(8L);
         user.setLogin(DEFAULT_LOGIN + RandomStringUtils.randomAlphabetic(5));
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
@@ -155,7 +134,6 @@ public class UserResourceIntTest {
     
     public static UserInfo createUserInfoEntity(EntityManager em) {
         UserInfo userInfo = new UserInfo();
-        userInfo.setId(8L);
         return userInfo;
     }
 
@@ -164,7 +142,6 @@ public class UserResourceIntTest {
         user = createEntity(em);
         user.setLogin(DEFAULT_LOGIN);
         user.setEmail(DEFAULT_EMAIL);
-        userInfo = createUserInfoEntity(em);
     }
 
     @Test
@@ -340,46 +317,48 @@ public class UserResourceIntTest {
             .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    @Transactional
-//    public void updateUser() throws Exception {
-//        // Initialize the database
-//        userRepository.saveAndFlush(user);
-//        int databaseSizeBeforeUpdate = userRepository.findAll().size();
-//
-//        // Update the user
-//        User updatedUser = userRepository.findById(user.getId()).get();
-//
-//        ManagedUserVM managedUserVM = new ManagedUserVM();
-//        
-//        managedUserVM.setPassword(UPDATED_PASSWORD);
-//        managedUserVM.setFirstName(UPDATED_FIRSTNAME);
-//        managedUserVM.setLastName(UPDATED_LASTNAME);
-//        managedUserVM.setEmail(UPDATED_EMAIL);
-//        managedUserVM.setActivated(updatedUser.getActivated());
-//        managedUserVM.setImageUrl(UPDATED_IMAGEURL);
-//        managedUserVM.setLangKey(UPDATED_LANGKEY);
-//        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
-//        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
-//        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
-//        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
-//        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-//
-//        restUserMockMvc.perform(put("/api/users")
-//            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-//            .content(TestUtil.convertObjectToJsonBytes(managedUserVM)))
-//            .andExpect(status().isOk());
-//
-//        // Validate the User in the database
-//        List<User> userList = userRepository.findAll();
-//        assertThat(userList).hasSize(databaseSizeBeforeUpdate);
-//        User testUser = userList.get(userList.size() - 1);
-//        assertThat(testUser.getFirstName()).isEqualTo(UPDATED_FIRSTNAME);
-//        assertThat(testUser.getLastName()).isEqualTo(UPDATED_LASTNAME);
-//        assertThat(testUser.getEmail()).isEqualTo(UPDATED_EMAIL);
-//        assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
-//        assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
-//    }
+    @Test
+    @Transactional
+    public void updateUser() throws Exception {
+        // Initialize the database
+        userRepository.saveAndFlush(user);
+        int databaseSizeBeforeUpdate = userRepository.findAll().size();
+
+        // Update the user
+        User updatedUser = userRepository.findById(user.getId()).get();
+
+        ManagedUserVM managedUserVM = new ManagedUserVM();
+        
+        managedUserVM.setId(updatedUser.getId());
+        managedUserVM.setLogin(UPDATED_LOGIN);
+        managedUserVM.setPassword(UPDATED_PASSWORD);
+        managedUserVM.setFirstName(UPDATED_FIRSTNAME);
+        managedUserVM.setLastName(UPDATED_LASTNAME);
+        managedUserVM.setEmail(UPDATED_EMAIL);
+        managedUserVM.setActivated(updatedUser.getActivated());
+        managedUserVM.setImageUrl(UPDATED_IMAGEURL);
+        managedUserVM.setLangKey(UPDATED_LANGKEY);
+        managedUserVM.setCreatedBy(updatedUser.getCreatedBy());
+        managedUserVM.setCreatedDate(updatedUser.getCreatedDate());
+        managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
+        managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
+        managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
+        restUserMockMvc.perform(put("/api/users")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(managedUserVM)))
+            .andExpect(status().isOk());
+
+        // Validate the User in the database
+        List<User> userList = userRepository.findAll();
+        assertThat(userList).hasSize(databaseSizeBeforeUpdate);
+        User testUser = userList.get(userList.size() - 1);
+        assertThat(testUser.getFirstName()).isEqualTo(UPDATED_FIRSTNAME);
+        assertThat(testUser.getLastName()).isEqualTo(UPDATED_LASTNAME);
+        assertThat(testUser.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
+        assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
+    }
 
     @Test
     @Transactional
@@ -520,18 +499,9 @@ public class UserResourceIntTest {
     @Test
     @Transactional
     public void deleteUser() throws Exception {
-    	userInfo.setUser(user);
-    	
         // Initialize the database
     	userRepository.saveAndFlush(user);
-    	userInfoRepository.saveAndFlush(userInfo);
         int userDatabaseSizeBeforeDelete = userRepository.findAll().size();
-        int userInfoDatabaseSizeBeforeDelete = userInfoRepository.findAll().size();
-
-        // Delete the userInfo
-        restUserInfoMockMvc.perform(delete("/api/user-infos/{id}", userInfo.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
         
         // Delete the user
         restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
@@ -541,8 +511,6 @@ public class UserResourceIntTest {
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Validate the database is empty
-        List<UserInfo> userInfoList = userInfoRepository.findAll();
-        assertThat(userInfoList).hasSize(userInfoDatabaseSizeBeforeDelete - 1);
         List<User> userList = userRepository.findAll();
         assertThat(userList).hasSize(userDatabaseSizeBeforeDelete - 1);
     }
