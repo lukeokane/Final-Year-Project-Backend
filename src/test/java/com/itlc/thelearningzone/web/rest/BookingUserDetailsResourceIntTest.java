@@ -68,6 +68,10 @@ public class BookingUserDetailsResourceIntTest {
 
     private static final Boolean DEFAULT_TUTOR_REJECTED = false;
     private static final Boolean UPDATED_TUTOR_REJECTED = true;
+    
+    private static final String DEFAULT_LOGIN = "johndoe";
+    
+    private static final String DEFAULT_BOOKING_TITLE = "AAAAAAAAAA";
 
     @Autowired
     private BookingUserDetailsRepository bookingUserDetailsRepository;
@@ -139,23 +143,23 @@ public class BookingUserDetailsResourceIntTest {
     
     public static User createUserEntity(EntityManager em) {
 		User user = new User();
-		user.setLogin("D00187490");
+		user.setLogin(DEFAULT_LOGIN + RandomStringUtils.randomAlphabetic(5));
 		user.setPassword(RandomStringUtils.random(60));
-		user.setId(8L);
+		//user.setId(8L);
 
 		return user;
 	}
     
     public static UserInfo createUserInfoEntity(EntityManager em) {
 		UserInfo userInfo = new UserInfo();
-		userInfo.setId(8L);
+		//userInfo.setId(8L);
 
 		return userInfo;
 	}
     
     public static Booking createBookingEntity(EntityManager em) {
 		Booking booking = new Booking()
-			.title("test booking")
+			.title(DEFAULT_BOOKING_TITLE + RandomStringUtils.randomAlphabetic(5))
 			.importanceLevel(DEFAULT_USER_SATISFACTION)
 			.requestedBy("test user")
 			.startTime(Instant.ofEpochMilli(0L))
@@ -189,9 +193,9 @@ public class BookingUserDetailsResourceIntTest {
 		
 		// Initialize the database
 		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
 		bookingRepository.saveAndFlush(booking);
         bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
-        userInfoRepository.saveAndFlush(userInfo);
 
         int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
 
@@ -217,6 +221,86 @@ public class BookingUserDetailsResourceIntTest {
         assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
         BookingUserDetails testBookingUserDetails = bookingUserDetailsList.get(bookingUserDetailsList.size() - 1);
         assertThat(testBookingUserDetails.isUserCancelled()).isEqualTo(UPDATED_USER_CANCELLED);
+	}
+    
+    /**
+     * Check that a non existent BookingUserDetails entity is caught in a BadRequestAlertException
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void cancelAttendanceWithCard2() throws Exception
+	{
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+        
+        bookingUserDetailsDTO.setId(null);
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + bookingUserDetailsDTO.getId() + "/" + user.getLogin())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+            .andExpect(status().isBadRequest());
+
+	}
+    
+    /**
+     * Check that a null studentNumber String is caught in an IllegalArgumentException
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void cancelAttendanceWithCard3() throws Exception
+	{
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+        
+        user.setLogin(null);
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + booking.getId() + "/" + user.getLogin())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+            .andExpect(status().is5xxServerError());
+
 	}
 
     @Test

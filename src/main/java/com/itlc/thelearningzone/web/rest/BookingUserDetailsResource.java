@@ -130,6 +130,9 @@ public class BookingUserDetailsResource {
         if (bookingID == null) {
             throw new BadRequestAlertException("Invalid id", "Booking", "idnull");
         }
+        if (studentNumber == null) {
+            throw new BadRequestAlertException("Invalid student number", "String", "stringnull");
+        }
         BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendanceWithCard(bookingID, studentNumber);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
