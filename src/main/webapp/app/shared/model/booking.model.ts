@@ -1,6 +1,7 @@
 import { Moment } from 'moment';
 import { IBookingUserDetails } from 'app/shared/model//booking-user-details.model';
 import { IUserInfo } from 'app/shared/model//user-info.model';
+import { ITopic } from 'app/shared/model//topic.model';
 import { INotification } from 'app/shared/model//notification.model';
 
 export const enum OrdinalScale {
@@ -29,6 +30,7 @@ export interface IBooking {
     bookingUserDetails?: IBookingUserDetails[];
     subjectId?: number;
     userInfos?: IUserInfo[];
+    topics?: ITopic[];
     notifications?: INotification[];
 }
 
@@ -52,6 +54,7 @@ export class Booking implements IBooking {
         public bookingUserDetails?: IBookingUserDetails[],
         public subjectId?: number,
         public userInfos?: IUserInfo[],
+        public topics?: ITopic[],
         public notifications?: INotification[]
     ) {
         this.tutorAccepted = this.tutorAccepted || false;

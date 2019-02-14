@@ -25,5 +25,16 @@
                                  referencedColumnNames="id"
                                  referencedTableName="user_info"/>
         
+        <addForeignKeyConstraint baseColumnNames="bookings_id"
+                                 baseTableName="booking_topic"
+                                 constraintName="fk_booking_topic_bookings_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="booking"/>
+        <addForeignKeyConstraint baseColumnNames="topics_id"
+                                 baseTableName="booking_topic"
+                                 constraintName="fk_booking_topic_topics_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="topic"/>
+        
     </changeSet>
 </databaseChangeLog>

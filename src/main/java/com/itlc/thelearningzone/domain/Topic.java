@@ -38,6 +38,11 @@ public class Topic implements Serializable {
     @JsonIgnore
     private Set<Subject> subjects = new HashSet<>();
 
+    @ManyToMany(mappedBy = "topics")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JsonIgnore
+    private Set<Booking> bookings = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -108,6 +113,31 @@ public class Topic implements Serializable {
 
     public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public Topic bookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+        return this;
+    }
+
+    public Topic addBooking(Booking booking) {
+        this.bookings.add(booking);
+        booking.getTopics().add(this);
+        return this;
+    }
+
+    public Topic removeBooking(Booking booking) {
+        this.bookings.remove(booking);
+        booking.getTopics().remove(this);
+        return this;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

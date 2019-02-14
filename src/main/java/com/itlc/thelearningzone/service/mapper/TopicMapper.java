@@ -14,6 +14,7 @@ public interface TopicMapper extends EntityMapper<TopicDTO, Topic> {
 
     @Mapping(target = "resources", ignore = true)
     @Mapping(target = "subjects", ignore = true)
+    @Mapping(target = "bookings", ignore = true)
     Topic toEntity(TopicDTO topicDTO);
 
     default Topic fromId(Long id) {

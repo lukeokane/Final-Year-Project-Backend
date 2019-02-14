@@ -92,6 +92,13 @@ public class Booking implements Serializable {
                inverseJoinColumns = @JoinColumn(name = "user_infos_id", referencedColumnName = "id"))
     private Set<UserInfo> userInfos = new HashSet<>();
 
+    @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JoinTable(name = "booking_topic",
+               joinColumns = @JoinColumn(name = "bookings_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name = "topics_id", referencedColumnName = "id"))
+    private Set<Topic> topics = new HashSet<>();
+
     @OneToMany(mappedBy = "booking")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Notification> notifications = new HashSet<>();
@@ -347,6 +354,31 @@ public class Booking implements Serializable {
 
     public void setUserInfos(Set<UserInfo> userInfos) {
         this.userInfos = userInfos;
+    }
+
+    public Set<Topic> getTopics() {
+        return topics;
+    }
+
+    public Booking topics(Set<Topic> topics) {
+        this.topics = topics;
+        return this;
+    }
+
+    public Booking addTopic(Topic topic) {
+        this.topics.add(topic);
+        topic.getBookings().add(this);
+        return this;
+    }
+
+    public Booking removeTopic(Topic topic) {
+        this.topics.remove(topic);
+        topic.getBookings().remove(this);
+        return this;
+    }
+
+    public void setTopics(Set<Topic> topics) {
+        this.topics = topics;
     }
 
     public Set<Notification> getNotifications() {

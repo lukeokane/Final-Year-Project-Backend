@@ -1,7 +1,6 @@
 package com.itlc.thelearningzone.repository;
 
 import com.itlc.thelearningzone.domain.Topic;
-
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
-
-	
-	
 }
