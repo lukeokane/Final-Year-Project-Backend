@@ -214,15 +214,13 @@ public class BookingServiceImpl implements BookingService {
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}
-		// setting message
+		// setting message and image url
 		if(sender.isPresent()) {	
 		   String notificationMessage = "New booking request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
-	       notification.setMessage(notificationMessage);   
+	       notification.setMessage(notificationMessage);
+	       notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		}
 		notification.setBookingId(bookingDTO.getId());
-		if(sender.isPresent()) {	
-		  notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
-		}
 		// getting receiver 
            Optional<User> receiver = userRepository.findById(ADMIN_ID);
         if(receiver.isPresent()) {
@@ -355,14 +353,12 @@ public class BookingServiceImpl implements BookingService {
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);
-		if(sender.isPresent()) {
-		   notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
-		}
 		notification.setBookingId(bookingDTO.getId());
-		// setting the notification message
+		// setting the notification message and sender image url
 		if(sender.isPresent()) {	
 		   String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
 		   notification.setMessage(notificationMessage);
+		   notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		}
 		
 		// getting receiver
@@ -394,8 +390,8 @@ public class BookingServiceImpl implements BookingService {
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		if(sender.isPresent()) {
 		  notification.setSenderId(sender.get().getId());
+		  notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		}
-		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
 		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		if(receiver.isPresent()) {
