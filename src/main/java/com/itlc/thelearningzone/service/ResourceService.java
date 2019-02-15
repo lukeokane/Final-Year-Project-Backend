@@ -14,14 +14,6 @@ import java.util.Optional;
  */
 public interface ResourceService {
 	
-	/**
-	 * Get all the resources associated with a subject
-	 * 
-	 * @param subjectId the id of the subject to retrieve all resources for
-	 * @return the list of entities
-	 */
-	List<Resource> findAllResourcesInSubject(Long subjectId);
-	
     /**
      * Save a resource.
      *

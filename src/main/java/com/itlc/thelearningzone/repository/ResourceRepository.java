@@ -16,6 +16,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
-	@Query(value = "SELECT resource FROM Resource resource LEFT JOIN resource.topic topic WHERE topic.id IN (SELECT topic.id FROM Subject subject LEFT JOIN subject.topics topic WHERE subject.id = :subjectId) ORDER BY topic.id")
-	List<Resource>findAllResourcesInSubject(@Param("subjectId") Long subjectId);
+	@Query(value = "SELECT resource FROM Resource resource LEFT JOIN resource.topic topic WHERE topic.id IN (SELECT topic.id FROM Booking booking LEFT JOIN booking.topics topic WHERE booking.id = :bookingId) ORDER BY topic.id")
+	List<Resource>findAllResourcesInBooking(@Param("bookingId") Long bookingId);
 }

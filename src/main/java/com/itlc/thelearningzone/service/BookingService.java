@@ -218,6 +218,8 @@ public interface BookingService {
 	BookingDTO updateBookingAccepted(@Valid BookingDTO bookingDTO);
 
 	void saveBookingWithAdminNotification(@Valid BookingDTO bookingDTO);
+	
+	void updateBookingAcceptedTutorAssigned(Long bookingId, Integer adminId, Integer tutorId);
 
 	BookingDTO updateBookingAssignedTutor(@Valid BookingDTO bookingDTO);
 
@@ -228,7 +230,7 @@ public interface BookingService {
 	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
 
 	List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate);
-	
+		
 	List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate, Instant instantToDate,
 			Integer selectedYear);
 }

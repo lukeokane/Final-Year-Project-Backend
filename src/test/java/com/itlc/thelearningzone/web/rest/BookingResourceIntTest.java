@@ -7,6 +7,7 @@ import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
+import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
@@ -129,6 +130,9 @@ public class BookingResourceIntTest {
 
 	@Autowired
 	private SubjectService subjectService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -153,6 +157,14 @@ public class BookingResourceIntTest {
 	private UserInfo userInfo;
 	
 	private User user;
+	
+	private UserInfo tutorUserInfo;
+	
+	private User tutorUser;
+	
+	private UserInfo adminUserInfo;
+	
+	private User adminUser;
 	
 	@Before
 	public void setup() {
@@ -295,10 +307,35 @@ public class BookingResourceIntTest {
 		booking2 = createEntity2(em);
 		booking3 = createEntity3(em);
 		
+		
+		// Create user
 		user = createUserEntity(em);
 		userInfo = createUserInfoEntity(em);
 		
+		// Create tutor user
+		tutorUser = createUserEntity(em);
+		tutorUser.setFirstName("Jane");
+		tutorUser.setLastName("Doe");
+		tutorUser.setEmail(RandomStringUtils.randomAlphabetic(5) + "janedoe@student.dkit.ie");
+		tutorUser.setLogin(RandomStringUtils.randomAlphabetic(5) + "jane.doe");
+		tutorUser.setPassword(RandomStringUtils.random(60));
+		tutorUser.setLangKey("en");		
+		tutorUserInfo = createUserInfoEntity(em);
+		
+		// Create admin user
+		adminUser = createUserEntity(em);
+		adminUser.setFirstName("Jane");
+		adminUser.setLastName("Doe");
+		adminUser.setEmail(RandomStringUtils.randomAlphabetic(5) + "janedoe@student.dkit.ie");
+		adminUser.setLogin(RandomStringUtils.randomAlphabetic(5) + "jane.doe");
+		adminUser.setPassword(RandomStringUtils.random(60));
+		adminUser.setLangKey("en");		
+		adminUserInfo = createUserInfoEntity(em);
+		
+		
 		userInfo.setUser(user);
+		tutorUserInfo.setUser(tutorUser);
+		adminUserInfo.setUser(adminUser);
 	}
 
 	@Test
@@ -567,7 +604,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingCancelledByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -671,7 +708,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingAcceptedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -723,7 +760,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingAssignTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -775,7 +812,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingRejectedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -4965,6 +5002,81 @@ public class BookingResourceIntTest {
 		List<Booking> bookingList = bookingRepository.findAll();
 		assertThat(bookingList).hasSize(databaseSizeBeforeDelete - 1);
 	}
+	
+	/*
+	 * Booking is successfully accepted and assign to tutor.
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+	@Test
+	@Transactional
+	public void updateBookingAcceptedTutorAssigned1() throws Exception {
+		
+		// Initialize userInfo database
+		userInfoRepository.save(userInfo);
+		userInfoRepository.save(tutorUserInfo);
+		userInfoRepository.save(adminUserInfo);
+
+		// Create userInfos for booking
+		Set<UserInfo> userInfos = new HashSet<UserInfo>();
+		userInfos.add(userInfo);
+		
+		// Initialize the database
+		booking.setSubject(null);
+		booking.setAdminAcceptedId(null);
+		booking.setTutorAcceptedId(null);
+		booking.setTutorAccepted(false);
+		bookingRepository.saveAndFlush(booking);
+
+		// Get the required entities
+		Booking beforeBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+		User admin = userRepository.findById(user.getId()).get();
+		User tutor = userRepository.findById(tutorUser.getId()).get();	
+
+	        
+		restBookingMockMvc
+			.perform(
+				put("/api/bookings/updateBookingAcceptedTutorAssigned/" + beforeBooking.getId() + "/" + admin.getId() + "/" + tutor.getId()))
+			.andExpect(status().isOk());
+		
+		Booking afterBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+		
+		assertThat(afterBooking.getAdminAcceptedId()).isEqualTo(admin.getId().intValue());
+		assertThat(afterBooking.isTutorAccepted()).isEqualTo(true);
+		assertThat(afterBooking.getTutorAcceptedId()).isEqualTo(tutor.getId().intValue());			
+
+		em.detach(beforeBooking);
+	    em.detach(admin);
+	    em.detach(tutor);
+	}
+	
+	/*
+	 * Booking update throws IllegalArguementException since booking ID does not exist
+	 */
+	@Test
+	@Transactional
+	public void updateBookingAcceptedTutorAssigned2() throws Exception {
+
+		// Initialize userInfo database
+		userInfoRepository.save(userInfo);
+		userInfoRepository.save(adminUserInfo);
+		userInfoRepository.save(tutorUserInfo);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+
+		User admin = userRepository.findById(adminUser.getId()).get();
+		User tutor = userRepository.findById(tutorUser.getId()).get();
+	    Long invalidBookingId = 10L; 
+				
+		restBookingMockMvc
+			.perform(
+				put("/api/bookings/updateBookingAcceptedTutorAssigned/" + invalidBookingId + "/" + admin.getId() + "/" + tutor.getId()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.title", is("Booking with id " + invalidBookingId + " does not exist" )));	
+		
+	}
+	
 	
 	@Test
 	@Transactional

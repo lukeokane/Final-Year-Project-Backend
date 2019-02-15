@@ -5,16 +5,16 @@ import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.repository.BookingRepository;
+import com.itlc.thelearningzone.repository.ResourceRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.UserInfoDTO;
 import com.itlc.thelearningzone.service.dto.NotificationDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
+import com.itlc.thelearningzone.web.rest.errors.BadRequestAlertException;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.MailService;
 import com.itlc.thelearningzone.service.NotificationService;
-import com.itlc.thelearningzone.service.UserService;
-import com.itlc.thelearningzone.service.ResourceService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +45,10 @@ import javax.validation.Valid;
 @Transactional
 public class BookingServiceImpl implements BookingService {
 
+	private final String ENTITY_NAME = "BookingService";
+	
+	private final String ID_NULL = "idnull";
+
 	private final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	private final BookingRepository bookingRepository;
@@ -55,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
 
 	private final MailService mailService;
 	
-	private final ResourceService resourceService;
+	private final ResourceRepository resourceRepository;
 
 	private final NotificationService notificationService;
 	
@@ -68,12 +72,12 @@ public class BookingServiceImpl implements BookingService {
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, ResourceService resourceService, NotificationService notificationService) {
+			UserRepository userRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService, UserInfoRepository userInfoRepository) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.userRepository = userRepository;
 		this.mailService = mailService;
-		this.resourceService = resourceService;
+		this.resourceRepository = resourceRepository;
 		this.notificationService = notificationService;
 
 	}
@@ -214,13 +218,13 @@ public class BookingServiceImpl implements BookingService {
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}
-		// setting message and image url
+		// setting message
 		if(sender.isPresent()) {	
 		   String notificationMessage = "New booking request on ".concat(bookingDTO.getTitle().concat(" from ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
-	       notification.setMessage(notificationMessage);
-	       notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+	       notification.setMessage(notificationMessage);   
 		}
 		notification.setBookingId(bookingDTO.getId());
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver 
            Optional<User> receiver = userRepository.findById(ADMIN_ID);
         if(receiver.isPresent()) {
@@ -229,6 +233,35 @@ public class BookingServiceImpl implements BookingService {
 		
 		notificationService.save(notification);
 				
+	}
+	
+	@Override
+	public void updateBookingAcceptedTutorAssigned(Long bookingId, Integer adminId, Integer tutorId)
+	{
+		log.debug("REST request to update booking ID {}, accepted by admin ID {} and assigned to tutor ID {}", bookingId, adminId, tutorId);
+		
+		/* Check that booking, adminId and tutorId exist */
+		Booking booking = bookingRepository.findOneWithEagerRelationships(bookingId).orElseThrow(() -> new BadRequestAlertException("Booking with id " + bookingId + " does not exist", ENTITY_NAME, ID_NULL));
+		User admin = userRepository.findById(adminId.longValue()).orElseThrow(() -> new BadRequestAlertException("User id " + adminId + " is does not exist", ENTITY_NAME, ID_NULL));
+		User tutor = userRepository.findById(tutorId.longValue()).orElseThrow(() -> new BadRequestAlertException("User id " + tutorId + " is does not exist", ENTITY_NAME, ID_NULL));
+
+		/* Begin email notification */
+		List<Resource> resources = new ArrayList<>();
+		
+		// Booking might not be a booking request; no subject
+		if (booking.getSubject() != null) {
+		resources = resourceRepository.findAllResourcesInBooking(booking.getId());
+		}
+		
+		booking.setAdminAcceptedId(adminId);
+		booking.setTutorAccepted(true);
+		booking.setTutorAcceptedId(tutorId);
+		
+		bookingRepository.save(booking);
+		
+		// Send booking confirmed email to user
+		mailService.sendBookingConfirmedEmail(booking, booking.getUserInfos(), tutor, resources);
+		
 	}
 
 	@Override
@@ -353,14 +386,13 @@ public class BookingServiceImpl implements BookingService {
 		Long tutorID = Long.valueOf(idTut.longValue());
 		Optional<User> sender = userRepository.findById(tutorID);
 		notification.setSenderId(tutorID);
-		notification.setBookingId(bookingDTO.getId());
-		// setting the notification message and sender image url
-		if(sender.isPresent()) {	
-		   String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
-		   notification.setMessage(notificationMessage);
+		if(sender.isPresent()) {
 		   notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		}
-		
+		notification.setBookingId(bookingDTO.getId());
+		// setting the notification message
+		String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+		notification.setMessage(notificationMessage);
 		// getting receiver
 		Optional<User> receiver = userRepository.findById(ADMIN_ID);
 		if(receiver.isPresent()) {
@@ -390,17 +422,19 @@ public class BookingServiceImpl implements BookingService {
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		if(sender.isPresent()) {
 		  notification.setSenderId(sender.get().getId());
-		  notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		}
+		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
-		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-		if(receiver.isPresent()) {
-		  notification.setReceiverId(receiver.get().getId());
-		  // setting the notification message
-		  String notificationMessage = "Sorry ".concat(receiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
-		  notification.setMessage(notificationMessage);
+		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		if(sender.isPresent()) {
+		  notification.setReceiverId(reveiver.get().getId());
 		}
 		notification.setBookingId(bookingDTO.getId());
+		
+		// setting the notification message
+		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
+		notification.setMessage(notificationMessage);
+		
 		notificationService.save(notification);
 		
 		//sending email to student
@@ -414,9 +448,9 @@ public class BookingServiceImpl implements BookingService {
 		/* Begin email notification */
 		List<Resource> resources = new ArrayList<>();
 		
-		// Booking not be a booking request; no subject
+		// Booking might not be a booking request; no subject
 		if (booking.getSubject().getId() != null) {
-		resources = resourceService.findAllResourcesInSubject(booking.getSubject().getId());
+		resources = resourceRepository.findAllResourcesInBooking(booking.getId());
 		}
 		// Send booking rejected email to user
 		mailService.sendBookingRejectedEmail(booking, booking.getUserInfos(), resources);

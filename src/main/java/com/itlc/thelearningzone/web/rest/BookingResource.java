@@ -96,6 +96,27 @@ public class BookingResource {
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+    
+    /**
+     * POST  /bookings/updateBookingAcceptedTutorAssigned : Create a new booking and create a booking notification for the ITLC admin for a new booking request
+     *
+     * @param bookingId the booking ID of the booking to modify
+     * @param adminId the admin accepted ID of the booking
+     * @param tutorId the tutor accepted ID of the booking
+     * @return the ResponseEntity with status 201 (Created) and with body the new bookingDTO, or with status 400 (Bad Request) if the booking has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("bookings/updateBookingAcceptedTutorAssigned/{bookingId}/{adminId}/{tutorId}")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingAcceptedTutorAssigned(@PathVariable Long bookingId,
+    		@PathVariable Integer adminId, 
+    		@PathVariable Integer tutorId) throws URISyntaxException {
+        log.debug("REST request to update booking ID {}, accepted by admin ID {} and assigned to tutor ID {}", bookingId, adminId, tutorId);
+        
+        bookingService.updateBookingAcceptedTutorAssigned(bookingId, adminId, tutorId);
+        
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingId.toString())).build();
+    }
 
     /**
      * PUT  /bookings : Updates an existing booking.
@@ -602,7 +623,7 @@ public class BookingResource {
     			
     			// Get subject if booking containers subject ID
     			if (bookingsDTOList.get(i).getSubjectId() != null) {
-    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getSubjectId()).get());
+    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getId()).get());
     			}
     			
     			// Do not return any list of UserInfo objects or BookingUserDetail objects 
@@ -639,8 +660,7 @@ public class BookingResource {
         List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
-        	
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet <BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         }
@@ -689,7 +709,6 @@ public class BookingResource {
         
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
-
 
     /**
      * GET  /bookings/:id : get the "id" booking.
