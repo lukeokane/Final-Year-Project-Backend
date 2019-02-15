@@ -141,19 +141,6 @@ public class MailService {
 		String subject = messageSource.getMessage(titleKey, null, locale);
 		sendEmail(user.getEmail(), subject, content, false, true);			
 	}
-    
-    @Async
-    private void sendBookingRequestRejectedByAdminFromTemplate(Booking booking, User user, String templateName,
-			String titleKey) {	
-    	Locale locale = Locale.forLanguageTag(user.getLangKey());
-		Context context = new Context(locale);
-		context.setVariable(USER, user);
-		context.setVariable(BOOKING, booking);
-		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
-		String content = templateEngine.process(templateName, context);
-		String subject = messageSource.getMessage(titleKey, null, locale);
-		sendEmail(user.getEmail(), subject, content, false, true);			
-	}
 
     @Async
     public void sendBookingRejectedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
@@ -182,7 +169,7 @@ public class MailService {
     	List<String> topics = new ArrayList<>();
     	
     	for (int i = 0; i < resources.size(); i++) {
-    		if (i - 1 >= 0 && resources.get(i - 1).getTopic().getId() != resources.get(i).getTopic().getId() || i == 0) {
+    		if (i - 1 >= 0 && !(resources.get(i - 1).getTopic().getId().equals(resources.get(i).getTopic().getId())) || i == 0) {
     			topics.add(resources.get(i).getTopic().getTitle());
     		}
     	}
