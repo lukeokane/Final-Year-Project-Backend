@@ -462,7 +462,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingCancelledByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -566,7 +566,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingAcceptedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -618,7 +618,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingAssignTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -670,7 +670,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings/updateBookingRejectedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
