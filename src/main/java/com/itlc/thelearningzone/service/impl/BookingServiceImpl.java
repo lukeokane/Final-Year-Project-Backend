@@ -220,7 +220,9 @@ public class BookingServiceImpl implements BookingService {
 	       notification.setMessage(notificationMessage);   
 		}
 		notification.setBookingId(bookingDTO.getId());
-		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		if(sender.isPresent()) {	
+		  notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
+		}
 		// getting receiver 
            Optional<User> receiver = userRepository.findById(ADMIN_ID);
         if(receiver.isPresent()) {
@@ -358,8 +360,11 @@ public class BookingServiceImpl implements BookingService {
 		}
 		notification.setBookingId(bookingDTO.getId());
 		// setting the notification message
-		String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
-		notification.setMessage(notificationMessage);
+		if(sender.isPresent()) {	
+		   String notificationMessage = "".concat(bookingDTO.getTitle().concat(" offer rejected ").concat(" by ").concat(sender.get().getFirstName().concat(" ").concat(sender.get().getLastName())));
+		   notification.setMessage(notificationMessage);
+		}
+		
 		// getting receiver
 		Optional<User> receiver = userRepository.findById(ADMIN_ID);
 		if(receiver.isPresent()) {
@@ -392,16 +397,14 @@ public class BookingServiceImpl implements BookingService {
 		}
 		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
-		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-		if(sender.isPresent()) {
-		  notification.setReceiverId(reveiver.get().getId());
+		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		if(receiver.isPresent()) {
+		  notification.setReceiverId(receiver.get().getId());
+		  // setting the notification message
+		  String notificationMessage = "Sorry ".concat(receiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
+		  notification.setMessage(notificationMessage);
 		}
 		notification.setBookingId(bookingDTO.getId());
-		
-		// setting the notification message
-		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
-		notification.setMessage(notificationMessage);
-		
 		notificationService.save(notification);
 		
 		//sending email to student
