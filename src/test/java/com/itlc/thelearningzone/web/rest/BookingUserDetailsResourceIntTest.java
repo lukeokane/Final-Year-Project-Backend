@@ -145,15 +145,13 @@ public class BookingUserDetailsResourceIntTest {
 		User user = new User();
 		user.setLogin(DEFAULT_LOGIN + RandomStringUtils.randomAlphabetic(5));
 		user.setPassword(RandomStringUtils.random(60));
-		//user.setId(8L);
 
 		return user;
 	}
     
     public static UserInfo createUserInfoEntity(EntityManager em) {
 		UserInfo userInfo = new UserInfo();
-		//userInfo.setId(8L);
-
+		
 		return userInfo;
 	}
     
