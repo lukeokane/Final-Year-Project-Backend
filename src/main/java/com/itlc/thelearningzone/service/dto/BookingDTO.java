@@ -51,6 +51,8 @@ public class BookingDTO implements Serializable {
     private Long subjectId;
 
     private Set<UserInfoDTO> userInfos = new HashSet<>();
+
+    private Set<TopicDTO> topics = new HashSet<>();
     
     private Set<BookingUserDetailsDTO> bookingUserDetailsDTO = new HashSet<>();
 
@@ -196,6 +198,14 @@ public class BookingDTO implements Serializable {
 
     public void setUserInfos(Set<UserInfoDTO> userInfos) {
         this.userInfos = userInfos;
+    }
+
+    public Set<TopicDTO> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(Set<TopicDTO> topics) {
+        this.topics = topics;
     }
 
     @Override

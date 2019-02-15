@@ -13,7 +13,6 @@ import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
-import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -1142,10 +1140,7 @@ public class BookingResourceIntTest {
 		// Set start time 16 hours before start booking time and end time 12 hours after
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
-
-		// setID to the userInfo id present in the booking
-		Long userId = userInfo.getId();
-
+		
 		// Get bookings for user in between the passed times, expect 2 to be returned
 		restBookingMockMvc
 			.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
@@ -1207,9 +1202,6 @@ public class BookingResourceIntTest {
 		// Set start time 16 hours before start booking time and end time 12 hours before
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
-
-		// setID to the userInfo id present in the booking
-		Long userId = userInfo.getId();
 
 		// Get bookings for user in between the passed times, expect 0 to be returned
 		restBookingMockMvc
@@ -1687,10 +1679,7 @@ public class BookingResourceIntTest {
 		// Set start time 16 hours before start booking time and end time 12 hours after
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
-
-		// setID to the userInfo id present in the booking
-		Long userId = userInfo.getId();
-
+		
 		// Get bookings for user in between the passed times, expect 2 to be
 		// returned
 		restBookingMockMvc
@@ -1756,9 +1745,6 @@ public class BookingResourceIntTest {
 		// Set start time 16 hours before start booking time and end time 12 hours before
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
-
-		// setID to the userInfo id present in the booking
-		Long userId = userInfo.getId();
 
 		// Get bookings for user in between the passed times, expect 0 to be returned
 		restBookingMockMvc

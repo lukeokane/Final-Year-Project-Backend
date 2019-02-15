@@ -12,6 +12,8 @@ import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from 'app/entities/subject';
 import { IUserInfo } from 'app/shared/model/user-info.model';
 import { UserInfoService } from 'app/entities/user-info';
+import { ITopic } from 'app/shared/model/topic.model';
+import { TopicService } from 'app/entities/topic';
 
 @Component({
     selector: 'jhi-booking-update',
@@ -24,6 +26,8 @@ export class BookingUpdateComponent implements OnInit {
     subjects: ISubject[];
 
     userinfos: IUserInfo[];
+
+    topics: ITopic[];
     startTime: string;
     endTime: string;
     modifiedTimestamp: string;
@@ -33,6 +37,7 @@ export class BookingUpdateComponent implements OnInit {
         private bookingService: BookingService,
         private subjectService: SubjectService,
         private userInfoService: UserInfoService,
+        private topicService: TopicService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -54,6 +59,12 @@ export class BookingUpdateComponent implements OnInit {
         this.userInfoService.query().subscribe(
             (res: HttpResponse<IUserInfo[]>) => {
                 this.userinfos = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+        this.topicService.query().subscribe(
+            (res: HttpResponse<ITopic[]>) => {
+                this.topics = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -97,6 +108,10 @@ export class BookingUpdateComponent implements OnInit {
     }
 
     trackUserInfoById(index: number, item: IUserInfo) {
+        return item.id;
+    }
+
+    trackTopicById(index: number, item: ITopic) {
         return item.id;
     }
 

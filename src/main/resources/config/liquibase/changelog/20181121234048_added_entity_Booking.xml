@@ -99,6 +99,17 @@
 
         <addPrimaryKey columnNames="bookings_id, user_infos_id" tableName="booking_user_info"/>
         
+        <createTable tableName="booking_topic">
+            <column name="topics_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bookings_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="bookings_id, topics_id" tableName="booking_topic"/>
+        
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 </databaseChangeLog>

@@ -96,6 +96,14 @@
             "ownerSide": true
         },
         {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "booking",
+            "relationshipName": "topic",
+            "otherEntityName": "topic",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
             "relationshipType": "one-to-many",
             "relationshipName": "notification",
             "otherEntityName": "notification",

@@ -602,7 +602,7 @@ public class BookingResource {
     			
     			// Get subject if booking containers subject ID
     			if (bookingsDTOList.get(i).getSubjectId() != null) {
-    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getId()).get());
+    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getSubjectId()).get());
     			}
     			
     			// Do not return any list of UserInfo objects or BookingUserDetail objects 

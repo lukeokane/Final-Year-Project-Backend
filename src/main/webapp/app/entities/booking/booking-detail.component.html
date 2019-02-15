@@ -73,6 +73,12 @@
                         <a [routerLink]="['/user-info', userInfo?.id, 'view' ]">{{userInfo.id}}</a>{{last ? '' : ', '}}
                     </span>
                 </dd>
+                <dt><span>Topic</span></dt>
+                <dd>
+                    <span *ngFor="let topic of booking.topics; let last = last">
+                        <a [routerLink]="['/topic', topic?.id, 'view' ]">{{topic.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
             </dl>
 
             <button type="submit"

@@ -141,6 +141,12 @@
                         <option [ngValue]="getSelected(booking.userInfos, userInfoOption)" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="field_topic">Topic</label>
+                    <select class="form-control" id="field_topic" multiple name="topic" [(ngModel)]="booking.topics">
+                        <option [ngValue]="getSelected(booking.topics, topicOption)" *ngFor="let topicOption of topics; trackBy: trackTopicById">{{topicOption.id}}</option>
+                    </select>
+                </div>
             </div>
             <div>
                 <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">

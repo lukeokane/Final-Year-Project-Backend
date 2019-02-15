@@ -108,6 +108,7 @@ relationship ManyToMany {
     Booking{userInfo} to UserInfo{booking},
     Subject{topic} to Topic{subject},
     SemesterGroup{subject} to Subject{semesterGroup}
+    Booking{topic} to Topic{booking}
 
 }
 
