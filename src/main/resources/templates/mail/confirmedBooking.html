@@ -10,25 +10,36 @@
             Dear
         </p>
          <p>
-        <span th:text="#{email.rejected.booking1}">
-           unfortunately, your tutorial on 
-        </span> 
-        <strong th:text="${booking.title}"> booking title </strong>
+        <span th:if="${tutorUser != null}" th:text="#{email.confirmed.bookingTutorial}">
+           As requested, an ITLC tutorial on
+        </span>   
         
-        <span th:text="#{email.rejected.booking2}">
-           could not be accepted
+        <span th:if="${tutorUser == null}" th:text="#{email.confirmed.booking}">
+           As requested, the booking for the 
+        </span>   
+        
+        <strong th:text="${booking.title}"> booking title </strong>  
+        <strong th:if="${#lists.size(topics) > 0}" th:text="'- ' + ${#strings.listJoin(topics, ', ')}"></strong> 
+        
+        <span th:if="${tutorUser != null}" th:text="#{email.confirmed.bookingWithTutor(${#dates.format(booking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(booking.startTime, 'HH.mma')}, ${#dates.format(booking.endTime, 'HH.mma')}, ${tutorUser.firstName + ' ' + tutorUser.lastName})}">
+           will take place on..
         </span> 
+        
+        <span th:if="${tutorUser == null}" th:text="#{email.confirmed.booking2(${#dates.format(booking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(booking.startTime, 'HH.mma')}, ${#dates.format(booking.endTime, 'HH.mma')})}">
+           will take place on..
+        </span> 
+        
         </p>
         
         <div th:if="${#lists.size(resources) > 0}">
-        <p  th:text="#{email.rejected.resourcesText}"></p>
+        <p  th:text="#{email.confirmed.resourcesText}">We have some useful resources...</p>
         </div>
-       
+        
 	   		<div th:each="resource: ${resources}">
 	    <div th:if="${(resourceStat.index - 1 >= 0 && resources[resourceStat.index - 1].topic.id != resources[resourceStat.index].topic.id) || resourceStat.index == 0}">
-	    	<strong th:text="${resources[resourceStat.index].topic.title}"></strong>
+	    	<strong th:text="${resources[resourceStat.index].topic.title}"> Get resource topic headers while iterating </strong>
 	    </div>
-    <div><a th:href="${resources[resourceStat.index].resourceURL}"><span th:text="${resources[resourceStat.index].title}"></span></a></div>
+    <div><a th:href="${resources[resourceStat.index].resourceURL}"><span th:text="${resources[resourceStat.index].title}">Resource URL here</span></a></div>
 	</div>
        		
        	<p th:text="#{email.contactinfo}"></p>	

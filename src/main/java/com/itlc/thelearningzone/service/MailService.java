@@ -6,6 +6,7 @@ import com.itlc.thelearningzone.domain.UserInfo;
 import io.github.jhipster.config.JHipsterProperties;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -40,6 +41,8 @@ public class MailService {
     private static final String TUTOR_USER = "tutorUser";
 
     private static final String BOOKING = "booking";
+    
+    private static final String RESOURCES = "resources";
 
     private static final String BASE_URL = "baseUrl";
 
@@ -154,14 +157,47 @@ public class MailService {
 
     @Async
     public void sendBookingRejectedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
-			String titleKey) {    	
+			String titleKey) { 
+    	
+    	Context context = new Context();
+		context.setVariable(BOOKING, booking);
+		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+  		context.setVariable(RESOURCES, resources);
+  		
     	for (UserInfo user : bookingUsers) {
     		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
-        	Context context = new Context(locale);
+        	context.setLocale(locale);
     		context.setVariable(USER, user);
-    		context.setVariable(BOOKING, booking);
-    		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
-    		context.setVariable("resources", resources);
+    		String content = templateEngine.process(templateName, context);
+    		String subject = messageSource.getMessage(titleKey, null, locale).replace("{0}", booking.getTitle());
+    		sendEmail(user.getUser().getEmail(), subject, content, false, true);
+    	}
+    }
+    
+    @Async
+    public void sendBookingConfirmedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, User tutor, List<Resource> resources, String templateName,
+			String titleKey) {    	
+    	
+    	// Get list of topics to concatenate them in the email template.
+    	List<String> topics = new ArrayList<>();
+    	
+    	for (int i = 0; i < resources.size(); i++) {
+    		if (i - 1 >= 0 && resources.get(i - 1).getTopic().getId() != resources.get(i).getTopic().getId() || i == 0) {
+    			topics.add(resources.get(i).getTopic().getTitle());
+    		}
+    	}
+    	
+    	Context context = new Context();
+    	context.setVariable("topics", topics);
+		context.setVariable(TUTOR_USER, tutor);
+		context.setVariable(BOOKING, booking);
+		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+		context.setVariable(RESOURCES, resources);
+		
+    	for (UserInfo user : bookingUsers) {
+    		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
+        	context.setLocale(locale);
+    		context.setVariable(USER, user);
     		String content = templateEngine.process(templateName, context);
     		String subject = messageSource.getMessage(titleKey, null, locale).replace("{0}", booking.getTitle());
     		sendEmail(user.getUser().getEmail(), subject, content, false, true);
@@ -188,25 +224,31 @@ public class MailService {
     
     @Async
 	public void sendBookingCancelledEmail(Booking booking, User user, User tutorUser) {
-		log.debug("Sending notification to '{}'", user.getEmail());
+		log.debug("Sending email to '{}'", user.getEmail());
 		sendBookingCancelledEmailFromTemplate(booking, user, tutorUser, "mail/cancellationEmail", "email.cancelled.title");
 	}
     
     @Async
 	public void sendBookingAcceptedByTutorEmail(Booking booking,User user,User tutorUser) {
-		log.debug("Sending notification to '{}'", user.getEmail());
+		log.debug("Sending email to '{}'", user.getEmail());
 		sendBookingAcceptedByTutorFromTemplate(booking, user, tutorUser,"mail/bookingAcceptedByTutorEmail", "email.accepted.title");
 	}
      
     @Async
 	public void sendBookingEditedyAdminEmail(Booking booking, User user, User tutorUser) {
-		log.debug("Sending notification to '{}'", user.getEmail());
+		log.debug("Sending email to '{}'", user.getEmail());
 		sendBookingEditedByAdminFromTemplate(booking, user, tutorUser, "mail/bookingEditedByAdminEmail", "email.edit.title");
 	}
 	
     @Async
     public void sendBookingRejectedEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
-		// log.debug("Sending booking rejected notification to '{}'", user.getEmail());
+    	log.debug("Sending booking rejected email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
 		sendBookingRejectedEmailFromTemplate(booking, bookingUsers, resources, "mail/bookingRejected", "email.rejected.title");
+	}
+    
+    @Async
+    public void sendBookingConfirmedEmail(Booking booking, Set<UserInfo> bookingUsers, User tutor, List<Resource> resources) {
+    	log.debug("Sending booking confirmed email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
+    	sendBookingConfirmedEmailFromTemplate(booking, bookingUsers, tutor, resources, "mail/bookingConfirmed", "email.confirmed.title");
 	}
 }
