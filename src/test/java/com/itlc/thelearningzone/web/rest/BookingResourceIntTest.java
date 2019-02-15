@@ -3,6 +3,7 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
@@ -13,6 +14,8 @@ import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -104,6 +108,9 @@ public class BookingResourceIntTest {
 
 	@Mock
 	private BookingRepository bookingRepositoryMock;
+	
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 
 	@Autowired
 	private BookingMapper bookingMapper;
@@ -138,12 +145,15 @@ public class BookingResourceIntTest {
 	private MockMvc restBookingMockMvc;
 
 	private Booking booking;
+	
+	private Booking booking2;
+	
+	private Booking booking3;
 
 	private UserInfo userInfo;
-
-	@Autowired
-	private UserInfoRepository userInfoRepository;
-
+	
+	private User user;
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -182,18 +192,113 @@ public class BookingResourceIntTest {
 		
 		return booking;
 	}
+	
+	/**
+	 * Create an entity for this test.
+	 *
+	 * This is a static method, as tests for other entities might also need it, if
+	 * they test an entity which requires the current entity.
+	 */
+	public static Booking createEntity2(EntityManager em) {
+		Booking booking = new Booking()
+			.title(DEFAULT_TITLE)
+			.requestedBy(DEFAULT_REQUESTED_BY)
+			.startTime(DEFAULT_START_TIME)
+			.endTime(DEFAULT_END_TIME)
+			.userComments(DEFAULT_USER_COMMENTS)
+			.importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+			.adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
+		
+		return booking;
+	}
+	
+	/**
+	 * Create an entity for this test.
+	 *
+	 * This is a static method, as tests for other entities might also need it, if
+	 * they test an entity which requires the current entity.
+	 */
+	public static Booking createEntity4(EntityManager em) {
+		Booking booking = new Booking()
+			.title(DEFAULT_TITLE)
+			.requestedBy(DEFAULT_REQUESTED_BY)
+			.startTime(DEFAULT_START_TIME)
+			.endTime(DEFAULT_END_TIME)
+			.userComments(DEFAULT_USER_COMMENTS)
+			.importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+			.adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
+		
+		return booking;
+	}
+	
+	/**
+	 * Create an entity for this test.
+	 *
+	 * This is a static method, as tests for other entities might also need it, if
+	 * they test an entity which requires the current entity.
+	 */
+	public static Booking createEntity3(EntityManager em) {
+		Booking booking = new Booking()
+			.title(DEFAULT_TITLE)
+			.requestedBy(DEFAULT_REQUESTED_BY)
+			.startTime(DEFAULT_START_TIME)
+			.endTime(DEFAULT_END_TIME)
+			.userComments(DEFAULT_USER_COMMENTS)
+			.importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
+			.adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
+			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
+			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
+			.modifiedTimestamp(DEFAULT_MODIFIED_TIMESTAMP)
+			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
+			.cancelled(DEFAULT_CANCELLED)
+			.requestTimes(DEFAULT_REQUEST_TIMES)
+			.readByAdmin(DEFAULT_READ_BY_ADMIN);
+		
+		return booking;
+	}
 
 	public static UserInfo createUserInfoEntity(EntityManager em) {
 		UserInfo userInfo = new UserInfo();
-		userInfo.setId(8L);
 
 		return userInfo;
+	}
+	
+	public static User createUserEntity(EntityManager em) {
+		User user = new User();		
+		user.setFirstName("Jane");
+		user.setLastName("Doe");
+		user.setEmail(RandomStringUtils.randomAlphabetic(5) + "janedoe@student.dkit.ie");
+		user.setLogin(RandomStringUtils.randomAlphabetic(5) + "jane.doe");
+		user.setPassword(RandomStringUtils.random(60));
+		user.setLangKey("en");
+		
+		return user;
 	}
 
 	@Before
 	public void initTest() {
 		booking = createEntity(em);
+		booking2 = createEntity2(em);
+		booking3 = createEntity3(em);
+		
+		user = createUserEntity(em);
 		userInfo = createUserInfoEntity(em);
+		
+		userInfo.setUser(user);
 	}
 
 	@Test
@@ -462,7 +567,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings/updateBookingCancelledByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -566,7 +671,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings/updateBookingAcceptedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -618,7 +723,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings/updateBookingAssignTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -670,7 +775,7 @@ public class BookingResourceIntTest {
 		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
 
 		restBookingMockMvc
-			.perform(put("/api/bookings/updateBookingRejectedByTutor").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
 			.andExpect(status().isOk());
 
 		// Validate the Booking in the database
@@ -985,6 +1090,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getAllBookingsDetailsTest1() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Create userInfos for booking
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
@@ -996,7 +1103,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1011,7 +1118,7 @@ public class BookingResourceIntTest {
 			.requestTimes(DEFAULT_REQUEST_TIMES)
 			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
-		bookingRepository.save(booking);
+		bookingRepository.save(booking2);
 
 		bookingRepository.flush();
 
@@ -1047,6 +1154,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getAllBookingsDetailsTest2() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Create userInfos for booking
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
@@ -1058,7 +1167,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1072,7 +1181,7 @@ public class BookingResourceIntTest {
 			.cancelled(DEFAULT_CANCELLED)
 			.requestTimes(DEFAULT_REQUEST_TIMES)
 			.readByAdmin(DEFAULT_READ_BY_ADMIN);
-		bookingRepository.save(booking);
+		bookingRepository.save(booking2);
 
 		bookingRepository.flush();
 
@@ -1117,8 +1226,11 @@ public class BookingResourceIntTest {
 
 		// Set userInfos in booking
 		booking.setUserInfos(userInfos);
+		
+		// Initialize the database
+		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1133,14 +1245,16 @@ public class BookingResourceIntTest {
 			.requestTimes(DEFAULT_REQUEST_TIMES)
 			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 		bookingRepository.save(booking2);
-		// Initialize the database
-		bookingRepository.save(booking);
+		
 		bookingRepository.flush();
 
 		// Set start time 16 hours before start booking time and end time 12 hours after
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
-		
+
+		// setID to the userInfo id present in the booking
+		Long userId = userInfo.getId();
+
 		// Get bookings for user in between the passed times, expect 2 to be returned
 		restBookingMockMvc
 			.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
@@ -1179,7 +1293,7 @@ public class BookingResourceIntTest {
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1203,6 +1317,9 @@ public class BookingResourceIntTest {
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
 
+		// setID to the userInfo id present in the booking
+		Long userId = userInfo.getId();
+
 		// Get bookings for user in between the passed times, expect 0 to be returned
 		restBookingMockMvc
 			.perform(get("/api/bookingsDetails?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
@@ -1218,6 +1335,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getAllBookingsDetailsTest5() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Create userInfos for booking
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
@@ -1229,7 +1348,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1391,6 +1510,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getAllBookingsDetailsTest9() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Create userInfos for booking
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
@@ -1402,7 +1523,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1422,7 +1543,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		restBookingMockMvc
-			.perform(get("/api/bookingsDetails?userInfo=false&userId=8"))
+			.perform(get("/api/bookingsDetails?userInfo=false&userId=" + userInfo.getId()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 			.andExpect(jsonPath("$.size()").value(1))
@@ -1451,6 +1572,7 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getAllBookingsDetailsTest10() throws Exception {
 
+		userInfoRepository.save(userInfo);
 		// Create userInfos for booking
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
@@ -1461,28 +1583,12 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		// Add a second booking
-		Booking booking2 = new Booking()
-			.title(DEFAULT_TITLE)
-			.requestedBy(DEFAULT_REQUESTED_BY)
-			.startTime(DEFAULT_START_TIME)
-			.endTime(DEFAULT_END_TIME)
-			.userComments(DEFAULT_USER_COMMENTS)
-			.importanceLevel(DEFAULT_IMPORTANCE_LEVEL)
-			.adminAcceptedId(DEFAULT_ADMIN_ACCEPTED_ID)
-			.tutorAccepted(DEFAULT_TUTOR_ACCEPTED)
-			.tutorAcceptedId(DEFAULT_TUTOR_ACCEPTED_ID)
-			.tutorRejectedCount(DEFAULT_TUTOR_REJECTED_COUNT)
-			.cancelled(DEFAULT_CANCELLED)
-			.requestTimes(DEFAULT_REQUEST_TIMES)
-			.readByAdmin(DEFAULT_READ_BY_ADMIN);
-
 		bookingRepository.save(booking2);
 
 		bookingRepository.flush();
 
 		restBookingMockMvc
-			.perform(get("/api/bookingsDetails?userInfo=true&userId=8"))
+			.perform(get("/api/bookingsDetails?userInfo=true&userId=" + userInfo.getId()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 			.andExpect(jsonPath("$.size()").value(1))
@@ -1513,6 +1619,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getConfirmedBookings1() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Set tutor accepted to true
 		booking.setTutorAccepted(UPDATED_TUTOR_ACCEPTED);
 
@@ -1527,7 +1635,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1578,6 +1686,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getConfirmedBookings2() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Set tutor accepted to true
 		booking.setTutorAccepted(UPDATED_TUTOR_ACCEPTED);
 
@@ -1592,7 +1702,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1607,7 +1717,7 @@ public class BookingResourceIntTest {
 			.requestTimes(DEFAULT_REQUEST_TIMES)
 			.readByAdmin(DEFAULT_READ_BY_ADMIN);
 
-		bookingRepository.save(booking);
+		bookingRepository.save(booking2);
 
 		bookingRepository.flush();
 
@@ -1656,7 +1766,7 @@ public class BookingResourceIntTest {
 		// Set userInfos in booking
 		booking.setUserInfos(userInfos);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1679,7 +1789,10 @@ public class BookingResourceIntTest {
 		// Set start time 16 hours before start booking time and end time 12 hours after
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().plus(12, ChronoUnit.HOURS).toEpochMilli();
-		
+
+		// setID to the userInfo id present in the booking
+		Long userId = userInfo.getId();
+
 		// Get bookings for user in between the passed times, expect 2 to be
 		// returned
 		restBookingMockMvc
@@ -1722,7 +1835,7 @@ public class BookingResourceIntTest {
 		Set<UserInfo> userInfos = new HashSet<UserInfo>();
 		userInfos.add(userInfo);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1746,6 +1859,9 @@ public class BookingResourceIntTest {
 		long startTimeMs = booking.getStartTime().minus(16, ChronoUnit.HOURS).toEpochMilli();
 		long endTimeMs = booking.getStartTime().minus(12, ChronoUnit.HOURS).toEpochMilli();
 
+		// setID to the userInfo id present in the booking
+		Long userId = userInfo.getId();
+
 		// Get bookings for user in between the passed times, expect 0 to be returned
 		restBookingMockMvc
 			.perform(get("/api/bookingsConfirmed?startTimeMs=" + startTimeMs + "&endTimeMs=" + endTimeMs + "&userInfo=true&sort=id,desc"))
@@ -1761,6 +1877,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getConfirmedBookings5() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Set tutor accepted to true
 		booking.setTutorAccepted(UPDATED_TUTOR_ACCEPTED);
 
@@ -1775,7 +1893,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1945,6 +2063,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getConfirmedBookings9() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Set tutor accepted to true
 		booking.setTutorAccepted(UPDATED_TUTOR_ACCEPTED);
 
@@ -1959,7 +2079,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -1979,7 +2099,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		restBookingMockMvc
-			.perform(get("/api/bookingsConfirmed?userInfo=false&userId=8"))
+			.perform(get("/api/bookingsConfirmed?userInfo=false&userId=" + userInfo.getId()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 			.andExpect(jsonPath("$.size()").value(1))
@@ -2008,6 +2128,8 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void getConfirmedBookings10() throws Exception {
 
+		userInfoRepository.save(userInfo);
+		
 		// Set tutor accepted to true
 		booking.setTutorAccepted(UPDATED_TUTOR_ACCEPTED);
 
@@ -2022,7 +2144,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Add a second booking
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2042,7 +2164,7 @@ public class BookingResourceIntTest {
 		bookingRepository.flush();
 
 		restBookingMockMvc
-			.perform(get("/api/bookingsConfirmed?userInfo=true&userId=8"))
+			.perform(get("/api/bookingsConfirmed?userInfo=true&userId=" + userInfo.getId()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 			.andExpect(jsonPath("$.size()").value(1))
@@ -2086,7 +2208,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2155,7 +2277,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2208,7 +2330,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2277,7 +2399,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2331,7 +2453,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2389,7 +2511,7 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2448,7 +2570,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2 
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2525,8 +2647,8 @@ public class BookingResourceIntTest {
 		// Initialize the database
 		bookingRepository.save(booking);
 
-		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		// Second booking new Booking has tutor accepted set to true, should not be returned
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2608,7 +2730,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2671,7 +2793,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2739,7 +2861,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2821,7 +2943,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2885,7 +3007,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -2966,7 +3088,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3032,7 +3154,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -3112,7 +3234,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3183,7 +3305,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3258,7 +3380,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3324,7 +3446,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3407,7 +3529,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3482,7 +3604,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3539,7 +3661,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3613,7 +3735,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking is accepted, should be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(DEFAULT_TITLE)
 			.requestedBy(DEFAULT_REQUESTED_BY)
 			.startTime(DEFAULT_START_TIME)
@@ -3672,7 +3794,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -3749,7 +3871,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true, should not be returned
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -3831,7 +3953,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -3890,7 +4012,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -3965,7 +4087,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to false
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4022,7 +4144,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to false
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4082,7 +4204,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4157,7 +4279,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has tutor accepted set to true
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4215,7 +4337,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking does not have admin accepted
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4234,7 +4356,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking2);
 
 		// Third booking does not have admin accepted
-		Booking booking3 = new Booking()
+		booking3
 				.title(UPDATED_TITLE)
 				.requestedBy(UPDATED_REQUESTED_BY)
 				.startTime(UPDATED_START_TIME)
@@ -4306,7 +4428,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking does not have admin accepted
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4325,7 +4447,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking2);
 
 		// Third booking does not have admin accepted
-		Booking booking3 = new Booking()
+		booking3
 				.title(UPDATED_TITLE)
 				.requestedBy(UPDATED_REQUESTED_BY)
 				.startTime(UPDATED_START_TIME)
@@ -4409,7 +4531,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4479,7 +4601,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4532,7 +4654,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4603,7 +4725,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4673,7 +4795,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4741,7 +4863,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
@@ -4794,7 +4916,7 @@ public class BookingResourceIntTest {
 		bookingRepository.save(booking);
 
 		// Second booking has been set to pending admin approval
-		Booking booking2 = new Booking()
+		booking2
 			.title(UPDATED_TITLE)
 			.requestedBy(UPDATED_REQUESTED_BY)
 			.startTime(UPDATED_START_TIME)
