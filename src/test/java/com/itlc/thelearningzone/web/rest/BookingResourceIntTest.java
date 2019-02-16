@@ -5030,11 +5030,11 @@ public class BookingResourceIntTest {
 		Booking beforeBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
 		User admin = userRepository.findById(user.getId()).get();
 		User tutor = userRepository.findById(tutorUser.getId()).get();	
-
 	        
+		String queryString = "adminId=" + admin.getId() + "&bookingId=" + beforeBooking.getId() + "&tutorId=" + tutor.getId();
 		restBookingMockMvc
 			.perform(
-				put("/api/bookings/updateBookingAcceptedTutorAssigned/" + beforeBooking.getId() + "/" + admin.getId() + "/" + tutor.getId()))
+				put("/api/bookings/updateBookingAcceptedTutorAssigned?" + queryString))
 			.andExpect(status().isOk());
 		
 		Booking afterBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
@@ -5066,10 +5066,11 @@ public class BookingResourceIntTest {
 		User admin = userRepository.findById(adminUser.getId()).get();
 		User tutor = userRepository.findById(tutorUser.getId()).get();
 	    Long invalidBookingId = 10L; 
-				
+
+	    String queryString = "adminId=" + admin.getId() + "&bookingId=" + invalidBookingId + "&tutorId=" + tutor.getId();
 		restBookingMockMvc
 			.perform(
-				put("/api/bookings/updateBookingAcceptedTutorAssigned/" + invalidBookingId + "/" + admin.getId() + "/" + tutor.getId()))
+				put("/api/bookings/updateBookingAcceptedTutorAssigned?" + queryString))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.title", is("Booking with id " + invalidBookingId + " does not exist" )));	
 		

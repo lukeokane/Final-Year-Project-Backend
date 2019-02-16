@@ -110,11 +110,11 @@ public class BookingResource {
      * @return the ResponseEntity with status 201 (Created) and with body the new bookingDTO, or with status 400 (Bad Request) if the booking has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("bookings/updateBookingAcceptedTutorAssigned/{bookingId}/{adminId}/{tutorId}")
+    @PutMapping("bookings/updateBookingAcceptedTutorAssigned")
     @Timed
-    public ResponseEntity<BookingDTO> updateBookingAcceptedTutorAssigned(@PathVariable Long bookingId,
-    		@PathVariable Integer adminId, 
-    		@PathVariable Integer tutorId) throws URISyntaxException {
+    public ResponseEntity<BookingDTO> updateBookingAcceptedTutorAssigned(@RequestParam Long bookingId,
+    		@RequestParam Integer adminId, 
+    		@RequestParam Integer tutorId) throws URISyntaxException {
         log.debug("REST request to update booking ID {}, accepted by admin ID {} and assigned to tutor ID {}", bookingId, adminId, tutorId);
         
         bookingService.updateBookingAcceptedTutorAssigned(bookingId, adminId, tutorId);
