@@ -430,8 +430,8 @@ public class BookingServiceImpl implements BookingService {
 		if(receiver.isPresent()) {
 			String notificationMessage = "Sorry " + receiver.get().getFirstName() + ", there are no bookings on " + bookingDTO.getTitle() + " based on the times you selected. Please request again";
 			notification.setMessage(notificationMessage); 
+			notification.setReceiverId(receiver.get().getId());
 		}
-		notification.setReceiverId(receiver.get().getId());
 	    notification.setBookingId(bookingDTO.getId());
 		
 		notificationService.save(notification);
