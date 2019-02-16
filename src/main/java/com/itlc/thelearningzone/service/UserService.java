@@ -265,7 +265,7 @@ public class UserService {
     public void deleteUser(String login) {
     	Optional<User> searchUser = userRepository.findOneByLogin(login);
     	if (searchUser.isPresent()) {
-    		userInfoService.findOne(userRepository.findOneByLogin(login).get().getId()).ifPresent(userInfo -> {
+    		userInfoService.findOne(searchUser.get().getId()).ifPresent(userInfo -> {
                 userInfoService.delete(userInfo.getId());
                 log.debug("Deleted UserInfo: {}", userInfo);
             });
