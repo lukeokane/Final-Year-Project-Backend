@@ -213,7 +213,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setTimestamp(instant);
 		notification.setRead(false);
 		// getting sender 
-		Optional<User> sender = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}
@@ -320,7 +320,7 @@ public class BookingServiceImpl implements BookingService {
 		String notificationMessage = "Your booking request ".concat(bookingDTO.getTitle().concat(" on ").concat(date).concat(" with ").concat(tutorUser.getFirstName().concat(tutorUser.getLastName().concat(" has been accepted"))));
 		notification.setMessage(notificationMessage);
 		// getting receiverID
-		Optional<User> receiver =  userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		if(receiver.isPresent()) {
 		   notification.setReceiverId(receiver.get().getId());
 		}
@@ -425,7 +425,7 @@ public class BookingServiceImpl implements BookingService {
 		  notification.setSenderImageURL(SENDER_URL + sender.get().getLogin() + IMAGE_FORMAT);
 		}
 		// getting receiver
-		Optional<User> receiver = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
+		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
 		// setting the notification message
 		if(receiver.isPresent()) {
 			String notificationMessage = "Sorry " + receiver.get().getFirstName() + ", there are no bookings on " + bookingDTO.getTitle() + " based on the times you selected. Please request again";
