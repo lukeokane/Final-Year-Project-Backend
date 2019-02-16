@@ -1,6 +1,7 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.SubjectService;
@@ -10,6 +11,7 @@ import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
+import com.itlc.thelearningzone.service.dto.SubjectDTO;
 
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -41,6 +43,8 @@ public class BookingResource {
     private final Logger log = LoggerFactory.getLogger(BookingResource.class);
 
     private static final String ENTITY_NAME = "booking";
+    
+    private final String ID_NULL = "idnull";
 
     private final BookingService bookingService;
     
@@ -623,7 +627,10 @@ public class BookingResource {
     			
     			// Get subject if booking containers subject ID
     			if (bookingsDTOList.get(i).getSubjectId() != null) {
-    				bdDTO.setSubject(subjectService.findOne(bookingsDTOList.get(i).getId()).get());
+    				
+    				Long subjectId = bookingsDTOList.get(i).getSubjectId();
+    				SubjectDTO subject = subjectService.findOne(subjectId).orElseThrow(() -> new BadRequestAlertException("Subject id " + subjectId + " is does not exist", ENTITY_NAME, ID_NULL));
+    				bdDTO.setSubject(subject);
     			}
     			
     			// Do not return any list of UserInfo objects or BookingUserDetail objects 
