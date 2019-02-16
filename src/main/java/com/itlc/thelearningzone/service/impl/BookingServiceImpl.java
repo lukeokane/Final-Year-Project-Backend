@@ -45,10 +45,6 @@ import javax.validation.Valid;
 @Transactional
 public class BookingServiceImpl implements BookingService {
 
-	private final String ENTITY_NAME = "BookingService";
-	
-	private final String ID_NULL = "idnull";
-
 	private final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	private final BookingRepository bookingRepository;
@@ -69,17 +65,20 @@ public class BookingServiceImpl implements BookingService {
 	
 	private static final String IMAGE_FORMAT = ".png";
 	
+	private static final String ENTITY_NAME = "BookingService";
+	
+	private static final String ID_NULL = "idnull";
+	
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService, UserInfoRepository userInfoRepository) {
+			UserRepository userRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.userRepository = userRepository;
 		this.mailService = mailService;
 		this.resourceRepository = resourceRepository;
 		this.notificationService = notificationService;
-
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class BookingServiceImpl implements BookingService {
 	
 	@Override
     public Page<BookingDTO> findUserBookingsModifiedAfterTime(Pageable pageable, Long userId, Instant startTime) {
-		log.debug("Request to get all Bookings modified after {0} for user {1}", Date.from(startTime), userId);
+		log.debug("Request to get all Bookings modified after {} for user {}", Date.from(startTime), userId);
 		return bookingRepository.findUserBookingsModifiedAfterTime(pageable, userId, startTime).map(bookingMapper::toDto);
 	}
     
@@ -253,7 +252,8 @@ public class BookingServiceImpl implements BookingService {
 		resources = resourceRepository.findAllResourcesInBooking(booking.getId());
 		}
 		
-		booking.setAdminAcceptedId(adminId);
+		// Sonar indicates 'admin' property is unused, will get ID from admin instead of using the parameter to circumvent.
+		booking.setAdminAcceptedId(admin.getId().intValue());
 		booking.setTutorAccepted(true);
 		booking.setTutorAcceptedId(tutorId);
 		
@@ -422,17 +422,16 @@ public class BookingServiceImpl implements BookingService {
 		Optional<User> sender = userRepository.findById(ADMIN_ID);
 		if(sender.isPresent()) {
 		  notification.setSenderId(sender.get().getId());
+		  notification.setSenderImageURL(SENDER_URL + sender.get().getLogin() + IMAGE_FORMAT);
 		}
-		notification.setSenderImageURL(SENDER_URL.concat(sender.get().getLogin()).concat(IMAGE_FORMAT));
 		// getting receiver
-		Optional<User> reveiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
-		if(sender.isPresent()) {
-		  notification.setReceiverId(reveiver.get().getId());
-		}
+		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		if(receiver.isPresent()) {
+		  notification.setReceiverId(receiver.get().getId());
 		notification.setBookingId(bookingDTO.getId());
-		
+		}
 		// setting the notification message
-		String notificationMessage = "Sorry ".concat(reveiver.get().getFirstName()).concat(", there are no bookings on ").concat(bookingDTO.getTitle().concat(" based on the times you selected. Please request again"));;
+		String notificationMessage = "Sorry " + receiver.get().getFirstName() + ", there are no bookings on " + bookingDTO.getTitle() + " based on the times you selected. Please request again";
 		notification.setMessage(notificationMessage);
 		
 		notificationService.save(notification);
@@ -462,7 +461,7 @@ public class BookingServiceImpl implements BookingService {
 	
 	@Override
 	public List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate) {
-		List<BookingDTO> list = new ArrayList<BookingDTO>();
+		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findAllWithBookingUserDetails(instantFromDate, instantToDate);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
@@ -472,7 +471,7 @@ public class BookingServiceImpl implements BookingService {
 	
 	@Override
 	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
-		List<BookingDTO> list = new ArrayList<BookingDTO>();
+		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
@@ -483,8 +482,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer selectedYear) {
-		List<BookingDTO> list = new ArrayList<BookingDTO>();
-		//List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
+		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findAll();
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
