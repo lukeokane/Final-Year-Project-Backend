@@ -202,7 +202,7 @@ public class CourseResourceIntTest {
         courseRepository.saveAndFlush(course);
 
         // Get all the courseList
-        restCourseMockMvc.perform(get("/api/courses?sort=id,desc"))
+        restCourseMockMvc.perform(get("/api/courses/findAllCoursesList?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(course.getId().intValue())))
