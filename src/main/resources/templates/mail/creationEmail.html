@@ -17,17 +17,13 @@
             th:text="${url}">Login link</a>
         </p>
         <p>
-            <span th:text="#{email.activation.text2}">Regards, </span>
+            <span th:text="#{email.cancelled.text3}">Regards, </span>
             <br/>
-            <br/>
-            <br/>
-            <em th:text="#{email.addy1}">IT Learning Centre</em>
-            <br/>
-            <em th:text="#{email.addy2}">PJ Carroll Building.</em>
-            <br/>
-            <em th:text="#{email.phoneNumAndExt}">Phone & ext</em>
-            <br/>
-            <em th:text="#{email.ItlcEmail}">Email</em>
+            <div th:text="#{email.addy1}"></div>
+            <div th:text="#{email.addy2}"></div>
+            <div><strong th:text="'T:'"></strong> <a th:href="'tel:' + #{email.phoneNum}"><span th:text="#{email.phoneNum}"></span></a> <span th:text="#{email.phoneExtension}"></span></div>
+            <div><strong th:text="'E:'"></strong> <span th:text="#{email.ItlcEmail}"></span></div>
+            <div><strong th:text="'W:'"></strong> <a th:href="#{email.website}"><span th:text="#{email.website}"></span></a></div>
         </p>
     </body>
 </html>
