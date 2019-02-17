@@ -213,7 +213,7 @@ public class SubjectResourceIntTest {
         subjectRepository.saveAndFlush(subject);
 
         // Get all the subjectList
-        restSubjectMockMvc.perform(get("/api/subjects?sort=id,desc"))
+        restSubjectMockMvc.perform(get("/api/subjects/findAllSubjectsList?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(subject.getId().intValue())))
