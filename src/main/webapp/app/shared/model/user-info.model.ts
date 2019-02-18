@@ -1,28 +1,29 @@
 import { IBookingUserDetails } from 'app/shared/model//booking-user-details.model';
 import { INotification } from 'app/shared/model//notification.model';
 import { IBooking } from 'app/shared/model//booking.model';
-import { ISemester } from 'app/shared/model//semester.model';
 
 export interface IUserInfo {
     id?: number;
     tutorSkills?: string;
+    profileImageURL?: string;
     userId?: number;
+    semesterGroupId?: number;
     bookingUserDetails?: IBookingUserDetails[];
-    senderUserInfos?: INotification[];
-    receiverUserInfos?: INotification[];
+    sentNotifications?: INotification[];
+    receivedNotifications?: INotification[];
     bookings?: IBooking[];
-    semesters?: ISemester[];
 }
 
 export class UserInfo implements IUserInfo {
     constructor(
         public id?: number,
         public tutorSkills?: string,
+        public profileImageURL?: string,
         public userId?: number,
+        public semesterGroupId?: number,
         public bookingUserDetails?: IBookingUserDetails[],
-        public senderUserInfos?: INotification[],
-        public receiverUserInfos?: INotification[],
-        public bookings?: IBooking[],
-        public semesters?: ISemester[]
+        public sentNotifications?: INotification[],
+        public receivedNotifications?: INotification[],
+        public bookings?: IBooking[]
     ) {}
 }

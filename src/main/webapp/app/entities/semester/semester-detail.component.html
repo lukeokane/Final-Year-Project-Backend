@@ -17,18 +17,6 @@
                 <dd>
                     <span>{{semester.semesterEndDate}}</span>
                 </dd>
-                <dt><span>Subject</span></dt>
-                <dd>
-                    <span *ngFor="let subject of semester.subjects; let last = last">
-                        <a [routerLink]="['/subject', subject?.id, 'view' ]">{{subject.id}}</a>{{last ? '' : ', '}}
-                    </span>
-                </dd>
-                <dt><span>User Info</span></dt>
-                <dd>
-                    <span *ngFor="let userInfo of semester.userInfos; let last = last">
-                        <a [routerLink]="['/user-info', userInfo?.id, 'view' ]">{{userInfo.id}}</a>{{last ? '' : ', '}}
-                    </span>
-                </dd>
                 <dt><span>Course Year</span></dt>
                 <dd>
                     <div *ngIf="semester.courseYearId">

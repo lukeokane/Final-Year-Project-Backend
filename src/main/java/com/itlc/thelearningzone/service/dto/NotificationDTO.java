@@ -3,7 +3,9 @@ package com.itlc.thelearningzone.service.dto;
 import java.time.Instant;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO for the Notification entity.
@@ -27,6 +29,16 @@ public class NotificationDTO implements Serializable {
     private Long receiverId;
 
     private Long bookingId;
+    
+    public Set<BookingDTO> getBookingDTO() {
+		return bookingDTO;
+	}
+
+	public void setBookingDTO(Set<BookingDTO> bookingDTO) {
+		this.bookingDTO = bookingDTO;
+	}
+
+	private Set<BookingDTO> bookingDTO = new HashSet<>();
 
     public Long getId() {
         return id;

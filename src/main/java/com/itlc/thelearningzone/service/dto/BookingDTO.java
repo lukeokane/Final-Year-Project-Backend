@@ -32,17 +32,29 @@ public class BookingDTO implements Serializable {
     @NotNull
     private OrdinalScale importanceLevel;
 
+    private Integer adminAcceptedId;
+
     private Boolean tutorAccepted;
 
     private Integer tutorAcceptedId;
+
+    private Instant modifiedTimestamp;
 
     private Integer tutorRejectedCount;
 
     private Boolean cancelled;
 
+    private String requestTimes;
+
+    private Boolean readByAdmin;
+
     private Long subjectId;
 
     private Set<UserInfoDTO> userInfos = new HashSet<>();
+
+    private Set<TopicDTO> topics = new HashSet<>();
+    
+    private Set<BookingUserDetailsDTO> bookingUserDetailsDTO = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -51,6 +63,14 @@ public class BookingDTO implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+    
+    public Set<BookingUserDetailsDTO> getBookingUserDetailsDTO() {
+		return bookingUserDetailsDTO;
+	}
+
+	public void setBookingUserDetailsDTO(Set<BookingUserDetailsDTO> bookingUserDetailsDTO) {
+		this.bookingUserDetailsDTO = bookingUserDetailsDTO;
+	}
 
     public String getTitle() {
         return title;
@@ -100,6 +120,14 @@ public class BookingDTO implements Serializable {
         this.importanceLevel = importanceLevel;
     }
 
+    public Integer getAdminAcceptedId() {
+        return adminAcceptedId;
+    }
+
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
+    }
+
     public Boolean isTutorAccepted() {
         return tutorAccepted;
     }
@@ -114,6 +142,14 @@ public class BookingDTO implements Serializable {
 
     public void setTutorAcceptedId(Integer tutorAcceptedId) {
         this.tutorAcceptedId = tutorAcceptedId;
+    }
+
+    public Instant getModifiedTimestamp() {
+        return modifiedTimestamp;
+    }
+
+    public void setModifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public Integer getTutorRejectedCount() {
@@ -132,6 +168,22 @@ public class BookingDTO implements Serializable {
         this.cancelled = cancelled;
     }
 
+    public String getRequestTimes() {
+        return requestTimes;
+    }
+
+    public void setRequestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+    }
+
+    public Boolean isReadByAdmin() {
+        return readByAdmin;
+    }
+
+    public void setReadByAdmin(Boolean readByAdmin) {
+        this.readByAdmin = readByAdmin;
+    }
+
     public Long getSubjectId() {
         return subjectId;
     }
@@ -146,6 +198,14 @@ public class BookingDTO implements Serializable {
 
     public void setUserInfos(Set<UserInfoDTO> userInfos) {
         this.userInfos = userInfos;
+    }
+
+    public Set<TopicDTO> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(Set<TopicDTO> topics) {
+        this.topics = topics;
     }
 
     @Override
@@ -179,10 +239,14 @@ public class BookingDTO implements Serializable {
             ", endTime='" + getEndTime() + "'" +
             ", userComments='" + getUserComments() + "'" +
             ", importanceLevel='" + getImportanceLevel() + "'" +
+            ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
+            ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
+            ", requestTimes='" + getRequestTimes() + "'" +
+            ", readByAdmin='" + isReadByAdmin() + "'" +
             ", subject=" + getSubjectId() +
             "}";
     }

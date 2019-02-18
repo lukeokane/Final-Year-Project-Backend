@@ -86,20 +86,14 @@ public class SemesterResource {
      * GET  /semesters : get all the semesters.
      *
      * @param pageable the pagination information
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
      * @return the ResponseEntity with status 200 (OK) and the list of semesters in body
      */
     @GetMapping("/semesters")
     @Timed
-    public ResponseEntity<List<SemesterDTO>> getAllSemesters(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<List<SemesterDTO>> getAllSemesters(Pageable pageable) {
         log.debug("REST request to get a page of Semesters");
-        Page<SemesterDTO> page;
-        if (eagerload) {
-            page = semesterService.findAllWithEagerRelationships(pageable);
-        } else {
-            page = semesterService.findAll(pageable);
-        }
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/semesters?eagerload=%b", eagerload));
+        Page<SemesterDTO> page = semesterService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/semesters");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

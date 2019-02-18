@@ -12,7 +12,11 @@ public class UserInfoDTO implements Serializable {
 
     private String tutorSkills;
 
+    private String profileImageURL;
+
     private Long userId;
+
+    private Long semesterGroupId;
 
     public Long getId() {
         return id;
@@ -30,12 +34,28 @@ public class UserInfoDTO implements Serializable {
         this.tutorSkills = tutorSkills;
     }
 
+    public String getProfileImageURL() {
+        return profileImageURL;
+    }
+
+    public void setProfileImageURL(String profileImageURL) {
+        this.profileImageURL = profileImageURL;
+    }
+
     public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getSemesterGroupId() {
+        return semesterGroupId;
+    }
+
+    public void setSemesterGroupId(Long semesterGroupId) {
+        this.semesterGroupId = semesterGroupId;
     }
 
     @Override
@@ -64,7 +84,9 @@ public class UserInfoDTO implements Serializable {
         return "UserInfoDTO{" +
             "id=" + getId() +
             ", tutorSkills='" + getTutorSkills() + "'" +
+            ", profileImageURL='" + getProfileImageURL() + "'" +
             ", user=" + getUserId() +
+            ", semesterGroup=" + getSemesterGroupId() +
             "}";
     }
 }

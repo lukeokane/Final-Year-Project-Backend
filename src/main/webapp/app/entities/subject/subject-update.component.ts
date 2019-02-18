@@ -8,8 +8,8 @@ import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from './subject.service';
 import { ITopic } from 'app/shared/model/topic.model';
 import { TopicService } from 'app/entities/topic';
-import { ISemester } from 'app/shared/model/semester.model';
-import { SemesterService } from 'app/entities/semester';
+import { ISemesterGroup } from 'app/shared/model/semester-group.model';
+import { SemesterGroupService } from 'app/entities/semester-group';
 
 @Component({
     selector: 'jhi-subject-update',
@@ -21,13 +21,13 @@ export class SubjectUpdateComponent implements OnInit {
 
     topics: ITopic[];
 
-    semesters: ISemester[];
+    semestergroups: ISemesterGroup[];
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private subjectService: SubjectService,
         private topicService: TopicService,
-        private semesterService: SemesterService,
+        private semesterGroupService: SemesterGroupService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -42,9 +42,9 @@ export class SubjectUpdateComponent implements OnInit {
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
-        this.semesterService.query().subscribe(
-            (res: HttpResponse<ISemester[]>) => {
-                this.semesters = res.body;
+        this.semesterGroupService.query().subscribe(
+            (res: HttpResponse<ISemesterGroup[]>) => {
+                this.semestergroups = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -84,7 +84,7 @@ export class SubjectUpdateComponent implements OnInit {
         return item.id;
     }
 
-    trackSemesterById(index: number, item: ISemester) {
+    trackSemesterGroupById(index: number, item: ISemesterGroup) {
         return item.id;
     }
 

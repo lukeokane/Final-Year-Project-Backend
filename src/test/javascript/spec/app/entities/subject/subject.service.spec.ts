@@ -21,7 +21,7 @@ describe('Service Tests', () => {
             service = injector.get(SubjectService);
             httpMock = injector.get(HttpTestingController);
 
-            elemDefault = new Subject(0, 'AAAAAAA');
+            elemDefault = new Subject(0, 'AAAAAAA', 'AAAAAAA');
         });
 
         describe('Service methods', async () => {
@@ -55,7 +55,8 @@ describe('Service Tests', () => {
             it('should update a Subject', async () => {
                 const returnedFromService = Object.assign(
                     {
-                        title: 'BBBBBB'
+                        title: 'BBBBBB',
+                        subjectCode: 'BBBBBB'
                     },
                     elemDefault
                 );
@@ -72,7 +73,8 @@ describe('Service Tests', () => {
             it('should return a list of Subject', async () => {
                 const returnedFromService = Object.assign(
                     {
-                        title: 'BBBBBB'
+                        title: 'BBBBBB',
+                        subjectCode: 'BBBBBB'
                     },
                     elemDefault
                 );

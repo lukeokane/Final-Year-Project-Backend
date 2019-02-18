@@ -20,6 +20,17 @@
                         </small>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_subjectCode">Subject Code</label>
+                    <input type="text" class="form-control" name="subjectCode" id="field_subjectCode"
+                        [(ngModel)]="subject.subjectCode" required/>
+                    <div [hidden]="!(editForm.controls.subjectCode?.dirty && editForm.controls.subjectCode?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.subjectCode?.errors?.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label for="field_topic">Topic</label>

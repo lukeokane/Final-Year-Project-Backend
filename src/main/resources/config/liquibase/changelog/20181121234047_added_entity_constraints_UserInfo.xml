@@ -14,5 +14,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
 
+        <addForeignKeyConstraint baseColumnNames="semester_group_id"
+                                 baseTableName="user_info"
+                                 constraintName="fk_user_info_semester_group_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="semester_group"/>
+
     </changeSet>
 </databaseChangeLog>

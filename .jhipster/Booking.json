@@ -42,6 +42,10 @@
             ]
         },
         {
+            "fieldName": "adminAcceptedId",
+            "fieldType": "Integer"
+        },
+        {
             "fieldName": "tutorAccepted",
             "fieldType": "Boolean"
         },
@@ -50,11 +54,23 @@
             "fieldType": "Integer"
         },
         {
+            "fieldName": "modifiedTimestamp",
+            "fieldType": "Instant"
+        },
+        {
             "fieldName": "tutorRejectedCount",
             "fieldType": "Integer"
         },
         {
             "fieldName": "cancelled",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "requestTimes",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "readByAdmin",
             "fieldType": "Boolean"
         }
     ],
@@ -76,6 +92,14 @@
             "otherEntityRelationshipName": "booking",
             "relationshipName": "userInfo",
             "otherEntityName": "userInfo",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "booking",
+            "relationshipName": "topic",
+            "otherEntityName": "topic",
             "otherEntityField": "id",
             "ownerSide": true
         },

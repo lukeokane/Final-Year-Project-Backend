@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -96,4 +98,20 @@ public class SubjectServiceImpl implements SubjectService {
         log.debug("Request to delete Subject : {}", id);
         subjectRepository.deleteById(id);
     }
+
+    /**
+     * Get all the Subjects in a list
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    @Override
+	public List<SubjectDTO> findAllSubjectsList() {
+		List<SubjectDTO> list = new ArrayList<SubjectDTO>();
+		List<Subject> ps = subjectRepository.findAll();
+		for (Subject p : ps)
+			list.add(subjectMapper.toDto(p));
+
+		return list;
+	}
 }

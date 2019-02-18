@@ -9,9 +9,19 @@
                 <dd>
                     <span>{{userInfo.tutorSkills}}</span>
                 </dd>
+                <dt><span>Profile Image URL</span></dt>
+                <dd>
+                    <span>{{userInfo.profileImageURL}}</span>
+                </dd>
                 <dt><span>User</span></dt>
                 <dd>
                     {{userInfo.userId}}
+                </dd>
+                <dt><span>Semester Group</span></dt>
+                <dd>
+                    <div *ngIf="userInfo.semesterGroupId">
+                        <a [routerLink]="['/semester-group', userInfo.semesterGroupId, 'view']">{{userInfo.semesterGroupId}}</a>
+                    </div>
                 </dd>
             </dl>
 

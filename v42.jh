@@ -1,5 +1,6 @@
 entity UserInfo {
-    tutorSkills String  
+    tutorSkills String,
+    profileImageURL String
 }
 
 entity Booking {
@@ -9,11 +10,14 @@ entity Booking {
     endTime Instant required,
     userComments String,
     importanceLevel OrdinalScale required,
+    adminAcceptedId Integer,
     tutorAccepted Boolean,
     tutorAcceptedId Integer,
+    modifiedTimestamp Instant,
     tutorRejectedCount Integer,
-    cancelled Boolean
-    
+    cancelled Boolean,
+    requestTimes String,
+    readByAdmin Boolean
 }
 
 entity BookingUserDetails {
@@ -22,8 +26,7 @@ entity BookingUserDetails {
     usercheckInTime Instant,
     usercheckOutTime Instant,
     userCancelled Boolean,
-    tutorRejected Boolean
-    
+    tutorRejected Boolean  
 }
 
 entity Notification {
@@ -49,8 +52,14 @@ entity Semester {
     semesterEndDate LocalDate
 }
 
-entity Subject {
+entity SemesterGroup {
 	title String required
+	
+}
+
+entity Subject {
+	title String required,
+    subjectCode String required
 
 }
 
@@ -74,30 +83,32 @@ enum SemesterNumber {
 }
 
 relationship OneToOne {
-	UserInfo to User{user}
+	UserInfo{user} to User
     
 }
 
 relationship ManyToOne {
     Booking{subject} to Subject{booking},
     BookingUserDetails{userInfo} to UserInfo{bookingUserDetails},
-    Notification{sender} to UserInfo{senderUserInfo},
-	Notification{receiver} to UserInfo{receiverUserInfo},
-	Notification{booking} to Booking{notification},
+    Notification{sender} to UserInfo{sentNotifications},
+	Notification{receiver} to UserInfo{receivedNotifications},
+	Notification{booking} to Booking{notification}
 }
 
 relationship OneToMany {    
     Booking{bookingUserDetails} to BookingUserDetails{booking},
     Topic{resource} to Resource{topic},
     Course{courseYear} to CourseYear{course},
-    CourseYear{semester} to Semester{courseYear}
+    CourseYear{semester} to Semester{courseYear},
+    Semester{semesterGroup} to SemesterGroup{semester},
+    SemesterGroup{userInfo} to UserInfo{semesterGroup},
 }
 
 relationship ManyToMany {
     Booking{userInfo} to UserInfo{booking},
     Subject{topic} to Topic{subject},
-    Semester{subject} to Subject{semester},
-    Semester{userInfo} to UserInfo{semester}
+    SemesterGroup{subject} to Subject{semesterGroup}
+    Booking{topic} to Topic{booking}
 
 }
 
@@ -106,10 +117,3 @@ dto * with mapstruct
 paginate * with pagination
 
 service all with serviceImpl
-
-
-
-
-
-
-

@@ -46,11 +46,19 @@
                 <constraints nullable="false" />
             </column>
 
+            <column name="admin_accepted_id" type="integer">
+                <constraints nullable="true" />
+            </column>
+
             <column name="tutor_accepted" type="bit">
                 <constraints nullable="true" />
             </column>
 
             <column name="tutor_accepted_id" type="integer">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="modified_timestamp" type="datetime">
                 <constraints nullable="true" />
             </column>
 
@@ -62,6 +70,14 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="request_times" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="read_by_admin" type="bit">
+                <constraints nullable="true" />
+            </column>
+
             <column name="subject_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -70,6 +86,7 @@
         </createTable>
         <dropDefaultValue tableName="booking" columnName="start_time" columnDataType="datetime"/>
         <dropDefaultValue tableName="booking" columnName="end_time" columnDataType="datetime"/>
+        <dropDefaultValue tableName="booking" columnName="modified_timestamp" columnDataType="datetime"/>
         
         <createTable tableName="booking_user_info">
             <column name="user_infos_id" type="bigint">
@@ -81,6 +98,17 @@
         </createTable>
 
         <addPrimaryKey columnNames="bookings_id, user_infos_id" tableName="booking_user_info"/>
+        
+        <createTable tableName="booking_topic">
+            <column name="topics_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bookings_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="bookings_id, topics_id" tableName="booking_topic"/>
         
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->

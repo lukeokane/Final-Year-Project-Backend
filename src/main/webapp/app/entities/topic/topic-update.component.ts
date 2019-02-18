@@ -8,6 +8,8 @@ import { ITopic } from 'app/shared/model/topic.model';
 import { TopicService } from './topic.service';
 import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from 'app/entities/subject';
+import { IBooking } from 'app/shared/model/booking.model';
+import { BookingService } from 'app/entities/booking';
 
 @Component({
     selector: 'jhi-topic-update',
@@ -19,10 +21,13 @@ export class TopicUpdateComponent implements OnInit {
 
     subjects: ISubject[];
 
+    bookings: IBooking[];
+
     constructor(
         private jhiAlertService: JhiAlertService,
         private topicService: TopicService,
         private subjectService: SubjectService,
+        private bookingService: BookingService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -34,6 +39,12 @@ export class TopicUpdateComponent implements OnInit {
         this.subjectService.query().subscribe(
             (res: HttpResponse<ISubject[]>) => {
                 this.subjects = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+        this.bookingService.query().subscribe(
+            (res: HttpResponse<IBooking[]>) => {
+                this.bookings = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -70,6 +81,10 @@ export class TopicUpdateComponent implements OnInit {
     }
 
     trackSubjectById(index: number, item: ISubject) {
+        return item.id;
+    }
+
+    trackBookingById(index: number, item: IBooking) {
         return item.id;
     }
 

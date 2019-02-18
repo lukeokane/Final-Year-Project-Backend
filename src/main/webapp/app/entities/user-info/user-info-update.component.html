@@ -14,12 +14,24 @@
                     <input type="text" class="form-control" name="tutorSkills" id="field_tutorSkills"
                         [(ngModel)]="userInfo.tutorSkills" />
                 </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_profileImageURL">Profile Image URL</label>
+                    <input type="text" class="form-control" name="profileImageURL" id="field_profileImageURL"
+                        [(ngModel)]="userInfo.profileImageURL" />
+                </div>
 
                 <div class="form-group">
                     <label class="form-control-label" for="field_user">User</label>
                     <select class="form-control" id="field_user" name="user" [(ngModel)]="userInfo.userId" >
                         <option [ngValue]="null"></option>
                         <option [ngValue]="userOption.id" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_semesterGroup">Semester Group</label>
+                    <select class="form-control" id="field_semesterGroup" name="semesterGroup" [(ngModel)]="userInfo.semesterGroupId" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="semesterGroupOption.id" *ngFor="let semesterGroupOption of semestergroups; trackBy: trackSemesterGroupById">{{semesterGroupOption.id}}</option>
                     </select>
                 </div>
             </div>

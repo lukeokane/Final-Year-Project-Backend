@@ -54,17 +54,29 @@ public class Booking implements Serializable {
     @Column(name = "importance_level", nullable = false)
     private OrdinalScale importanceLevel;
 
+    @Column(name = "admin_accepted_id")
+    private Integer adminAcceptedId;
+
     @Column(name = "tutor_accepted")
     private Boolean tutorAccepted;
 
     @Column(name = "tutor_accepted_id")
     private Integer tutorAcceptedId;
 
+    @Column(name = "modified_timestamp")
+    private Instant modifiedTimestamp;
+
     @Column(name = "tutor_rejected_count")
     private Integer tutorRejectedCount;
 
     @Column(name = "cancelled")
     private Boolean cancelled;
+
+    @Column(name = "request_times")
+    private String requestTimes;
+
+    @Column(name = "read_by_admin")
+    private Boolean readByAdmin;
 
     @OneToMany(mappedBy = "booking")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -79,6 +91,13 @@ public class Booking implements Serializable {
                joinColumns = @JoinColumn(name = "bookings_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "user_infos_id", referencedColumnName = "id"))
     private Set<UserInfo> userInfos = new HashSet<>();
+
+    @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JoinTable(name = "booking_topic",
+               joinColumns = @JoinColumn(name = "bookings_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name = "topics_id", referencedColumnName = "id"))
+    private Set<Topic> topics = new HashSet<>();
 
     @OneToMany(mappedBy = "booking")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -170,6 +189,19 @@ public class Booking implements Serializable {
         this.importanceLevel = importanceLevel;
     }
 
+    public Integer getAdminAcceptedId() {
+        return adminAcceptedId;
+    }
+
+    public Booking adminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
+        return this;
+    }
+
+    public void setAdminAcceptedId(Integer adminAcceptedId) {
+        this.adminAcceptedId = adminAcceptedId;
+    }
+
     public Boolean isTutorAccepted() {
         return tutorAccepted;
     }
@@ -196,6 +228,19 @@ public class Booking implements Serializable {
         this.tutorAcceptedId = tutorAcceptedId;
     }
 
+    public Instant getModifiedTimestamp() {
+        return modifiedTimestamp;
+    }
+
+    public Booking modifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
+        return this;
+    }
+
+    public void setModifiedTimestamp(Instant modifiedTimestamp) {
+        this.modifiedTimestamp = modifiedTimestamp;
+    }
+
     public Integer getTutorRejectedCount() {
         return tutorRejectedCount;
     }
@@ -220,6 +265,32 @@ public class Booking implements Serializable {
 
     public void setCancelled(Boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public String getRequestTimes() {
+        return requestTimes;
+    }
+
+    public Booking requestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+        return this;
+    }
+
+    public void setRequestTimes(String requestTimes) {
+        this.requestTimes = requestTimes;
+    }
+
+    public Boolean isReadByAdmin() {
+        return readByAdmin;
+    }
+
+    public Booking readByAdmin(Boolean readByAdmin) {
+        this.readByAdmin = readByAdmin;
+        return this;
+    }
+
+    public void setReadByAdmin(Boolean readByAdmin) {
+        this.readByAdmin = readByAdmin;
     }
 
     public Set<BookingUserDetails> getBookingUserDetails() {
@@ -285,6 +356,31 @@ public class Booking implements Serializable {
         this.userInfos = userInfos;
     }
 
+    public Set<Topic> getTopics() {
+        return topics;
+    }
+
+    public Booking topics(Set<Topic> topics) {
+        this.topics = topics;
+        return this;
+    }
+
+    public Booking addTopic(Topic topic) {
+        this.topics.add(topic);
+        topic.getBookings().add(this);
+        return this;
+    }
+
+    public Booking removeTopic(Topic topic) {
+        this.topics.remove(topic);
+        topic.getBookings().remove(this);
+        return this;
+    }
+
+    public void setTopics(Set<Topic> topics) {
+        this.topics = topics;
+    }
+
     public Set<Notification> getNotifications() {
         return notifications;
     }
@@ -341,10 +437,14 @@ public class Booking implements Serializable {
             ", endTime='" + getEndTime() + "'" +
             ", userComments='" + getUserComments() + "'" +
             ", importanceLevel='" + getImportanceLevel() + "'" +
+            ", adminAcceptedId=" + getAdminAcceptedId() +
             ", tutorAccepted='" + isTutorAccepted() + "'" +
             ", tutorAcceptedId=" + getTutorAcceptedId() +
+            ", modifiedTimestamp='" + getModifiedTimestamp() + "'" +
             ", tutorRejectedCount=" + getTutorRejectedCount() +
             ", cancelled='" + isCancelled() + "'" +
+            ", requestTimes='" + getRequestTimes() + "'" +
+            ", readByAdmin='" + isReadByAdmin() + "'" +
             "}";
     }
 }

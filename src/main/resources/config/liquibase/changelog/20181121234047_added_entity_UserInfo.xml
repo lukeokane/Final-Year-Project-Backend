@@ -25,11 +25,24 @@
             <column name="tutor_skills" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+
+            <column name="profile_image_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="user_id" type="bigint">
                 <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_info_user_id" />
             </column>
+            <column name="semester_group_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
+        <loadData encoding="UTF-8"
+                  file="config/liquibase/user_infos.csv"
+                  separator=";"
+                  tableName="user_info">
+        </loadData>
         
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->

@@ -29,6 +29,10 @@
                 <dd>
                     <span>{{booking.importanceLevel}}</span>
                 </dd>
+                <dt><span>Admin Accepted Id</span></dt>
+                <dd>
+                    <span>{{booking.adminAcceptedId}}</span>
+                </dd>
                 <dt><span>Tutor Accepted</span></dt>
                 <dd>
                     <span>{{booking.tutorAccepted}}</span>
@@ -37,6 +41,10 @@
                 <dd>
                     <span>{{booking.tutorAcceptedId}}</span>
                 </dd>
+                <dt><span>Modified Timestamp</span></dt>
+                <dd>
+                    <span>{{booking.modifiedTimestamp}}</span>
+                </dd>
                 <dt><span>Tutor Rejected Count</span></dt>
                 <dd>
                     <span>{{booking.tutorRejectedCount}}</span>
@@ -44,6 +52,14 @@
                 <dt><span>Cancelled</span></dt>
                 <dd>
                     <span>{{booking.cancelled}}</span>
+                </dd>
+                <dt><span>Request Times</span></dt>
+                <dd>
+                    <span>{{booking.requestTimes}}</span>
+                </dd>
+                <dt><span>Read By Admin</span></dt>
+                <dd>
+                    <span>{{booking.readByAdmin}}</span>
                 </dd>
                 <dt><span>Subject</span></dt>
                 <dd>
@@ -55,6 +71,12 @@
                 <dd>
                     <span *ngFor="let userInfo of booking.userInfos; let last = last">
                         <a [routerLink]="['/user-info', userInfo?.id, 'view' ]">{{userInfo.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
+                <dt><span>Topic</span></dt>
+                <dd>
+                    <span *ngFor="let topic of booking.topics; let last = last">
+                        <a [routerLink]="['/topic', topic?.id, 'view' ]">{{topic.id}}</a>{{last ? '' : ', '}}
                     </span>
                 </dd>
             </dl>

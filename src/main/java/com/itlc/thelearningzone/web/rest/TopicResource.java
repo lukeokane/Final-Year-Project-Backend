@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,6 +94,21 @@ public class TopicResource {
         Page<TopicDTO> page = topicService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/topics");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+
+    /**
+     * GET  /topics : get topics by subject id.
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of topics in body
+     */
+    @GetMapping("/topics/bySubjectId")
+    @Timed
+    public ResponseEntity<List<TopicDTO>> getAllTopicsBySubjectId(@RequestParam("ids") Long[] paramValues){
+        log.debug("REST request to get a page of Topics");
+        List<TopicDTO> topics = topicService.findTopicsList(paramValues);
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(topics));
     }
 
     /**

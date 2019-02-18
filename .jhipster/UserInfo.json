@@ -4,6 +4,10 @@
         {
             "fieldName": "tutorSkills",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "profileImageURL",
+            "fieldType": "String"
         }
     ],
     "relationships": [
@@ -13,7 +17,13 @@
             "otherEntityName": "user",
             "otherEntityField": "id",
             "ownerSide": true,
-            "otherEntityRelationshipName": "user"
+            "otherEntityRelationshipName": "userInfo"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "semesterGroup",
+            "otherEntityName": "semesterGroup",
+            "otherEntityField": "id"
         },
         {
             "relationshipType": "one-to-many",
@@ -23,13 +33,13 @@
         },
         {
             "relationshipType": "one-to-many",
-            "relationshipName": "senderUserInfo",
+            "relationshipName": "sentNotifications",
             "otherEntityName": "notification",
             "otherEntityRelationshipName": "sender"
         },
         {
             "relationshipType": "one-to-many",
-            "relationshipName": "receiverUserInfo",
+            "relationshipName": "receivedNotifications",
             "otherEntityName": "notification",
             "otherEntityRelationshipName": "receiver"
         },
@@ -37,13 +47,6 @@
             "relationshipType": "many-to-many",
             "relationshipName": "booking",
             "otherEntityName": "booking",
-            "ownerSide": false,
-            "otherEntityRelationshipName": "userInfo"
-        },
-        {
-            "relationshipType": "many-to-many",
-            "relationshipName": "semester",
-            "otherEntityName": "semester",
             "ownerSide": false,
             "otherEntityRelationshipName": "userInfo"
         }

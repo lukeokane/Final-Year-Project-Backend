@@ -1,5 +1,6 @@
 package com.itlc.thelearningzone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,20 +41,9 @@ public class Semester implements Serializable {
     @Column(name = "semester_end_date")
     private LocalDate semesterEndDate;
 
-    @ManyToMany
+    @OneToMany(mappedBy = "semester")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "semester_subject",
-               joinColumns = @JoinColumn(name = "semesters_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "subjects_id", referencedColumnName = "id"))
-    private Set<Subject> subjects = new HashSet<>();
-
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "semester_user_info",
-               joinColumns = @JoinColumn(name = "semesters_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "user_infos_id", referencedColumnName = "id"))
-    private Set<UserInfo> userInfos = new HashSet<>();
-
+    private Set<SemesterGroup> semesterGroups = new HashSet<>();
     @ManyToOne
     @JsonIgnoreProperties("semesters")
     private CourseYear courseYear;
@@ -106,54 +96,29 @@ public class Semester implements Serializable {
         this.semesterEndDate = semesterEndDate;
     }
 
-    public Set<Subject> getSubjects() {
-        return subjects;
+    public Set<SemesterGroup> getSemesterGroups() {
+        return semesterGroups;
     }
 
-    public Semester subjects(Set<Subject> subjects) {
-        this.subjects = subjects;
+    public Semester semesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
         return this;
     }
 
-    public Semester addSubject(Subject subject) {
-        this.subjects.add(subject);
-        subject.getSemesters().add(this);
+    public Semester addSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.add(semesterGroup);
+        semesterGroup.setSemester(this);
         return this;
     }
 
-    public Semester removeSubject(Subject subject) {
-        this.subjects.remove(subject);
-        subject.getSemesters().remove(this);
+    public Semester removeSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.remove(semesterGroup);
+        semesterGroup.setSemester(null);
         return this;
     }
 
-    public void setSubjects(Set<Subject> subjects) {
-        this.subjects = subjects;
-    }
-
-    public Set<UserInfo> getUserInfos() {
-        return userInfos;
-    }
-
-    public Semester userInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
-        return this;
-    }
-
-    public Semester addUserInfo(UserInfo userInfo) {
-        this.userInfos.add(userInfo);
-        userInfo.getSemesters().add(this);
-        return this;
-    }
-
-    public Semester removeUserInfo(UserInfo userInfo) {
-        this.userInfos.remove(userInfo);
-        userInfo.getSemesters().remove(this);
-        return this;
-    }
-
-    public void setUserInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
+    public void setSemesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
     }
 
     public CourseYear getCourseYear() {

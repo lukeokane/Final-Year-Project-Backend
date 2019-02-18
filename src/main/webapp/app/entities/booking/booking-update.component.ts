@@ -12,6 +12,8 @@ import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from 'app/entities/subject';
 import { IUserInfo } from 'app/shared/model/user-info.model';
 import { UserInfoService } from 'app/entities/user-info';
+import { ITopic } from 'app/shared/model/topic.model';
+import { TopicService } from 'app/entities/topic';
 
 @Component({
     selector: 'jhi-booking-update',
@@ -24,14 +26,18 @@ export class BookingUpdateComponent implements OnInit {
     subjects: ISubject[];
 
     userinfos: IUserInfo[];
+
+    topics: ITopic[];
     startTime: string;
     endTime: string;
+    modifiedTimestamp: string;
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private bookingService: BookingService,
         private subjectService: SubjectService,
         private userInfoService: UserInfoService,
+        private topicService: TopicService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -41,6 +47,8 @@ export class BookingUpdateComponent implements OnInit {
             this.booking = booking;
             this.startTime = this.booking.startTime != null ? this.booking.startTime.format(DATE_TIME_FORMAT) : null;
             this.endTime = this.booking.endTime != null ? this.booking.endTime.format(DATE_TIME_FORMAT) : null;
+            this.modifiedTimestamp =
+                this.booking.modifiedTimestamp != null ? this.booking.modifiedTimestamp.format(DATE_TIME_FORMAT) : null;
         });
         this.subjectService.query().subscribe(
             (res: HttpResponse<ISubject[]>) => {
@@ -54,6 +62,12 @@ export class BookingUpdateComponent implements OnInit {
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
+        this.topicService.query().subscribe(
+            (res: HttpResponse<ITopic[]>) => {
+                this.topics = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
     }
 
     previousState() {
@@ -64,6 +78,7 @@ export class BookingUpdateComponent implements OnInit {
         this.isSaving = true;
         this.booking.startTime = this.startTime != null ? moment(this.startTime, DATE_TIME_FORMAT) : null;
         this.booking.endTime = this.endTime != null ? moment(this.endTime, DATE_TIME_FORMAT) : null;
+        this.booking.modifiedTimestamp = this.modifiedTimestamp != null ? moment(this.modifiedTimestamp, DATE_TIME_FORMAT) : null;
         if (this.booking.id !== undefined) {
             this.subscribeToSaveResponse(this.bookingService.update(this.booking));
         } else {
@@ -93,6 +108,10 @@ export class BookingUpdateComponent implements OnInit {
     }
 
     trackUserInfoById(index: number, item: IUserInfo) {
+        return item.id;
+    }
+
+    trackTopicById(index: number, item: ITopic) {
         return item.id;
     }
 

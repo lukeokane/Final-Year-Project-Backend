@@ -51,18 +51,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="field_subject">Subject</label>
-                    <select class="form-control" id="field_subject" multiple name="subject" [(ngModel)]="semester.subjects">
-                        <option [ngValue]="getSelected(semester.subjects, subjectOption)" *ngFor="let subjectOption of subjects; trackBy: trackSubjectById">{{subjectOption.id}}</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="field_userInfo">User Info</label>
-                    <select class="form-control" id="field_userInfo" multiple name="userInfo" [(ngModel)]="semester.userInfos">
-                        <option [ngValue]="getSelected(semester.userInfos, userInfoOption)" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label class="form-control-label" for="field_courseYear">Course Year</label>
                     <select class="form-control" id="field_courseYear" name="courseYear" [(ngModel)]="semester.courseYearId" >
                         <option [ngValue]="null"></option>

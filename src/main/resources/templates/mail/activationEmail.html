@@ -6,7 +6,7 @@
         <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
     </head>
     <body>
-        <p th:text="#{email.activation.greeting(${user.login})}">
+        <p th:text="#{email.activation.greeting(${user.firstName})}">
             Dear
         </p>
         <p th:text="#{email.activation.text1}">
@@ -16,10 +16,15 @@
             <a th:with="url=(@{|${baseUrl}/#/activate?key=${user.activationKey}|})" th:href="${url}"
             th:text="${url}">Activation link</a>
         </p>
+        
         <p>
-            <span th:text="#{email.activation.text2}">Regards, </span>
+            <span th:text="#{email.cancelled.text3}">Regards, </span>
             <br/>
-            <em th:text="#{email.signature}">JHipster.</em>
+            <div th:text="#{email.addy1}"></div>
+            <div th:text="#{email.addy2}"></div>
+            <div><strong th:text="'T:'"></strong> <a th:href="'tel:' + #{email.phoneNum}"><span th:text="#{email.phoneNum}"></span></a> <span th:text="#{email.phoneExtension}"></span></div>
+            <div><strong th:text="'E:'"></strong> <span th:text="#{email.ItlcEmail}"></span></div>
+            <div><strong th:text="'W:'"></strong> <a th:href="#{email.website}"><span th:text="#{email.website}"></span></a></div>
         </p>
     </body>
 </html>

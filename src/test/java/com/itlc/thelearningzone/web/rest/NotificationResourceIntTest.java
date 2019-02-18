@@ -3,7 +3,9 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 
 import com.itlc.thelearningzone.domain.Notification;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.NotificationRepository;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.service.NotificationService;
 import com.itlc.thelearningzone.service.dto.NotificationDTO;
 import com.itlc.thelearningzone.service.mapper.NotificationMapper;
@@ -26,11 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import static com.itlc.thelearningzone.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,6 +57,8 @@ public class NotificationResourceIntTest {
     private static final String DEFAULT_SENDER_IMAGE_URL = "AAAAAAAAAA";
     private static final String UPDATED_SENDER_IMAGE_URL = "BBBBBBBBBB";
 
+    private static final Long userId = 8L;
+    
     private static final Boolean DEFAULT_READ = false;
     private static final Boolean UPDATED_READ = true;
 
@@ -80,6 +86,11 @@ public class NotificationResourceIntTest {
     private MockMvc restNotificationMockMvc;
 
     private Notification notification;
+    
+    private UserInfo userInfo;
+    
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 
     @Before
     public void setup() {
@@ -99,17 +110,28 @@ public class NotificationResourceIntTest {
      * if they test an entity which requires the current entity.
      */
     public static Notification createEntity(EntityManager em) {
+    	
         Notification notification = new Notification()
             .timestamp(DEFAULT_TIMESTAMP)
             .message(DEFAULT_MESSAGE)
             .senderImageURL(DEFAULT_SENDER_IMAGE_URL)
             .read(DEFAULT_READ);
+        
         return notification;
+        
     }
+    
+    public static UserInfo createUserInfoEntity(EntityManager em) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setId(8L);
+
+		return userInfo;
+	}
 
     @Before
     public void initTest() {
         notification = createEntity(em);
+        userInfo = createUserInfoEntity(em);
     }
 
     @Test
@@ -191,7 +213,7 @@ public class NotificationResourceIntTest {
         List<Notification> notificationList = notificationRepository.findAll();
         assertThat(notificationList).hasSize(databaseSizeBeforeTest);
     }
-
+    
     @Test
     @Transactional
     public void getAllNotifications() throws Exception {
@@ -208,7 +230,8 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(DEFAULT_SENDER_IMAGE_URL.toString())))
             .andExpect(jsonPath("$.[*].read").value(hasItem(DEFAULT_READ.booleanValue())));
     }
-    
+
+
     @Test
     @Transactional
     public void getNotification() throws Exception {
@@ -224,6 +247,28 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE.toString()))
             .andExpect(jsonPath("$.senderImageURL").value(DEFAULT_SENDER_IMAGE_URL.toString()))
             .andExpect(jsonPath("$.read").value(DEFAULT_READ.booleanValue()));
+    }
+    
+    @Test
+    @Transactional
+    public void getAllNotificationsDateAscList() throws Exception {
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+        // Get the notification
+        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscList"))
+             .andExpect(status().isNotFound());
+            
+    }
+    
+    @Test
+    @Transactional
+    public void getAllNotificationsPageable() throws Exception {
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+        // Get the notification
+        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscPageable"))
+             .andExpect(status().isNotFound());
+            
     }
 
     @Test
@@ -304,7 +349,259 @@ public class NotificationResourceIntTest {
         List<Notification> notificationList = notificationRepository.findAll();
         assertThat(notificationList).hasSize(databaseSizeBeforeDelete - 1);
     }
+    
+    /**
+     * Set time to 0 and a user ID that has a received notification in the database
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
 
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = 0L;
+        Long userId = userInfo.getId();
+        
+        // Get the notification
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(1))
+			.andExpect(jsonPath("$.[*].message").value(hasItem(notification.getMessage().toString())))
+			.andExpect(jsonPath("$.[*].timestamp").value(hasItem(notification.getTimestamp().toString())))
+			.andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(notification.getSenderImageURL().toString())))
+			.andExpect(jsonPath("$.[*].read").value(hasItem(notification.isRead().booleanValue())));
+    }
+    
+    /**
+     * Set time to -16 hours and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications2() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(1))
+			.andExpect(jsonPath("$.[*].message").value(hasItem(notification.getMessage().toString())))
+			.andExpect(jsonPath("$.[*].timestamp").value(hasItem(notification.getTimestamp().toString())))
+			.andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(notification.getSenderImageURL().toString())))
+			.andExpect(jsonPath("$.[*].read").value(hasItem(notification.isRead().booleanValue())));
+    }
+    
+    /**
+     * Set time to +16 hours and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications3() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().plus(16, ChronoUnit.HOURS).toEpochMilli();
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(0));
+    }
+    
+    /**
+     * Set time to -1 second and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications4() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().minus(1, ChronoUnit.SECONDS).toEpochMilli();
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(1))
+			.andExpect(jsonPath("$.[*].message").value(hasItem(notification.getMessage().toString())))
+			.andExpect(jsonPath("$.[*].timestamp").value(hasItem(notification.getTimestamp().toString())))
+			.andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(notification.getSenderImageURL().toString())))
+			.andExpect(jsonPath("$.[*].read").value(hasItem(notification.isRead().booleanValue())));
+    }
+
+    /**
+     * Set time to time of the booking present and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications5() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().toEpochMilli();
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(1))
+			.andExpect(jsonPath("$.[*].message").value(hasItem(notification.getMessage().toString())))
+			.andExpect(jsonPath("$.[*].timestamp").value(hasItem(notification.getTimestamp().toString())))
+			.andExpect(jsonPath("$.[*].senderImageURL").value(hasItem(notification.getSenderImageURL().toString())))
+			.andExpect(jsonPath("$.[*].read").value(hasItem(notification.isRead().booleanValue())));
+    }
+    
+    /**
+     * Set time to +1 seconds and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications6() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().plus(1, ChronoUnit.SECONDS).toEpochMilli();
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(0));
+    }
+     
+    /**
+     * Set time to -16 hours and user ID is null
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications7() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        Long userId = null;
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.title", is("Parameter startTimeMs or userId is missing")));
+    }
+    
+    /**
+     * Set time to -16 hours and a user ID that does not exist in the repository
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications8() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = null;
+        Long userId = userInfo.getId();
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.title", is("Parameter startTimeMs or userId is missing")));
+    }
+    
+    /**
+     * Set time to +1 and a user ID that has a received notification in the database
+     */
+    @Test
+    @Transactional
+    public void getLatestNotifications9() throws Exception {
+    	
+		// Initialize userInfo database
+		userInfoRepository.saveAndFlush(userInfo);
+
+		notification.setReceiver(userInfo);
+		
+        // Initialize the database
+        notificationRepository.saveAndFlush(notification);
+
+        // API parameters
+        Long startTimeMs = notification.getTimestamp().minus(16, ChronoUnit.HOURS).toEpochMilli();
+        Long userId = 0L;
+        
+        // Get the notifications
+        restNotificationMockMvc.perform(get("/api/notifications/latest?startTimeMs=" + ((startTimeMs != null) ? startTimeMs : "") + "&userId=" + ((userId != null) ? userId : ""))
+            .accept(TestUtil.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.size()").value(0));
+    }
+    
     @Test
     @Transactional
     public void equalsVerifier() throws Exception {

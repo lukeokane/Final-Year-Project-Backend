@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="#{email.cancelled.title}">Booking cancellation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.cancelled.greeting(${booking.requestedBy})}">
+            Dear
+        </p>
+         <p>
+        <span th:text="#{email.cancelled.booking(${booking.title})}">
+           title
+        </span>
+        <span th:text="#{email.cancelled.bookingTime(${booking.startTime})}">
+          time
+        </span>
+        <span th:text="#{email.cancelled.tutorFirstName(${tutorUser.firstName})}">
+            first name
+        </span>
+         <span th:text="#{email.cancelled.tutorLastName(${tutorUser.lastName})}">
+            last name
+        </span>
+       
+        </p>
+        <p>
+            <span th:text="#{email.cancelled.text3}">Regards, </span>
+            <br/>
+            <br/>
+            <em th:text="#{email.addy1}">IT Learning Centre</em>
+            <em th:text="#{email.addy2}">PJ Carroll Building.</em>
+            <em th:text="#{email.phoneNumAndExt}">Phone & ext</em>
+            <em th:text="#{email.ItlcEmail}">Email</em>
+        </p>
+    </body>
+</html>

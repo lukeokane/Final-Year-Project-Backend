@@ -30,6 +30,10 @@ public class Subject implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @NotNull
+    @Column(name = "subject_code", nullable = false)
+    private String subjectCode;
+
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "subject_topic",
@@ -43,7 +47,7 @@ public class Subject implements Serializable {
     @ManyToMany(mappedBy = "subjects")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JsonIgnore
-    private Set<Semester> semesters = new HashSet<>();
+    private Set<SemesterGroup> semesterGroups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -65,6 +69,19 @@ public class Subject implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public Subject subjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+        return this;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
     }
 
     public Set<Topic> getTopics() {
@@ -117,29 +134,29 @@ public class Subject implements Serializable {
         this.bookings = bookings;
     }
 
-    public Set<Semester> getSemesters() {
-        return semesters;
+    public Set<SemesterGroup> getSemesterGroups() {
+        return semesterGroups;
     }
 
-    public Subject semesters(Set<Semester> semesters) {
-        this.semesters = semesters;
+    public Subject semesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
         return this;
     }
 
-    public Subject addSemester(Semester semester) {
-        this.semesters.add(semester);
-        semester.getSubjects().add(this);
+    public Subject addSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.add(semesterGroup);
+        semesterGroup.getSubjects().add(this);
         return this;
     }
 
-    public Subject removeSemester(Semester semester) {
-        this.semesters.remove(semester);
-        semester.getSubjects().remove(this);
+    public Subject removeSemesterGroup(SemesterGroup semesterGroup) {
+        this.semesterGroups.remove(semesterGroup);
+        semesterGroup.getSubjects().remove(this);
         return this;
     }
 
-    public void setSemesters(Set<Semester> semesters) {
-        this.semesters = semesters;
+    public void setSemesterGroups(Set<SemesterGroup> semesterGroups) {
+        this.semesterGroups = semesterGroups;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
@@ -168,6 +185,7 @@ public class Subject implements Serializable {
         return "Subject{" +
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
+            ", subjectCode='" + getSubjectCode() + "'" +
             "}";
     }
 }

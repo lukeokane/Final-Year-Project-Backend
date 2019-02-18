@@ -86,6 +86,11 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="form-control-label" for="field_adminAcceptedId">Admin Accepted Id</label>
+                    <input type="number" class="form-control" name="adminAcceptedId" id="field_adminAcceptedId"
+                        [(ngModel)]="booking.adminAcceptedId" />
+                </div>
+                <div class="form-group">
                     <label class="form-control-label" for="field_tutorAccepted">Tutor Accepted</label>
                     <input type="checkbox" class="form-control" name="tutorAccepted" id="field_tutorAccepted"
                         [(ngModel)]="booking.tutorAccepted" />
@@ -96,6 +101,13 @@
                         [(ngModel)]="booking.tutorAcceptedId" />
                 </div>
                 <div class="form-group">
+                    <label class="form-control-label" for="field_modifiedTimestamp">Modified Timestamp</label>
+                    <div class="d-flex">
+                        <input id="field_modifiedTimestamp" type="datetime-local" class="form-control" name="modifiedTimestamp" [(ngModel)]="modifiedTimestamp"
+                        />
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="form-control-label" for="field_tutorRejectedCount">Tutor Rejected Count</label>
                     <input type="number" class="form-control" name="tutorRejectedCount" id="field_tutorRejectedCount"
                         [(ngModel)]="booking.tutorRejectedCount" />
@@ -104,6 +116,16 @@
                     <label class="form-control-label" for="field_cancelled">Cancelled</label>
                     <input type="checkbox" class="form-control" name="cancelled" id="field_cancelled"
                         [(ngModel)]="booking.cancelled" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_requestTimes">Request Times</label>
+                    <input type="text" class="form-control" name="requestTimes" id="field_requestTimes"
+                        [(ngModel)]="booking.requestTimes" />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_readByAdmin">Read By Admin</label>
+                    <input type="checkbox" class="form-control" name="readByAdmin" id="field_readByAdmin"
+                        [(ngModel)]="booking.readByAdmin" />
                 </div>
 
                 <div class="form-group">
@@ -117,6 +139,12 @@
                     <label for="field_userInfo">User Info</label>
                     <select class="form-control" id="field_userInfo" multiple name="userInfo" [(ngModel)]="booking.userInfos">
                         <option [ngValue]="getSelected(booking.userInfos, userInfoOption)" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="field_topic">Topic</label>
+                    <select class="form-control" id="field_topic" multiple name="topic" [(ngModel)]="booking.topics">
+                        <option [ngValue]="getSelected(booking.topics, topicOption)" *ngFor="let topicOption of topics; trackBy: trackTopicById">{{topicOption.id}}</option>
                     </select>
                 </div>
             </div>

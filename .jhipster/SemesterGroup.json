@@ -1,0 +1,43 @@
+{
+    "name": "SemesterGroup",
+    "fields": [
+        {
+            "fieldName": "title",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
+            "otherEntityRelationshipName": "semesterGroup"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "semesterGroup",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "semester",
+            "otherEntityName": "semester",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181126060345",
+    "entityTableName": "semester_group",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

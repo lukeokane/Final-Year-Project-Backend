@@ -3,6 +3,7 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.domain.Authority;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.service.MailService;
@@ -130,6 +131,11 @@ public class UserResourceIntTest {
         user.setLangKey(DEFAULT_LANGKEY);
         return user;
     }
+    
+    public static UserInfo createUserInfoEntity(EntityManager em) {
+        UserInfo userInfo = new UserInfo();
+        return userInfo;
+    }
 
     @Before
     public void initTest() {
@@ -145,6 +151,7 @@ public class UserResourceIntTest {
 
         // Create the User
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setLogin(DEFAULT_LOGIN);
         managedUserVM.setPassword(DEFAULT_PASSWORD);
         managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
@@ -155,6 +162,7 @@ public class UserResourceIntTest {
         managedUserVM.setLangKey(DEFAULT_LANGKEY);
         managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
+        
         restUserMockMvc.perform(post("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(managedUserVM)))
@@ -178,6 +186,7 @@ public class UserResourceIntTest {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setId(1L);
         managedUserVM.setLogin(DEFAULT_LOGIN);
         managedUserVM.setPassword(DEFAULT_PASSWORD);
@@ -208,7 +217,7 @@ public class UserResourceIntTest {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
-        managedUserVM.setLogin(DEFAULT_LOGIN);// this login should already be used
+
         managedUserVM.setPassword(DEFAULT_PASSWORD);
         managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
         managedUserVM.setLastName(DEFAULT_LASTNAME);
@@ -217,6 +226,7 @@ public class UserResourceIntTest {
         managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
         managedUserVM.setLangKey(DEFAULT_LANGKEY);
         managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
 
         // Create the User
         restUserMockMvc.perform(post("/api/users")
@@ -237,6 +247,7 @@ public class UserResourceIntTest {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setLogin("anotherlogin");
         managedUserVM.setPassword(DEFAULT_PASSWORD);
         managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
@@ -246,7 +257,7 @@ public class UserResourceIntTest {
         managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
         managedUserVM.setLangKey(DEFAULT_LANGKEY);
         managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-
+        
         // Create the User
         restUserMockMvc.perform(post("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -317,8 +328,9 @@ public class UserResourceIntTest {
         User updatedUser = userRepository.findById(user.getId()).get();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setId(updatedUser.getId());
-        managedUserVM.setLogin(updatedUser.getLogin());
+        managedUserVM.setLogin(UPDATED_LOGIN);
         managedUserVM.setPassword(UPDATED_PASSWORD);
         managedUserVM.setFirstName(UPDATED_FIRSTNAME);
         managedUserVM.setLastName(UPDATED_LASTNAME);
@@ -359,6 +371,7 @@ public class UserResourceIntTest {
         User updatedUser = userRepository.findById(user.getId()).get();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setId(updatedUser.getId());
         managedUserVM.setLogin(UPDATED_LOGIN);
         managedUserVM.setPassword(UPDATED_PASSWORD);
@@ -373,6 +386,7 @@ public class UserResourceIntTest {
         managedUserVM.setLastModifiedBy(updatedUser.getLastModifiedBy());
         managedUserVM.setLastModifiedDate(updatedUser.getLastModifiedDate());
         managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
 
         restUserMockMvc.perform(put("/api/users")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -412,6 +426,7 @@ public class UserResourceIntTest {
         User updatedUser = userRepository.findById(user.getId()).get();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setId(updatedUser.getId());
         managedUserVM.setLogin(updatedUser.getLogin());
         managedUserVM.setPassword(updatedUser.getPassword());
@@ -454,6 +469,7 @@ public class UserResourceIntTest {
         User updatedUser = userRepository.findById(user.getId()).get();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
+        
         managedUserVM.setId(updatedUser.getId());
         managedUserVM.setLogin("jhipster");// this login should already be used by anotherUser
         managedUserVM.setPassword(updatedUser.getPassword());
@@ -475,23 +491,28 @@ public class UserResourceIntTest {
             .andExpect(status().isBadRequest());
     }
 
+    /**
+     * Check that an existing User entity and its associated UserInfo entity has been deleted
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
     @Test
     @Transactional
     public void deleteUser() throws Exception {
         // Initialize the database
-        userRepository.saveAndFlush(user);
-        int databaseSizeBeforeDelete = userRepository.findAll().size();
-
+    	userRepository.saveAndFlush(user);
+        int userDatabaseSizeBeforeDelete = userRepository.findAll().size();
+        
         // Delete the user
         restUserMockMvc.perform(delete("/api/users/{login}", user.getLogin())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
-
+  
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Validate the database is empty
         List<User> userList = userRepository.findAll();
-        assertThat(userList).hasSize(databaseSizeBeforeDelete - 1);
+        assertThat(userList).hasSize(userDatabaseSizeBeforeDelete - 1);
     }
 
     @Test

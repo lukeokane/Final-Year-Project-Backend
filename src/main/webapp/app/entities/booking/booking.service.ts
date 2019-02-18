@@ -25,10 +25,52 @@ export class BookingService {
             .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
+    createBookingWithAdminNotification(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .post<IBooking>(`${this.resourceUrl}/createBookingWithAdminNotification`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
     update(booking: IBooking): Observable<EntityResponseType> {
         const copy = this.convertDateFromClient(booking);
         return this.http
             .put<IBooking>(this.resourceUrl, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    updateBookingAssignTutor(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingAssignTutor`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    updateBookingAcceptedByTutor(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingAcceptedByTutor`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    updateBookingRejectedByTutor(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingRejectedByTutor`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    updateBookingCancelledByTutor(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingCancelledByTutor`, copy, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    updateBookingRejectedByAdmin(booking: IBooking): Observable<EntityResponseType> {
+        const copy = this.convertDateFromClient(booking);
+        return this.http
+            .put<IBooking>(`${this.resourceUrl}/updateBookingRequestRejectedByAdmin`, copy, { observe: 'response' })
             .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
@@ -45,6 +87,13 @@ export class BookingService {
             .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
     }
 
+    // findAllNotificationsByUserLoggedIn(req?: any): Observable<EntityArrayResponseType> {
+    //     const options = createRequestOption(req);
+    //     return this.http
+    //     .get<INotification[]>(this.resourceUrl, { params: options, observe: 'response' })
+    //         .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
+    // }
+
     delete(id: number): Observable<HttpResponse<any>> {
         return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
     }
@@ -52,7 +101,9 @@ export class BookingService {
     protected convertDateFromClient(booking: IBooking): IBooking {
         const copy: IBooking = Object.assign({}, booking, {
             startTime: booking.startTime != null && booking.startTime.isValid() ? booking.startTime.toJSON() : null,
-            endTime: booking.endTime != null && booking.endTime.isValid() ? booking.endTime.toJSON() : null
+            endTime: booking.endTime != null && booking.endTime.isValid() ? booking.endTime.toJSON() : null,
+            modifiedTimestamp:
+                booking.modifiedTimestamp != null && booking.modifiedTimestamp.isValid() ? booking.modifiedTimestamp.toJSON() : null
         });
         return copy;
     }
@@ -61,6 +112,7 @@ export class BookingService {
         if (res.body) {
             res.body.startTime = res.body.startTime != null ? moment(res.body.startTime) : null;
             res.body.endTime = res.body.endTime != null ? moment(res.body.endTime) : null;
+            res.body.modifiedTimestamp = res.body.modifiedTimestamp != null ? moment(res.body.modifiedTimestamp) : null;
         }
         return res;
     }
@@ -70,6 +122,7 @@ export class BookingService {
             res.body.forEach((booking: IBooking) => {
                 booking.startTime = booking.startTime != null ? moment(booking.startTime) : null;
                 booking.endTime = booking.endTime != null ? moment(booking.endTime) : null;
+                booking.modifiedTimestamp = booking.modifiedTimestamp != null ? moment(booking.modifiedTimestamp) : null;
             });
         }
         return res;

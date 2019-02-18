@@ -8,11 +8,11 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity Course and its DTO CourseDTO.
  */
-@Mapper(componentModel = "spring", uses = {})
+@Mapper(componentModel = "spring", uses = {CourseYearMapper.class})
 public interface CourseMapper extends EntityMapper<CourseDTO, Course> {
 
 
-    @Mapping(target = "courseYears", ignore = true)
+    @Mapping(target = "courseYears")
     Course toEntity(CourseDTO courseDTO);
 
     default Course fromId(Long id) {

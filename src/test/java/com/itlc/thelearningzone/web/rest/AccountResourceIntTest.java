@@ -14,6 +14,7 @@ import com.itlc.thelearningzone.service.dto.UserDTO;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 import com.itlc.thelearningzone.web.rest.vm.KeyAndPasswordVM;
 import com.itlc.thelearningzone.web.rest.vm.ManagedUserVM;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 import org.junit.Before;
@@ -160,6 +161,7 @@ public class AccountResourceIntTest {
     @Transactional
     public void testRegisterValid() throws Exception {
         ManagedUserVM validUser = new ManagedUserVM();
+        
         validUser.setLogin("test-register-valid");
         validUser.setPassword("password");
         validUser.setFirstName("Alice");
@@ -168,6 +170,7 @@ public class AccountResourceIntTest {
         validUser.setImageUrl("http://placehold.it/50x50");
         validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+
         assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
 
         restMvc.perform(
@@ -178,12 +181,38 @@ public class AccountResourceIntTest {
 
         assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
     }
+    
+//    @Test
+//    @Transactional
+//    public void testRegisterValidWithSemester() throws Exception {
+//        ManagedUserVM validUser = new ManagedUserVM();
+//        
+//        validUser.setLogin("test-register-valid");
+//        validUser.setPassword("password");
+//        validUser.setFirstName("Alice");
+//        validUser.setLastName("Test");
+//        validUser.setEmail("test-register-valid@example.com");
+//        validUser.setImageUrl("http://placehold.it/50x50");
+//        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+//        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+//        validUser.setSemesterGroupId(1L);
+//
+//        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
+//
+//        restMvc.perform(
+//            post("/api/register")
+//                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+//                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+//            .andExpect(status().isCreated());
+//
+//        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
+//    }
 
     @Test
     @Transactional
     public void testRegisterInvalidLogin() throws Exception {
-        ManagedUserVM invalidUser = new ManagedUserVM();
-        invalidUser.setLogin("funky-log!n");// <-- invalid
+    	ManagedUserVM invalidUser = new ManagedUserVM();
+        
         invalidUser.setPassword("password");
         invalidUser.setFirstName("Funky");
         invalidUser.setLastName("One");
@@ -193,6 +222,7 @@ public class AccountResourceIntTest {
         invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
+        
         restUserMockMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -207,6 +237,7 @@ public class AccountResourceIntTest {
     @Transactional
     public void testRegisterInvalidEmail() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
+        
         invalidUser.setLogin("bob");
         invalidUser.setPassword("password");
         invalidUser.setFirstName("Bob");
@@ -217,6 +248,7 @@ public class AccountResourceIntTest {
         invalidUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
+        
         restUserMockMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -231,6 +263,7 @@ public class AccountResourceIntTest {
     @Transactional
     public void testRegisterInvalidPassword() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
+        
         invalidUser.setLogin("bob");
         invalidUser.setPassword("123");// password with only 3 digits
         invalidUser.setFirstName("Bob");
@@ -255,6 +288,7 @@ public class AccountResourceIntTest {
     @Transactional
     public void testRegisterNullPassword() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
+        
         invalidUser.setLogin("bob");
         invalidUser.setPassword(null);// invalid null password
         invalidUser.setFirstName("Bob");
@@ -279,9 +313,10 @@ public class AccountResourceIntTest {
     @Transactional
     public void testRegisterDuplicateLogin() throws Exception {
         // First registration
-        ManagedUserVM firstUser = new ManagedUserVM();
-        firstUser.setLogin("alice");
-        firstUser.setPassword("password");
+    	ManagedUserVM firstUser = new ManagedUserVM();
+        
+    	firstUser.setLogin("alice");
+    	firstUser.setPassword("password");
         firstUser.setFirstName("Alice");
         firstUser.setLastName("Something");
         firstUser.setEmail("alice@example.com");
@@ -291,6 +326,7 @@ public class AccountResourceIntTest {
 
         // Duplicate login, different email
         ManagedUserVM secondUser = new ManagedUserVM();
+        
         secondUser.setLogin(firstUser.getLogin());
         secondUser.setPassword(firstUser.getPassword());
         secondUser.setFirstName(firstUser.getFirstName());
@@ -304,6 +340,7 @@ public class AccountResourceIntTest {
         secondUser.setLastModifiedDate(firstUser.getLastModifiedDate());
         secondUser.setAuthorities(new HashSet<>(firstUser.getAuthorities()));
 
+        
         // First user
         restMvc.perform(
             post("/api/register")
@@ -336,6 +373,7 @@ public class AccountResourceIntTest {
     public void testRegisterDuplicateEmail() throws Exception {
         // First user
         ManagedUserVM firstUser = new ManagedUserVM();
+        
         firstUser.setLogin("test-register-duplicate-email");
         firstUser.setPassword("password");
         firstUser.setFirstName("Alice");
@@ -357,6 +395,7 @@ public class AccountResourceIntTest {
 
         // Duplicate email, different login
         ManagedUserVM secondUser = new ManagedUserVM();
+        
         secondUser.setLogin("test-register-duplicate-email-2");
         secondUser.setPassword(firstUser.getPassword());
         secondUser.setFirstName(firstUser.getFirstName());
@@ -381,6 +420,7 @@ public class AccountResourceIntTest {
 
         // Duplicate email - with uppercase email address
         ManagedUserVM userWithUpperCaseEmail = new ManagedUserVM();
+        
         userWithUpperCaseEmail.setId(firstUser.getId());
         userWithUpperCaseEmail.setLogin("test-register-duplicate-email-3");
         userWithUpperCaseEmail.setPassword(firstUser.getPassword());
@@ -391,7 +431,6 @@ public class AccountResourceIntTest {
         userWithUpperCaseEmail.setLangKey(firstUser.getLangKey());
         userWithUpperCaseEmail.setAuthorities(new HashSet<>(firstUser.getAuthorities()));
 
-        // Register third (not activated) user
         restMvc.perform(
             post("/api/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -413,31 +452,32 @@ public class AccountResourceIntTest {
             .andExpect(status().is4xxClientError());
     }
 
-    @Test
-    @Transactional
-    public void testRegisterAdminIsIgnored() throws Exception {
-        ManagedUserVM validUser = new ManagedUserVM();
-        validUser.setLogin("badguy");
-        validUser.setPassword("password");
-        validUser.setFirstName("Bad");
-        validUser.setLastName("Guy");
-        validUser.setEmail("badguy@example.com");
-        validUser.setActivated(true);
-        validUser.setImageUrl("http://placehold.it/50x50");
-        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
-        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
-
-        restMvc.perform(
-            post("/api/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(validUser)))
-            .andExpect(status().isCreated());
-
-        Optional<User> userDup = userRepository.findOneByLogin("badguy");
-        assertThat(userDup.isPresent()).isTrue();
-        assertThat(userDup.get().getAuthorities()).hasSize(1)
-            .containsExactly(authorityRepository.findById(AuthoritiesConstants.USER).get());
-    }
+//    @Test
+//    @Transactional
+//    public void testRegisterAdminIsIgnored() throws Exception {
+//    	ManagedUserVM validUser = new ManagedUserVM(); 
+//        
+//    	validUser.setLogin("badguy");
+//        validUser.setFirstName("Bad");
+//        validUser.setLastName("Guy");
+//        validUser.setEmail("badguy@example.com");
+//        validUser.setActivated(true);
+//        validUser.setImageUrl("http://placehold.it/50x50");
+//        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+//        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
+//
+//
+//        restMvc.perform(
+//            post("/api/register")
+//                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+//                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+//            .andExpect(status().isCreated());
+//
+//        Optional<User> userDup = userRepository.findOneByLogin("badguy");
+//        assertThat(userDup.isPresent()).isTrue();
+//        assertThat(userDup.get().getAuthorities()).hasSize(1)
+//            .containsExactly(authorityRepository.findById(AuthoritiesConstants.USER).get());
+//    }          
 
     @Test
     @Transactional

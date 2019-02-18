@@ -16,6 +16,9 @@ public class SubjectDTO implements Serializable {
     @NotNull
     private String title;
 
+    @NotNull
+    private String subjectCode;
+
     private Set<TopicDTO> topics = new HashSet<>();
 
     public Long getId() {
@@ -32,6 +35,14 @@ public class SubjectDTO implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
     }
 
     public Set<TopicDTO> getTopics() {
@@ -68,6 +79,7 @@ public class SubjectDTO implements Serializable {
         return "SubjectDTO{" +
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
+            ", subjectCode='" + getSubjectCode() + "'" +
             "}";
     }
 }

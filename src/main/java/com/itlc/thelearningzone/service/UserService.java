@@ -2,11 +2,13 @@ package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
+import com.itlc.thelearningzone.domain.SemesterGroup;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
+import com.itlc.thelearningzone.repository.SemesterGroupRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
@@ -40,6 +42,10 @@ public class UserService {
     private final UserRepository userRepository;
     
     private final UserInfoRepository userInfoRepository;
+    
+    private final SemesterGroupRepository semesterGroupRepository;
+    
+    private final UserInfoService userInfoService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -47,9 +53,11 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, SemesterGroupRepository semesterGroupRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
+        this.semesterGroupRepository = semesterGroupRepository;
+        this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
@@ -93,6 +101,7 @@ public class UserService {
     }
 
     public User registerUser(UserDTO userDTO, String password) {
+    	
         userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
@@ -123,18 +132,29 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
-        this.clearUserCaches(newUser);
+      
         log.debug("Created Information for User: {}", newUser);
-        
-     // Create and save the UserInfo entity
-        UserInfo newUserInfo = new UserInfo();
-        newUserInfo.setUser(newUser);
-        userInfoRepository.save(newUserInfo);
-        //userInfoSearchRepository.save(newUserInfo);
-        log.debug("Created Information for UserInfo: {}", newUserInfo);
         
         return newUser;
     }
+    
+    public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
+    	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
+        if (semesterGroup.isPresent()) {
+        	// Create and save the UserInfo entity
+            UserInfo newUserInfo = new UserInfo();
+        	newUserInfo.setSemesterGroup(semesterGroup.get());
+        	
+        	User newUser = this.registerUser(userDTO, password);
+        	newUserInfo.setUser(newUser);
+            userInfoRepository.save(newUserInfo);
+            log.debug("Created Information for UserInfo: {}", newUserInfo);
+            return newUser;
+    	} else {
+    		throw new IllegalArgumentException("Semester Group ID is does not exist");
+    	}
+    }
+    
     private boolean removeNonActivatedUser(User existingUser){
         if (existingUser.getActivated()) {
              return false;
@@ -145,6 +165,7 @@ public class UserService {
         return true;
     }
 
+    // Updated method to Create and save the UserInfo entity for this User entity
     public User createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
@@ -173,6 +194,13 @@ public class UserService {
         userRepository.save(user);
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
+        
+     // Create and save the UserInfo entity
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setUser(user);
+        userInfoRepository.save(newUserInfo);
+        log.debug("Created Information for UserInfo: {}", newUserInfo);
+        
         return user;
     }
 
@@ -233,12 +261,22 @@ public class UserService {
             .map(UserDTO::new);
     }
 
+    // Added delete UserInfo functionality before parent entity (User) is deleted
     public void deleteUser(String login) {
-        userRepository.findOneByLogin(login).ifPresent(user -> {
-            userRepository.delete(user);
-            this.clearUserCaches(user);
-            log.debug("Deleted User: {}", user);
-        });
+    	Optional<User> searchUser = userRepository.findOneByLogin(login);
+    	if (searchUser.isPresent()) {
+    		userInfoService.findOne(searchUser.get().getId()).ifPresent(userInfo -> {
+                userInfoService.delete(userInfo.getId());
+                log.debug("Deleted UserInfo: {}", userInfo);
+            });
+    		userRepository.findOneByLogin(login).ifPresent(user -> {
+                userRepository.delete(user);
+                this.clearUserCaches(user);
+                log.debug("Deleted User: {}", user);
+            });
+    	} else {
+    		throw new IllegalArgumentException("User login does not exist");
+    	}
     }
 
     public void changePassword(String currentClearTextPassword, String newPassword) {

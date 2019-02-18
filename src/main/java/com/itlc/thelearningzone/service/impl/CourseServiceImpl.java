@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -61,6 +63,22 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findAll(pageable)
             .map(courseMapper::toDto);
     }
+    
+    /**
+     * Get all the courses in a list
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    @Override
+	public List<CourseDTO> findAllCoursesList() {
+		List<CourseDTO> list = new ArrayList<CourseDTO>();
+		List<Course> ps = courseRepository.findAll();
+		for (Course p : ps)
+			list.add(courseMapper.toDto(p));
+
+		return list;
+	}
 
 
     /**
