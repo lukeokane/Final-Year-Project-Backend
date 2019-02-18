@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -33,6 +34,19 @@ public class SemesterGroupServiceImpl implements SemesterGroupService {
         this.semesterGroupMapper = semesterGroupMapper;
     }
 
+    /**
+     * Save a semesterGroup.
+     *
+     * @param semesterGroupDTO the entity to save
+     * @return the persisted entity
+     */
+    @Override
+    public Page<SemesterGroupDTO> findAllSemesterGroupsInCourseYearInTimeFrame(Pageable pageable, Long courseYearId, LocalDate startTime, LocalDate endTime) {
+        log.debug("Request to get SemesterGroups for course year {} starting at time {} to end time {}", courseYearId, startTime, endTime);
+
+        return semesterGroupRepository.findAllSemesterGroupsInCourseYearInTimeFrame(pageable, courseYearId, startTime, endTime).map(semesterGroupMapper::toDto);
+    } 
+    
     /**
      * Save a semesterGroup.
      *

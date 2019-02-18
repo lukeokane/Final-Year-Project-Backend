@@ -1,9 +1,15 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.itlc.thelearningzone.ThelearningzoneApp;
-
+import com.itlc.thelearningzone.domain.Course;
+import com.itlc.thelearningzone.domain.CourseYear;
+import com.itlc.thelearningzone.domain.Semester;
 import com.itlc.thelearningzone.domain.SemesterGroup;
+import com.itlc.thelearningzone.domain.enumeration.SemesterNumber;
+import com.itlc.thelearningzone.repository.CourseRepository;
+import com.itlc.thelearningzone.repository.CourseYearRepository;
 import com.itlc.thelearningzone.repository.SemesterGroupRepository;
+import com.itlc.thelearningzone.repository.SemesterRepository;
 import com.itlc.thelearningzone.service.SemesterGroupService;
 import com.itlc.thelearningzone.service.dto.SemesterGroupDTO;
 import com.itlc.thelearningzone.service.mapper.SemesterGroupMapper;
@@ -27,6 +33,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +63,15 @@ public class SemesterGroupResourceIntTest {
 
     @Autowired
     private SemesterGroupRepository semesterGroupRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
+    
+    @Autowired
+    private CourseYearRepository courseYearRepository;
+    
+    @Autowired
+    private SemesterRepository semesterRepository;
 
     @Mock
     private SemesterGroupRepository semesterGroupRepositoryMock;
@@ -80,7 +100,13 @@ public class SemesterGroupResourceIntTest {
     private MockMvc restSemesterGroupMockMvc;
 
     private SemesterGroup semesterGroup;
-
+    
+    private Course course;
+    
+    private CourseYear courseYear;  
+    
+    private Semester semester;
+    
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -100,12 +126,44 @@ public class SemesterGroupResourceIntTest {
      */
     public static SemesterGroup createEntity(EntityManager em) {
         SemesterGroup semesterGroup = new SemesterGroup()
-            .title(DEFAULT_TITLE);
+            .title("CO4a");
         return semesterGroup;
+    }
+    
+    public static Course createCourseEntity(EntityManager em) {
+        Course semesterGroup = new Course()
+            .title("Course Title 1")
+            .courseCode("DK_COMP_8");
+        
+        return semesterGroup;
+    }
+    
+    public static CourseYear createCourseYearEntity(EntityManager em) {
+    	CourseYear courseYear = new CourseYear()
+    			.courseYear(4);
+    	
+    	return courseYear;
+    			
+    }
+    
+    public static Semester createSemesterEntity(EntityManager em) {
+    	
+    	LocalDate currentTime = LocalDate.now();
+    			
+    	Semester semester = new Semester()
+    			.semesterNumber(SemesterNumber.EIGHT)
+    			.semesterStartDate(currentTime)
+    			.semesterEndDate(currentTime);
+    	
+    	return semester;
+    			
     }
 
     @Before
     public void initTest() {
+    	course = createCourseEntity(em);
+    	courseYear = createCourseYearEntity(em);
+        semester = createSemesterEntity(em);
         semesterGroup = createEntity(em);
     }
 
@@ -125,7 +183,7 @@ public class SemesterGroupResourceIntTest {
         List<SemesterGroup> semesterGroupList = semesterGroupRepository.findAll();
         assertThat(semesterGroupList).hasSize(databaseSizeBeforeCreate + 1);
         SemesterGroup testSemesterGroup = semesterGroupList.get(semesterGroupList.size() - 1);
-        assertThat(testSemesterGroup.getTitle()).isEqualTo(DEFAULT_TITLE);
+        assertThat(testSemesterGroup.getTitle()).isEqualTo(semesterGroup.getTitle());
     }
 
     @Test
@@ -166,7 +224,7 @@ public class SemesterGroupResourceIntTest {
         List<SemesterGroup> semesterGroupList = semesterGroupRepository.findAll();
         assertThat(semesterGroupList).hasSize(databaseSizeBeforeTest);
     }
-
+    
     @Test
     @Transactional
     public void getAllSemesterGroups() throws Exception {
@@ -178,7 +236,7 @@ public class SemesterGroupResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(semesterGroup.getId().intValue())))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())));
+            .andExpect(jsonPath("$.[*].title").value(hasItem(semesterGroup.getTitle())));
     }
     
     @SuppressWarnings({"unchecked"})
@@ -225,7 +283,7 @@ public class SemesterGroupResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(semesterGroup.getId().intValue()))
-            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE.toString()));
+            .andExpect(jsonPath("$.title").value(semesterGroup.getTitle()));
     }
 
     @Test
@@ -299,6 +357,43 @@ public class SemesterGroupResourceIntTest {
         // Validate the database is empty
         List<SemesterGroup> semesterGroupList = semesterGroupRepository.findAll();
         assertThat(semesterGroupList).hasSize(databaseSizeBeforeDelete - 1);
+    }
+    
+    /*
+	 * Check that search returns a result
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void getBookingsLatestDetailsChanges1() throws Exception {
+    	
+    	Instant currentTime = Instant.now();
+    	
+    	// Set start and end date one hour from current time.
+    	semester.setSemesterStartDate(currentTime.minus(1, ChronoUnit.HOURS).atZone(ZoneId.systemDefault()).toLocalDate());
+    	semester.setSemesterEndDate(currentTime.plus(1, ChronoUnit.HOURS).atZone(ZoneId.systemDefault()).toLocalDate());
+    	
+        // Initialize the database
+    	courseRepository.saveAndFlush(course);
+    	courseYearRepository.saveAndFlush(courseYear);
+    	semesterRepository.saveAndFlush(semester);
+        semesterGroupRepository.saveAndFlush(semesterGroup);
+        
+        courseYear.setCourse(course);
+        courseYear.addSemester(semester);
+        course.addCourseYear(courseYear);
+        semester.addSemesterGroup(semesterGroup);
+      
+
+        String queryString = "?courseYearId=" + courseYear.getId();
+        // Get all the semesterGroupList
+        restSemesterGroupMockMvc.perform(get("/api/semester-groups/currentlyRunning" + queryString))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.size()").value(1))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(semesterGroup.getId().intValue())))
+            .andExpect(jsonPath("$.[*].title").value(hasItem(semesterGroup.getTitle())));
     }
 
     @Test

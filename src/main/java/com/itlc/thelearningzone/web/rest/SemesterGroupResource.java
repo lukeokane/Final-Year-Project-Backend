@@ -12,14 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,7 +80,30 @@ public class SemesterGroupResource {
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, semesterGroupDTO.getId().toString()))
             .body(result);
     }
-
+    
+    /**
+     * GET  /semester-groups : get all the semesterGroups.
+     *
+     * @param pageable the pagination information
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
+     * @return the ResponseEntity with status 200 (OK) and the list of semesterGroups in body
+     */
+    @GetMapping("/semester-groups/currentlyRunning")
+    @Timed
+    public ResponseEntity<List<SemesterGroupDTO>> getBookingsLatestDetailsChanges(Pageable pageable, @RequestParam(required = true) Long courseYearId) {
+        LocalDate startTime = LocalDate.now();
+        LocalDate endTime = LocalDate.now();
+    	
+    	log.debug("REST request to get SemesterGroups for course year {} starting at time {} to end time {}", courseYearId, startTime, endTime);
+        
+    	Page<SemesterGroupDTO> page;
+ 
+        page = semesterGroupService.findAllSemesterGroupsInCourseYearInTimeFrame(pageable, courseYearId, startTime, endTime);
+        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/semester-groups?courseYearId=%d", courseYearId));
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
     /**
      * GET  /semester-groups : get all the semesterGroups.
      *

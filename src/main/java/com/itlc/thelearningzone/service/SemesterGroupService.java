@@ -5,6 +5,7 @@ import com.itlc.thelearningzone.service.dto.SemesterGroupDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,14 @@ public interface SemesterGroupService {
      * @return the persisted entity
      */
     SemesterGroupDTO save(SemesterGroupDTO semesterGroupDTO);
+    
+    /**
+     * Get semester groups within a course year between two dates
+     *
+     * @param id the id of the entity
+     * @return the entity
+     */
+    public Page<SemesterGroupDTO> findAllSemesterGroupsInCourseYearInTimeFrame(Pageable pageable, Long courseYearId, LocalDate startTime, LocalDate endTime);
 
     /**
      * Get all the semesterGroups.
