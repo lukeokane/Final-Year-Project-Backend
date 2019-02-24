@@ -213,7 +213,7 @@ public class BookingServiceImpl implements BookingService {
 		notification.setTimestamp(instant);
 		notification.setRead(false);
 		// getting sender 
-		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+		Optional<User> sender = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}
@@ -425,7 +425,7 @@ public class BookingServiceImpl implements BookingService {
 		  notification.setSenderImageURL(SENDER_URL + sender.get().getLogin() + IMAGE_FORMAT);
 		}
 		// getting receiver
-		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
+		Optional<User> receiver = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
 		// setting the notification message
 		if(receiver.isPresent()) {
 			String notificationMessage = "Sorry " + receiver.get().getFirstName() + ", there are no bookings on " + bookingDTO.getTitle() + " based on the times you selected. Please request again";
@@ -462,28 +462,28 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate) {
 		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAllWithBookingUserDetails(instantFromDate, instantToDate);
+		List<Booking> ps = bookingRepository.findAllBookings(instantFromDate, instantToDate);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
 	
-	@Override
-	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
-		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
-		for (Booking p : ps)
-			list.add(bookingMapper.toDto(p));
-
-		return list;
-	}
+//	@Override
+//	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
+//		List<BookingDTO> list = new ArrayList<>();
+//		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
+//		for (Booking p : ps)
+//			list.add(bookingMapper.toDto(p));
+//
+//		return list;
+//	}
 	
 	@Override
 	public List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer selectedYear) {
 		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAll();
+		List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
 
@@ -535,6 +535,8 @@ public class BookingServiceImpl implements BookingService {
 		log.debug("Request to delete Booking : {}", id);
 		bookingRepository.deleteById(id);
 	}
+
+	
 
 
 }

@@ -97,13 +97,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findBookingsPendingAdminApprovalChanges(Pageable pageable, @Param("startTime") Instant startTime);
     
     @Query(value = "select distinct booking from Booking booking left join booking.topics t where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate order by booking.startTime asc")
-	List<Booking> findAllWithBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
+	List<Booking> findAllBookings(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
 
-    @Query(value = "select distinct booking from Booking booking left join booking.topics t where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate order by booking.startTime asc")
-    List<Booking> findAllWithoutBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
+//    @Query(value = "select distinct booking from Booking booking left join booking.topics t where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate order by booking.startTime asc")
+//    List<Booking> findAllWithoutBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
     
-	
-//  @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.userInfos.semesterGroup.id IN (select distinct semester_group.id from SemesterGroup)")
-//  List<Booking> findBookingsAllcoursesSelectedYear(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("selectedYear") Integer selectedYear);
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos bui on booking.id = bui.id left join UserInfo ui on bui.id = ui.id left join SemesterGroup sg on ui.semesterGroup.id = sg.id left join Semester s on sg.id = s.id left join CourseYear cy on s.courseYear.id = cy.id where cy.courseYear = :selectedYear and booking.startTime between :instantFromDate and :instantToDate")
+    List<Booking> findBookingsAllcoursesSelectedYear(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("selectedYear") Integer selectedYear);
     
 }

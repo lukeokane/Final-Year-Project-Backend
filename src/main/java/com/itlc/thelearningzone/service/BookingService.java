@@ -229,7 +229,7 @@ public interface BookingService {
 
 	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
 
-	List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate);
+	//List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate);
 		
 	List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate, Instant instantToDate,
 			Integer selectedYear);

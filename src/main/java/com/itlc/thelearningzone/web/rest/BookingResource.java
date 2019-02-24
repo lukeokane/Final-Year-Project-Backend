@@ -691,8 +691,14 @@ public class BookingResource {
         toDate = toDate + dateParse;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
-        List<BookingDTO> bookings = bookingService.findAllBookingsDistributionList(instantFromDate,instantToDate);
+        List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
+        }
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
     
