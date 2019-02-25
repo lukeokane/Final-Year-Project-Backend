@@ -249,16 +249,16 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.read").value(DEFAULT_READ.booleanValue()));
     }
     
-    @Test
-    @Transactional
-    public void getAllNotificationsDateAscList() throws Exception {
-        // Initialize the database
-        notificationRepository.saveAndFlush(notification);
-        // Get the notification
-        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscList"))
-             .andExpect(status().isNotFound());
-            
-    }
+//    @Test
+//    @Transactional
+//    public void getAllNotificationsDateAscList() throws Exception {
+//        // Initialize the database
+//        notificationRepository.saveAndFlush(notification);
+//        // Get the notification
+//        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscList"))
+//             .andExpect(status().isNotFound());
+//            
+//    }
     
     @Test
     @Transactional

@@ -105,15 +105,15 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.deleteById(id);
     }
 
-	@Override
-	public List<NotificationDTO> findAllNotificationsList() {
-		List<NotificationDTO> list = new ArrayList<NotificationDTO>();
-		List<Notification> ps = notificationRepository.findAllList();
-		for (Notification p : ps)
-			list.add(notificationMapper.toDto(p));
-
-		return list;
-	}
+//	@Override
+//	public List<NotificationDTO> findAllNotificationsList() {
+//		List<NotificationDTO> list = new ArrayList<NotificationDTO>();
+//		List<Notification> ps = notificationRepository.findAllList();
+//		for (Notification p : ps)
+//			list.add(notificationMapper.toDto(p));
+//
+//		return list;
+//	}
 	
 	@Override
 	public Page<NotificationDTO> findUserNotificationsAfterTime(Pageable pageable, Long userId, Instant startTime) {

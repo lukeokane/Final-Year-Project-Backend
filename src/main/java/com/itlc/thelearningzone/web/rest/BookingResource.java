@@ -703,7 +703,7 @@ public class BookingResource {
     }
     
     /**
-     * GET  /bookings/ get all the bookings in a list form with all courses and a selected year between a start date and end date with no booking user details are populated
+     * GET  /bookings/ get all the bookings in a list form with all courses and a selected year between a start date and end date with booking user details populated
      *
      * @param id the id of the bookingDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
@@ -718,8 +718,14 @@ public class BookingResource {
         toDate = toDate + dateParse;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
-        List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);
+        List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);        
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
+        }      
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
 
