@@ -50,9 +50,18 @@ public interface BookingUserDetailsService {
 	/**
      * Cancel tutorial attendance.
      *
-     * @param bookingID the booking belonging to the bookingUserDetails entity
-     * @param studentNumber the student number for the student canceling their attendance
+     * @param bookingID the booking belonging to the booking entity
+     * @param login the login belonging to the user canceling attendance
      * @return the persisted entity
      */
-	BookingUserDetailsDTO cancelAttendance(Long bookingID, String studentNumber);
+	BookingUserDetailsDTO cancelAttendance(Long bookingID, String login);
+	
+	/**
+     * Check-in to a tutorial.
+     *
+     * @param bookingID the booking belonging to the booking entity
+     * @param login the login belonging to the user checking in
+     * @return the persisted entity
+     */
+	BookingUserDetailsDTO checkIn(Long bookingID, String login);
 }

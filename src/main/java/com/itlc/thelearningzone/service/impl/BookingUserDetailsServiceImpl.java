@@ -1,8 +1,10 @@
 package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
+import com.itlc.thelearningzone.domain.Booking;
 import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -33,12 +37,15 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
     private final BookingUserDetailsMapper bookingUserDetailsMapper;
 
     private final UserRepository userRepository;
+    
+    private final BookingRepository bookingRepository;
 
     public BookingUserDetailsServiceImpl(BookingUserDetailsRepository bookingUserDetailsRepository, BookingUserDetailsMapper bookingUserDetailsMapper,
-    		UserRepository userRepository) {
+    		UserRepository userRepository, BookingRepository bookingRepository) {
         this.bookingUserDetailsRepository = bookingUserDetailsRepository;
         this.bookingUserDetailsMapper = bookingUserDetailsMapper;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     /**
@@ -106,25 +113,61 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
 	}
 	
 	/**
-     * Cancel tutorial attendance with student card.
+     * Cancel tutorial attendance.
      *
-     * @param bookingID the booking belonging to the bookingUserDetails entity
-     * @param studentNumber the student number retrieved from the student card scanner
-     * @return the persisted entity
+     * @param bookingID the booking belonging to the booking entity
+     * @param login the login belonging to the user canceling attendance
+     * @return the entity
      */
 	@Override
-    public BookingUserDetailsDTO cancelAttendance(Long bookingID, String studentNumber) {
-        log.debug("Request to cancel attendance for Student : {}", studentNumber);
+    public BookingUserDetailsDTO cancelAttendance(Long bookingID, String login) {
+        log.debug("Request to cancel tutorial attendance for User : {}", login);
         
-        Optional<User> user = userRepository.findOneByLogin(studentNumber);
+        Optional<User> user = userRepository.findOneByLogin(login);
         if (user.isPresent()) {
-        	BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndStudentNumber(bookingID, user.get().getId());
-            bookingUserDetails.setUserCancelled(true);
-            bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
-            log.debug("Created Information for BookingUserDetails: {}", bookingUserDetails);
-            return bookingUserDetailsMapper.toDto(bookingUserDetails);
+        	Optional<Booking> booking = bookingRepository.findById(bookingID);
+        	if (booking.isPresent()) 
+        	{
+        		BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndLogin(bookingID, user.get().getId());
+                bookingUserDetails.setUserCancelled(true);
+                bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
+                log.debug("Created Information for BookingUserDetails: {}", bookingUserDetails);
+                return bookingUserDetailsMapper.toDto(bookingUserDetails);
+        	} else {
+        		throw new IllegalArgumentException("Booking with that ID does not exist");
+        	}
     	} else {
     		throw new IllegalArgumentException("User login does not exist");
     	}
     }
+
+	/**
+     * Check-in to a tutorial.
+     *
+     * @param bookingID the booking belonging to the booking entity
+     * @param login the login belonging to the user checking in
+     * @return the entity
+     */
+	@Override
+	public BookingUserDetailsDTO checkIn(Long bookingID, String login) {
+		log.debug("Request to check-in to tutorial for User : {}", login);
+
+		Optional<User> user = userRepository.findOneByLogin(login);
+        if (user.isPresent()) {
+        	Optional<Booking> booking = bookingRepository.findById(bookingID);
+        	if (booking.isPresent())
+        	{
+        		BookingUserDetails bookingUserDetails = bookingUserDetailsRepository.findOneByBookingIdAndLogin(bookingID, user.get().getId());
+                bookingUserDetails.setUsercheckInTime(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+                bookingUserDetails = bookingUserDetailsRepository.save(bookingUserDetails);
+                log.debug("Created Information for BookingUserDetails: {}", bookingUserDetails);
+                return bookingUserDetailsMapper.toDto(bookingUserDetails);
+        	} else {
+        		throw new IllegalArgumentException("Booking with that ID does not exist");
+        	}
+    	} else {
+    		throw new IllegalArgumentException("User login does not exist");
+    	}
+
+	}
 }
