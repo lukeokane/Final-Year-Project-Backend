@@ -209,7 +209,7 @@ public class BookingUserDetailsResourceIntTest {
         em.detach(updatedUser);
         BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
 
-        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + booking.getId() + "/" + user.getLogin())
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendance/" + booking.getId() + "/" + user.getLogin())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
             .andExpect(status().isOk());
@@ -254,7 +254,7 @@ public class BookingUserDetailsResourceIntTest {
         BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
         
         bookingUserDetailsDTO.setId(null);
-        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + bookingUserDetailsDTO.getId() + "/" + user.getLogin())
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendance/" + bookingUserDetailsDTO.getId() + "/" + user.getLogin())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
             .andExpect(status().isBadRequest());
@@ -294,7 +294,7 @@ public class BookingUserDetailsResourceIntTest {
         BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
         
         user.setLogin(null);
-        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendanceWithCard/" + booking.getId() + "/" + user.getLogin())
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/cancelAttendance/" + booking.getId() + "/" + user.getLogin())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
             .andExpect(status().is5xxServerError());

@@ -123,7 +123,7 @@ public class BookingUserDetailsResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
     
-    @PutMapping("/booking-user-details/cancelAttendanceWithCard/{bookingID}/{studentNumber}")
+    @PutMapping("/booking-user-details/cancelAttendance/{bookingID}/{studentNumber}")
     @Timed
     public ResponseEntity<BookingUserDetailsDTO> updateBookingUserDetailsForCancelledAttendance(@PathVariable Long bookingID, @PathVariable String studentNumber) throws URISyntaxException {
     	log.debug("REST request to update BookingUserDetails for student : {}", studentNumber);
@@ -133,7 +133,7 @@ public class BookingUserDetailsResource {
         if (studentNumber == null) {
             throw new BadRequestAlertException("Invalid student number", "String", "stringnull");
         }
-        BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendanceWithCard(bookingID, studentNumber);
+        BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendance(bookingID, studentNumber);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
