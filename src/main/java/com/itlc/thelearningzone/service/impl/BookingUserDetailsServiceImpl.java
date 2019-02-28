@@ -113,7 +113,7 @@ public class BookingUserDetailsServiceImpl implements BookingUserDetailsService 
      * @return the persisted entity
      */
 	@Override
-    public BookingUserDetailsDTO cancelAttendanceWithCard(Long bookingID, String studentNumber) {
+    public BookingUserDetailsDTO cancelAttendance(Long bookingID, String studentNumber) {
         log.debug("Request to cancel attendance for Student : {}", studentNumber);
         
         Optional<User> user = userRepository.findOneByLogin(studentNumber);
