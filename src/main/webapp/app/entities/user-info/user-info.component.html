@@ -18,7 +18,7 @@
             <th jhiSortBy="tutorSkills"><span>Tutor Skills</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="profileImageURL"><span>Profile Image URL</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="userId"><span>User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="semesterGroupId"><span>Semester Group</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="courseYearId"><span>Course Year</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -31,8 +31,8 @@
                     {{userInfo.userId}}
                 </td>
                 <td>
-                    <div *ngIf="userInfo.semesterGroupId">
-                        <a [routerLink]="['../semester-group', userInfo.semesterGroupId , 'view' ]" >{{userInfo.semesterGroupId}}</a>
+                    <div *ngIf="userInfo.courseYearId">
+                        <a [routerLink]="['../course-year', userInfo.courseYearId , 'view' ]" >{{userInfo.courseYearId}}</a>
                     </div>
                 </td>
                 <td class="text-right">

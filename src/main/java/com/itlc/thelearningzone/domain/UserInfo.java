@@ -38,7 +38,7 @@ public class UserInfo implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("userInfos")
-    private SemesterGroup semesterGroup;
+    private CourseYear courseYear;
 
     @OneToMany(mappedBy = "userInfo")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -102,17 +102,17 @@ public class UserInfo implements Serializable {
         this.user = user;
     }
 
-    public SemesterGroup getSemesterGroup() {
-        return semesterGroup;
+    public CourseYear getCourseYear() {
+        return courseYear;
     }
 
-    public UserInfo semesterGroup(SemesterGroup semesterGroup) {
-        this.semesterGroup = semesterGroup;
+    public UserInfo courseYear(CourseYear courseYear) {
+        this.courseYear = courseYear;
         return this;
     }
 
-    public void setSemesterGroup(SemesterGroup semesterGroup) {
-        this.semesterGroup = semesterGroup;
+    public void setCourseYear(CourseYear courseYear) {
+        this.courseYear = courseYear;
     }
 
     public Set<BookingUserDetails> getBookingUserDetails() {

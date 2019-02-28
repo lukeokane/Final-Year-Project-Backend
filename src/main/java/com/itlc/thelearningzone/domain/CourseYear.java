@@ -33,7 +33,14 @@ public class CourseYear implements Serializable {
 
     @OneToMany(mappedBy = "courseYear")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Semester> semesters = new HashSet<>();
+    private Set<UserInfo> userInfos = new HashSet<>();
+    @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JoinTable(name = "course_year_subject",
+               joinColumns = @JoinColumn(name = "course_years_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name = "subjects_id", referencedColumnName = "id"))
+    private Set<Subject> subjects = new HashSet<>();
+
     @ManyToOne
     @JsonIgnoreProperties("courseYears")
     private Course course;
@@ -60,29 +67,54 @@ public class CourseYear implements Serializable {
         this.courseYear = courseYear;
     }
 
-    public Set<Semester> getSemesters() {
-        return semesters;
+    public Set<UserInfo> getUserInfos() {
+        return userInfos;
     }
 
-    public CourseYear semesters(Set<Semester> semesters) {
-        this.semesters = semesters;
+    public CourseYear userInfos(Set<UserInfo> userInfos) {
+        this.userInfos = userInfos;
         return this;
     }
 
-    public CourseYear addSemester(Semester semester) {
-        this.semesters.add(semester);
-        semester.setCourseYear(this);
+    public CourseYear addUserInfo(UserInfo userInfo) {
+        this.userInfos.add(userInfo);
+        userInfo.setCourseYear(this);
         return this;
     }
 
-    public CourseYear removeSemester(Semester semester) {
-        this.semesters.remove(semester);
-        semester.setCourseYear(null);
+    public CourseYear removeUserInfo(UserInfo userInfo) {
+        this.userInfos.remove(userInfo);
+        userInfo.setCourseYear(null);
         return this;
     }
 
-    public void setSemesters(Set<Semester> semesters) {
-        this.semesters = semesters;
+    public void setUserInfos(Set<UserInfo> userInfos) {
+        this.userInfos = userInfos;
+    }
+
+    public Set<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public CourseYear subjects(Set<Subject> subjects) {
+        this.subjects = subjects;
+        return this;
+    }
+
+    public CourseYear addSubject(Subject subject) {
+        this.subjects.add(subject);
+        subject.getCourseYears().add(this);
+        return this;
+    }
+
+    public CourseYear removeSubject(Subject subject) {
+        this.subjects.remove(subject);
+        subject.getCourseYears().remove(this);
+        return this;
+    }
+
+    public void setSubjects(Set<Subject> subjects) {
+        this.subjects = subjects;
     }
 
     public Course getCourse() {

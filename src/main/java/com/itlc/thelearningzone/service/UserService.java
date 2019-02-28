@@ -2,13 +2,13 @@ package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
-import com.itlc.thelearningzone.domain.SemesterGroup;
+import com.itlc.thelearningzone.domain.CourseYear;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
-import com.itlc.thelearningzone.repository.SemesterGroupRepository;
+import com.itlc.thelearningzone.repository.CourseYearRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
@@ -43,7 +43,7 @@ public class UserService {
     
     private final UserInfoRepository userInfoRepository;
     
-    private final SemesterGroupRepository semesterGroupRepository;
+    private final CourseYearRepository courseYearRepository;
     
     private final UserInfoService userInfoService;
 
@@ -53,10 +53,10 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, SemesterGroupRepository semesterGroupRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
-        this.semesterGroupRepository = semesterGroupRepository;
+        this.courseYearRepository = courseYearRepository;
         this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
@@ -139,11 +139,11 @@ public class UserService {
     }
     
     public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
-    	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
-        if (semesterGroup.isPresent()) {
+    	Optional<CourseYear> courseYear = courseYearRepository.findById(semesterGroupId);
+        if (courseYear.isPresent()) {
         	// Create and save the UserInfo entity
             UserInfo newUserInfo = new UserInfo();
-        	newUserInfo.setSemesterGroup(semesterGroup.get());
+        	//newUserInfo.setSemesterGroup(semesterGroup.get());
         	
         	User newUser = this.registerUser(userDTO, password);
         	newUserInfo.setUser(newUser);

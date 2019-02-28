@@ -9,6 +9,12 @@
                 <dd>
                     <span>{{courseYear.courseYear}}</span>
                 </dd>
+                <dt><span>Subject</span></dt>
+                <dd>
+                    <span *ngFor="let subject of courseYear.subjects; let last = last">
+                        <a [routerLink]="['/subject', subject?.id, 'view' ]">{{subject.id}}</a>{{last ? '' : ', '}}
+                    </span>
+                </dd>
                 <dt><span>Course</span></dt>
                 <dd>
                     <div *ngIf="courseYear.courseId">

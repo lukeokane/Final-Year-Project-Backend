@@ -28,10 +28,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" for="field_semesterGroup">Semester Group</label>
-                    <select class="form-control" id="field_semesterGroup" name="semesterGroup" [(ngModel)]="userInfo.semesterGroupId" >
+                    <label class="form-control-label" for="field_courseYear">Course Year</label>
+                    <select class="form-control" id="field_courseYear" name="courseYear" [(ngModel)]="userInfo.courseYearId" >
                         <option [ngValue]="null"></option>
-                        <option [ngValue]="semesterGroupOption.id" *ngFor="let semesterGroupOption of semestergroups; trackBy: trackSemesterGroupById">{{semesterGroupOption.id}}</option>
+                        <option [ngValue]="courseYearOption.id" *ngFor="let courseYearOption of courseyears; trackBy: trackCourseYearById">{{courseYearOption.id}}</option>
                     </select>
                 </div>
             </div>

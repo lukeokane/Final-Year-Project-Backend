@@ -6,6 +6,8 @@ import { JhiAlertService } from 'ng-jhipster';
 
 import { ICourseYear } from 'app/shared/model/course-year.model';
 import { CourseYearService } from './course-year.service';
+import { ISubject } from 'app/shared/model/subject.model';
+import { SubjectService } from 'app/entities/subject';
 import { ICourse } from 'app/shared/model/course.model';
 import { CourseService } from 'app/entities/course';
 
@@ -17,11 +19,14 @@ export class CourseYearUpdateComponent implements OnInit {
     courseYear: ICourseYear;
     isSaving: boolean;
 
+    subjects: ISubject[];
+
     courses: ICourse[];
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private courseYearService: CourseYearService,
+        private subjectService: SubjectService,
         private courseService: CourseService,
         private activatedRoute: ActivatedRoute
     ) {}
@@ -31,6 +36,12 @@ export class CourseYearUpdateComponent implements OnInit {
         this.activatedRoute.data.subscribe(({ courseYear }) => {
             this.courseYear = courseYear;
         });
+        this.subjectService.query().subscribe(
+            (res: HttpResponse<ISubject[]>) => {
+                this.subjects = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
         this.courseService.query().subscribe(
             (res: HttpResponse<ICourse[]>) => {
                 this.courses = res.body;
@@ -69,7 +80,22 @@ export class CourseYearUpdateComponent implements OnInit {
         this.jhiAlertService.error(errorMessage, null, null);
     }
 
+    trackSubjectById(index: number, item: ISubject) {
+        return item.id;
+    }
+
     trackCourseById(index: number, item: ICourse) {
         return item.id;
+    }
+
+    getSelected(selectedVals: Array<any>, option: any) {
+        if (selectedVals) {
+            for (let i = 0; i < selectedVals.length; i++) {
+                if (option.id === selectedVals[i].id) {
+                    return selectedVals[i];
+                }
+            }
+        }
+        return option;
     }
 }

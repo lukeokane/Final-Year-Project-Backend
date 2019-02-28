@@ -7,8 +7,8 @@ import { JhiAlertService } from 'ng-jhipster';
 import { IUserInfo } from 'app/shared/model/user-info.model';
 import { UserInfoService } from './user-info.service';
 import { IUser, UserService } from 'app/core';
-import { ISemesterGroup } from 'app/shared/model/semester-group.model';
-import { SemesterGroupService } from 'app/entities/semester-group';
+import { ICourseYear } from 'app/shared/model/course-year.model';
+import { CourseYearService } from 'app/entities/course-year';
 import { IBooking } from 'app/shared/model/booking.model';
 import { BookingService } from 'app/entities/booking';
 
@@ -22,7 +22,7 @@ export class UserInfoUpdateComponent implements OnInit {
 
     users: IUser[];
 
-    semestergroups: ISemesterGroup[];
+    courseyears: ICourseYear[];
 
     bookings: IBooking[];
 
@@ -30,7 +30,7 @@ export class UserInfoUpdateComponent implements OnInit {
         private jhiAlertService: JhiAlertService,
         private userInfoService: UserInfoService,
         private userService: UserService,
-        private semesterGroupService: SemesterGroupService,
+        private courseYearService: CourseYearService,
         private bookingService: BookingService,
         private activatedRoute: ActivatedRoute
     ) {}
@@ -46,9 +46,9 @@ export class UserInfoUpdateComponent implements OnInit {
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
-        this.semesterGroupService.query().subscribe(
-            (res: HttpResponse<ISemesterGroup[]>) => {
-                this.semestergroups = res.body;
+        this.courseYearService.query().subscribe(
+            (res: HttpResponse<ICourseYear[]>) => {
+                this.courseyears = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -94,7 +94,7 @@ export class UserInfoUpdateComponent implements OnInit {
         return item.id;
     }
 
-    trackSemesterGroupById(index: number, item: ISemesterGroup) {
+    trackCourseYearById(index: number, item: ICourseYear) {
         return item.id;
     }
 

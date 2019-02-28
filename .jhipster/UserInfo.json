@@ -21,8 +21,8 @@
         },
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "semesterGroup",
-            "otherEntityName": "semesterGroup",
+            "relationshipName": "courseYear",
+            "otherEntityName": "courseYear",
             "otherEntityField": "id"
         },
         {
