@@ -41,6 +41,7 @@ public class ManagedUserVM extends UserDTO {
     @Override
     public String toString() {
         return "ManagedUserVM{" +
+        		"courseYearId: " + getCourseYearId() +
             "} " + super.toString();
     }
 
