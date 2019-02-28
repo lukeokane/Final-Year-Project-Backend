@@ -14,12 +14,15 @@ import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
 import com.itlc.thelearningzone.service.util.RandomUtil;
 import com.itlc.thelearningzone.web.rest.errors.*;
+import com.itlc.thelearningzone.service.mapper.UserMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,8 @@ public class UserService {
     
     private final UserInfoRepository userInfoRepository;
     
+    private final UserMapper userMapper;
+    
     private final CourseYearRepository courseYearRepository;
     
     private final UserInfoService userInfoService;
@@ -53,9 +58,10 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, UserMapper userMapper, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
+        this.userMapper = userMapper;
         this.courseYearRepository = courseYearRepository;
         this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
@@ -126,10 +132,19 @@ public class UserService {
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
         newUser.setActivated(false);
+        
+        Set<Authority> authorities = new HashSet<>();
+        
+        // If user is a tutor, set authority but don't make activation key, admin will activate a tutor.
+        if (userDTO.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
+        	authorityRepository.findById(AuthoritiesConstants.TUTOR).ifPresent(authorities::add);
+        }
+        else {
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);       
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
-        Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        }
+        
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
       
@@ -335,6 +350,20 @@ public class UserService {
      */
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+    
+    /**
+     * Return users that have a certain role and are activated or not activated
+     * 
+     * @param pageable the pagination information
+     * @param role authority of the user group
+     * @param activated activation status of the user group
+     */
+    public Page<UserDTO> findAllByRoleAndActivationStatus(Pageable pageable, @Param(value = "role") String role, @Param(value = "activated") boolean activated) {
+    	Page<User> users = userRepository.findAllByRoleAndActivationStatus(pageable, role, activated);
+    	long totalUsers = users.getTotalElements();
+    	return new PageImpl<UserDTO>(users.stream().map(user -> new UserDTO(user))
+    			.collect(Collectors.toList()), pageable, totalUsers);
     }
 
     private void clearUserCaches(User user) {

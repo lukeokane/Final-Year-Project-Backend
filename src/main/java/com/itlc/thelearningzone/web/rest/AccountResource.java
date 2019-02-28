@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.repository.UserRepository;
+import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.MailService;
 import com.itlc.thelearningzone.service.UserService;
@@ -70,7 +71,11 @@ public class AccountResource {
         else {
         	user = userService.registerUser(managedUserVM, managedUserVM.getPassword());	
         }
+        
+        // Do not send activation email to a tutor, will be activated by the admin.
+        if (!managedUserVM.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
         mailService.sendActivationEmail(user);
+        }
     }
 
     /**

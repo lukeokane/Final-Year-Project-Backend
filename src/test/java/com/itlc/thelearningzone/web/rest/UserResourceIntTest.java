@@ -1,9 +1,11 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.itlc.thelearningzone.ThelearningzoneApp;
+import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
+import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.service.MailService;
@@ -13,6 +15,7 @@ import com.itlc.thelearningzone.service.mapper.UserMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 import com.itlc.thelearningzone.web.rest.vm.ManagedUserVM;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +36,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -71,6 +75,9 @@ public class UserResourceIntTest {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     @Autowired
     private MailService mailService;
@@ -99,6 +106,8 @@ public class UserResourceIntTest {
     private MockMvc restUserMockMvc;
 
     private User user;
+    
+    private Authority authority;
 
     @Before
     public void setup() {
@@ -136,12 +145,19 @@ public class UserResourceIntTest {
         UserInfo userInfo = new UserInfo();
         return userInfo;
     }
+    
+    public static Authority createAuthorityEntity(EntityManager em) {
+    	Authority authority = new Authority();
+    	authority.setName(AuthoritiesConstants.TUTOR);
+    	return authority;
+    }
 
     @Before
     public void initTest() {
         user = createEntity(em);
         user.setLogin(DEFAULT_LOGIN);
         user.setEmail(DEFAULT_EMAIL);
+        authority = createAuthorityEntity(em);
     }
 
     @Test
@@ -286,6 +302,81 @@ public class UserResourceIntTest {
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGEURL)))
             .andExpect(jsonPath("$.[*].langKey").value(hasItem(DEFAULT_LANGKEY)));
+    }
+    
+    /*
+	 * Check that user with tutor role and not activated is returned
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void getAllByRoleAndActivationStatus1() throws Exception {
+        // Initialize the database
+    	authorityRepository.save(authority);
+    	
+    	user.setActivated(false);
+    	Set<Authority> authorities = new HashSet<Authority>();
+    	authorities.add(authority);
+    	user.setAuthorities(authorities);
+        userRepository.saveAndFlush(user);
+
+        // Get all the users
+        restUserMockMvc.perform(get("/api/users/tutors/activation")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].login").value(hasItem(DEFAULT_LOGIN)))
+            .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRSTNAME)))
+            .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LASTNAME)))
+            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
+            .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGEURL)))
+            .andExpect(jsonPath("$.[*].langKey").value(hasItem(DEFAULT_LANGKEY)))
+            .andExpect(jsonPath("$.[*].authorities[*]").value(hasItem(AuthoritiesConstants.TUTOR)));
+    }
+    
+    /*
+	 * Check that user that is not a tutor is not return
+	 */
+    @Test
+    @Transactional
+    public void getAllByRoleAndActivationStatus2() throws Exception {
+        // Initialize the database
+    	authority.setName(AuthoritiesConstants.USER);
+    	authorityRepository.save(authority);
+    	
+    	user.setActivated(false);
+    	Set<Authority> authorities = new HashSet<Authority>();
+    	authorities.add(authority);
+    	user.setAuthorities(authorities);
+        userRepository.saveAndFlush(user);
+
+        // Get all the users
+        restUserMockMvc.perform(get("/api/users/tutors/activation")
+            .accept(MediaType.APPLICATION_JSON))
+        	.andExpect(jsonPath("$.size()").value(0));
+    }
+    
+    /*
+	 * Check that tutor that is activated is not returned
+	 */
+    @Test
+    @Transactional
+    public void getAllByRoleAndActivationStatus3() throws Exception {
+        // Initialize the database
+    	authority.setName(AuthoritiesConstants.TUTOR);
+    	authorityRepository.save(authority);
+    	
+    	user.setActivated(true);
+    	Set<Authority> authorities = new HashSet<Authority>();
+    	authorities.add(authority);
+    	user.setAuthorities(authorities);
+        userRepository.saveAndFlush(user);
+
+        // Get all the users
+        restUserMockMvc.perform(get("/api/users/tutors/activation")
+            .accept(MediaType.APPLICATION_JSON))
+        	.andExpect(jsonPath("$.size()").value(0));
     }
 
     @Test

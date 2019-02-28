@@ -207,6 +207,36 @@ public class AccountResourceIntTest {
 //
 //        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
 //    }
+    
+    @Test
+    @Transactional
+    public void testRegisterTutorValid1() throws Exception {
+        ManagedUserVM validUser = new ManagedUserVM();
+        
+        validUser.setLogin("test-register-valid");
+        validUser.setPassword("password");
+        validUser.setFirstName("Alice");
+        validUser.setLastName("Test");
+        validUser.setEmail("test-register-valid@example.com");
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.TUTOR));
+
+        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
+
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+            .andExpect(status().isCreated());
+
+        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();    
+        Optional<User> user = userRepository.findOneByLogin("test-register-valid");
+        Optional<Authority> authority = authorityRepository.findById(AuthoritiesConstants.TUTOR);
+        assertThat(user.isPresent()).isTrue();
+        assertThat(authority.isPresent()).isTrue();
+        assertThat(user.get().getAuthorities().contains(authority.get())).isTrue();
+    }
 
     @Test
     @Transactional
