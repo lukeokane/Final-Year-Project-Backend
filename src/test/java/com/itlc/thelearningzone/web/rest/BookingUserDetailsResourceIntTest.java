@@ -240,6 +240,8 @@ public class BookingUserDetailsResourceIntTest {
 		userInfoRepository.saveAndFlush(userInfo);
 		bookingRepository.saveAndFlush(booking);
         bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+        
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
 
         // Update the required entities
         BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
@@ -258,6 +260,12 @@ public class BookingUserDetailsResourceIntTest {
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
             .andExpect(status().isBadRequest());
+        
+     // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+        BookingUserDetails testBookingUserDetails = bookingUserDetailsList.get(bookingUserDetailsList.size() - 1);
+        assertThat(testBookingUserDetails.isUserCancelled()).isEqualTo(DEFAULT_USER_CANCELLED);
 
 	}
     
@@ -280,6 +288,8 @@ public class BookingUserDetailsResourceIntTest {
 		userInfoRepository.saveAndFlush(userInfo);
 		bookingRepository.saveAndFlush(booking);
         bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+        
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
 
         // Update the required entities
         BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
@@ -298,6 +308,12 @@ public class BookingUserDetailsResourceIntTest {
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
             .andExpect(status().is5xxServerError());
+        
+     // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+        BookingUserDetails testBookingUserDetails = bookingUserDetailsList.get(bookingUserDetailsList.size() - 1);
+        assertThat(testBookingUserDetails.isUserCancelled()).isEqualTo(DEFAULT_USER_CANCELLED);
 
 	}
 
