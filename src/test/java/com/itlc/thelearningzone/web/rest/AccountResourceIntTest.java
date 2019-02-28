@@ -3,8 +3,14 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
+import com.itlc.thelearningzone.domain.Course;
+import com.itlc.thelearningzone.domain.CourseYear;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
+import com.itlc.thelearningzone.repository.CourseRepository;
+import com.itlc.thelearningzone.repository.CourseYearRepository;
+import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.service.MailService;
@@ -36,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.*;
 
+import javax.persistence.EntityManager;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -57,6 +65,9 @@ public class AccountResourceIntTest {
 
     @Autowired
     private AuthorityRepository authorityRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Autowired
     private UserService userService;
@@ -70,8 +81,17 @@ public class AccountResourceIntTest {
     @Autowired
     private ExceptionTranslator exceptionTranslator;
 
+	@Autowired
+	private EntityManager em;
+    
     @Mock
     private UserService mockUserService;
+    
+    @Mock
+    private CourseYearRepository courseYearRepository;
+    
+    @Mock
+    private UserInfoRepository userInfoRepository;
 
     @Mock
     private MailService mockMailService;
@@ -79,6 +99,12 @@ public class AccountResourceIntTest {
     private MockMvc restMvc;
 
     private MockMvc restUserMockMvc;
+    
+    private User user;
+    
+    private UserInfo userInfo;
+    
+    private CourseYear courseYear;
 
     @Before
     public void setup() {
@@ -97,6 +123,45 @@ public class AccountResourceIntTest {
             .setControllerAdvice(exceptionTranslator)
             .build();
     }
+    
+    /**
+	 * Create an entity for this test.
+	 *
+	 * This is a static method, as tests for other entities might also need it, if
+	 * they test an entity which requires the current entity.
+	 */
+	public static User createUserEntity(EntityManager em) {
+		User user = new User();
+		user.setLogin("test-register-valid");
+		user.setPassword("password");
+		user.setFirstName("Alice");
+		user.setLastName("Test");
+		user.setEmail("test-register-valid@example.com");
+		user.setImageUrl("http://placehold.it/50x50");
+		user.setLangKey(Constants.DEFAULT_LANGUAGE);
+		
+		return user;
+	}
+	
+	public static UserInfo createUserInfoEntity(EntityManager em) {
+		UserInfo userInfo = new UserInfo();
+		
+		return userInfo;
+	}
+	
+	public static CourseYear createCourseYearEntity(EntityManager em) {
+		CourseYear courseYear = new CourseYear();
+		return courseYear;
+	}
+	
+	@Before 
+	public void initTest() {
+		user = createUserEntity(em);
+		userInfo = createUserInfoEntity(em);
+		courseYear = createCourseYearEntity(em);
+		
+		userInfo.setUser(user);
+	}
 
     @Test
     public void testNonAuthenticatedUser() throws Exception {
@@ -184,7 +249,7 @@ public class AccountResourceIntTest {
     
 //    @Test
 //    @Transactional
-//    public void testRegisterValidWithSemester() throws Exception {
+//    public void testRegisterValidWithCourseYear() throws Exception {
 //        ManagedUserVM validUser = new ManagedUserVM();
 //        
 //        validUser.setLogin("test-register-valid");
@@ -194,18 +259,31 @@ public class AccountResourceIntTest {
 //        validUser.setEmail("test-register-valid@example.com");
 //        validUser.setImageUrl("http://placehold.it/50x50");
 //        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
-//        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
-//        validUser.setSemesterGroupId(1L);
-//
-//        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isFalse();
-//
+//        
+//        Course course = new Course();
+//        course.setCourseCode("eeke");
+//        course.setTitle("test");
+//       courseRepository.save(course);
+//       courseYear.setCourse(course);
+//        courseYearRepository.save(courseYear);
+//        
+//        validUser.setCourseYearId(courseYear.getId());
+//       System.out.println(validUser.toString());
+//       System.out.println(courseYearRepository.count());
 //        restMvc.perform(
 //            post("/api/register")
 //                .contentType(TestUtil.APPLICATION_JSON_UTF8)
 //                .content(TestUtil.convertObjectToJsonBytes(validUser)))
 //            .andExpect(status().isCreated());
 //
-//        assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
+//        Optional<User> user = userRepository.findOneByLogin("test-register-valid");
+//        assertThat(user.isPresent()).isTrue();
+//        
+//        Optional<UserInfo> userInfo = userInfoRepository.findById(user.get().getId());
+//        System.out.println(userInfoRepository.count());
+//        assertThat(userInfo.isPresent()).isTrue();
+//        assertThat(userInfo.get().getCourseYear().getId()).isEqualTo(validUser.getCourseYearId());       
+//        
 //    }
     
     @Test

@@ -64,16 +64,16 @@ public class AccountResource {
         }
         
         User user = null;
-        if(managedUserVM.getSemesterGroupId() != null)
+        if(managedUserVM.getCourseYearId() != null)
         {
-        	user = userService.registerUser(managedUserVM, managedUserVM.getPassword(), managedUserVM.getSemesterGroupId());
+        	user = userService.registerUser(managedUserVM, managedUserVM.getPassword(), managedUserVM.getCourseYearId());
         }
         else {
         	user = userService.registerUser(managedUserVM, managedUserVM.getPassword());	
         }
         
         // Do not send activation email to a tutor, will be activated by the admin.
-        if (!managedUserVM.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
+        if (managedUserVM.getAuthorities() != null && !managedUserVM.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
         mailService.sendActivationEmail(user);
         }
     }

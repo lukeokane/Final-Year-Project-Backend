@@ -136,7 +136,7 @@ public class UserService {
         Set<Authority> authorities = new HashSet<>();
         
         // If user is a tutor, set authority but don't make activation key, admin will activate a tutor.
-        if (userDTO.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
+        if (userDTO.getAuthorities() != null && userDTO.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
         	authorityRepository.findById(AuthoritiesConstants.TUTOR).ifPresent(authorities::add);
         }
         else {
@@ -153,8 +153,8 @@ public class UserService {
         return newUser;
     }
     
-    public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
-    	Optional<CourseYear> courseYear = courseYearRepository.findById(semesterGroupId);
+    public User registerUser(UserDTO userDTO, String password, Long courseYearId) {
+    	Optional<CourseYear> courseYear = courseYearRepository.findById(courseYearId);
         if (courseYear.isPresent()) {
         	// Create and save the UserInfo entity
             UserInfo newUserInfo = new UserInfo();
@@ -162,11 +162,12 @@ public class UserService {
         	
         	User newUser = this.registerUser(userDTO, password);
         	newUserInfo.setUser(newUser);
+        	newUserInfo.setCourseYear(courseYear.get());
             userInfoRepository.save(newUserInfo);
             log.debug("Created Information for UserInfo: {}", newUserInfo);
             return newUser;
     	} else {
-    		throw new IllegalArgumentException("Semester Group ID is does not exist");
+    		throw new IllegalArgumentException("Course Year ID does not exist");
     	}
     }
     

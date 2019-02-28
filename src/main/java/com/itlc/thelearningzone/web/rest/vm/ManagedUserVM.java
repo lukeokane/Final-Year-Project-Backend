@@ -16,7 +16,7 @@ public class ManagedUserVM extends UserDTO {
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
     
-    private Long semesterGroupId;
+    private Long courseYearId;
 
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
@@ -30,17 +30,18 @@ public class ManagedUserVM extends UserDTO {
         this.password = password;
     }
     
-    public void setSemesterGroupId(Long semesterGroupId) {
-	    this.semesterGroupId = semesterGroupId;
+    public void setCourseYearId(Long courseYearId) {
+	    this.courseYearId = courseYearId;
 	}
     
-    public Long getSemesterGroupId() {
-		return semesterGroupId;
+    public Long getCourseYearId() {
+		return courseYearId;
 	}
 
     @Override
     public String toString() {
         return "ManagedUserVM{" +
+        		"courseYearId: " + getCourseYearId() +
             "} " + super.toString();
     }
 
