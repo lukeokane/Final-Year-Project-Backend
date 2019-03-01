@@ -8,8 +8,8 @@ stages:
     - build
     - test
     - analyze
-    - package
-    - release
+    # - package
+    # - release
     # - deploy
 
 
@@ -60,33 +60,33 @@ sonar-analyze:
         - ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=agt -Dsonar.projectKey=12e5511654376144861e1bd1cc68755b1b4d45dd -Dmaven.repo.local=$MAVEN_USER_HOME
     allow_failure: true
 
-maven-package:
-     stage: package
-     script:
-         #- ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
-         - ./mvnw package -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
-     artifacts:
-         paths:
-             - target/*.war
-         expire_in: 1 day
+#maven-package:
+#     stage: package
+#     script:
+#         #- ./mvnw verify deploy -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
+#         - ./mvnw package -Pprod -DskipTests -Dmaven.repo.local=$MAVEN_USER_HOME
+#     artifacts:
+#         paths:
+#             - target/*.war
+#         expire_in: 1 day
 
 ## Uncomment the following line to use gitlabs container registry. You need to adapt the REGISTRY_URL in case you are not using gitlab.com
-docker-push:
-    image: docker:latest
-    services:
-        - docker:dind
-    variables:
-        REGISTRY_URL: registry.gitlab.com
-        DOCKER_HOST: tcp://docker:2375
-        DOCKER_DRIVER: overlay2
-        IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    stage: release
-    dependencies:
-        - maven-package
-    before_script:
-        - docker info
-        - cp target/*.war src/main/docker
-    script:
-        - docker login -u "gitlab-ci-token" -p "KU9hxpdoqEPz5JXYkjxL" $REGISTRY_URL
-        - docker build -f src/main/docker/Dockerfile -t $IMAGE_TAG src/main/docker
-        - docker push $IMAGE_TAG
+#docker-push:
+#    image: docker:latest
+#    services:
+#        - docker:dind
+#    variables:
+#        REGISTRY_URL: registry.gitlab.com
+#        DOCKER_HOST: tcp://docker:2375
+#        DOCKER_DRIVER: overlay2
+#        IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+#    stage: release
+#    dependencies:
+#        - maven-package
+#    before_script:
+#        - docker info
+#        - cp target/*.war src/main/docker
+#    script:
+#        - docker login -u "gitlab-ci-token" -p "KU9hxpdoqEPz5JXYkjxL" $REGISTRY_URL
+#        - docker build -f src/main/docker/Dockerfile -t $IMAGE_TAG src/main/docker
+#        - docker push $IMAGE_TAG
