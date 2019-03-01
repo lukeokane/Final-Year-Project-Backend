@@ -192,6 +192,27 @@ public class MailService {
     }
     
     @Async
+    public void sendBookingReminderEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod, String templateName,
+			String titleKey) { 
+    	
+    	Context context = new Context();
+		context.setVariable(BOOKING, booking);
+		context.setVariable(TUTOR_USER, tutor);
+		context.setVariable("relativeTimePeriod", relativeTimePeriod);
+		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+  		
+		
+    	for (UserInfo user : bookingUsers) {
+    		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
+        	context.setLocale(locale);
+    		context.setVariable(USER, user);
+    		String content = templateEngine.process(templateName, context);
+    		String subject = messageSource.getMessage(titleKey, null, locale).replace("{0}", booking.getTitle());
+    		sendEmail(user.getUser().getEmail(), subject, content, false, true);
+    	}
+    }
+    
+    @Async
     public void sendActivationEmail(User user) {
         log.debug("Sending activation email to '{}'", user.getEmail());
         sendEmailFromTemplate(user, "mail/activationEmail", "email.activation.title");
@@ -238,4 +259,9 @@ public class MailService {
     	log.debug("Sending booking confirmed email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
     	sendBookingConfirmedEmailFromTemplate(booking, bookingUsers, tutor, resources, "mail/bookingConfirmed", "email.confirmed.title");
 	}
+    
+    public void sendBookingReminderEmail(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod) {
+    	log.debug("Sending booking reminder email");
+    	sendBookingReminderEmailFromTemplate(booking, bookingUsers, tutor, relativeTimePeriod, "mail/reminderEmail", "email.confirmed.title");
+    }
 }
