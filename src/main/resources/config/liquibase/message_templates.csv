@@ -1,0 +1,9 @@
+id;tag;reason;message
+1;cancelBooking;Cancel booking reason 1;Cancel booking message 1
+2;cancelBooking;Cancel booking reason 2;Cancel booking message 2
+3;cancelBooking;Cancel booking reason 3;Cancel booking message 3
+4;cancelBooking;Cancel booking reason 4;Cancel booking message 4
+5;rejectBooking;Reject booking reason 1;Reject booking message 1
+6;rejectBooking;Reject booking reason 2;Reject booking message 2
+7;rejectBooking;Reject booking reason 3;Reject booking message 3
+8;rejectBooking;Reject booking reason 4;Reject booking message 4
