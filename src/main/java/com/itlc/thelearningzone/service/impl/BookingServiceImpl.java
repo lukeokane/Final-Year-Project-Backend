@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -489,6 +490,61 @@ public class BookingServiceImpl implements BookingService {
 		return list;
 	}
 
+	
+    /**
+     * Send booking reminders to participants
+	 *
+     * This is scheduled to get fired everyday, at 18:00 (pm).
+     */
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void sendBookingEveningReminderEmail() {
+    	
+    	// Get next day time and end of next day time
+    	Instant currentTime = Instant.now();
+    	Instant nextDay = currentTime.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
+    	Instant endOfNextDay = nextDay.minus(1, ChronoUnit.DAYS);
+    	
+    	// Get bookings between those two times
+    	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(nextDay, endOfNextDay);
+    	
+    	log.debug("Scheduled task, runs at 18:00 every day: sending emails to attendees of {} bookings", bookings.size());
+    	for (int i = 0; i < bookings.size(); i++) {
+    		Booking booking = bookings.get(i);
+    		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
+    		if (tutor.isPresent()) {
+    		// Send email to attendees
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    		}
+    	}
+    }
+    
+    /**
+     * Send booking reminders to participants an hour before booking commences
+	 *
+     * This is scheduled to get fired every 5 minutes
+     */
+    @Scheduled(fixedRate = 300000)
+    public void sendBookingHourBeforeReminderEmail() {
+    	
+    	// Get time an hour from now and an hour + 5 minutes from now
+    	Instant currentTime = Instant.now();
+    	Instant startTime = currentTime.truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.HOURS);
+    	Instant endTime = startTime.plus(5, ChronoUnit.MINUTES);
+    	
+    	// Get bookings between those two times
+    	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(startTime, endTime);
+    			
+    	log.debug("Scheduled task, runs every 5 minutes: sending emails to attendees of {} bookings", bookings.size());
+    	for (int i = 0; i < bookings.size(); i++) {
+    		Booking booking = bookings.get(i);
+    		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
+    		if (tutor.isPresent()) {
+    		// Send email to attendees
+    		mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    		}
+    	}
+    }
+    
 	/**
 	 * Get all the bookings.
 	 *
