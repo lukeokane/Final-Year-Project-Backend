@@ -756,4 +756,14 @@ public class BookingResource {
         bookingService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+    
+    @PutMapping("/bookings/cancelBooking/{bookingID}")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingForCancellation(@PathVariable Long bookingID) throws URISyntaxException {
+    	log.debug("REST request to update Booking : {}", bookingID);
+        BookingDTO result = bookingService.cancelBooking(bookingID);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
 }

@@ -52,16 +52,16 @@ public interface BookingUserDetailsService {
      *
      * @param bookingID the booking belonging to the booking entity
      * @param login the login belonging to the user canceling attendance
-     * @return the persisted entity
+     * @return the entity
      */
 	BookingUserDetailsDTO cancelAttendance(Long bookingID, String login);
 	
 	/**
      * Check-in to a tutorial.
      *
-     * @param bookingID the booking belonging to the booking entity
+     * @param bookingID the bookingID belonging to the booking entity
      * @param login the login belonging to the user checking in
-     * @return the persisted entity
+     * @return the entity
      */
 	BookingUserDetailsDTO checkIn(Long bookingID, String login);
 }

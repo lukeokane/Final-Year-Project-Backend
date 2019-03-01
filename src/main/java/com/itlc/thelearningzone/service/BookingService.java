@@ -233,4 +233,12 @@ public interface BookingService {
 		
 	List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate, Instant instantToDate,
 			Integer selectedYear);
+	
+	/**
+     * Cancel the "bookingID" booking.
+     *
+     * @param bookingID the bookingID belonging to the booking entity to be deleted
+     * @return the entity
+     */
+	BookingDTO cancelBooking(Long bookingID);
 }

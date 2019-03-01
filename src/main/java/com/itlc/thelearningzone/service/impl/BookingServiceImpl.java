@@ -2,6 +2,7 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.repository.BookingRepository;
@@ -534,7 +535,27 @@ public class BookingServiceImpl implements BookingService {
 		bookingRepository.deleteById(id);
 	}
 
-	
-
+	/**
+     * Cancel the "bookingID" booking.
+     *
+     * @param bookingID the bookingID belonging to the booking entity to be deleted
+     * @return the entity
+     */
+	@Override
+	public BookingDTO cancelBooking(Long bookingID) {
+		log.debug("Request to cancel Booking : {}", bookingID);
+		
+		Optional<Booking> booking = bookingRepository.findById(bookingID);
+    	if (booking.isPresent()) 
+    	{
+    		Booking updatedBooking = bookingRepository.getOne(bookingID);
+    		updatedBooking.setCancelled(true);
+    		updatedBooking = bookingRepository.save(updatedBooking);
+            log.debug("Created Information for Booking: {}", updatedBooking);
+            return bookingMapper.toDto(updatedBooking);
+    	} else {
+    		throw new IllegalArgumentException("Booking with that ID does not exist");
+    	}
+	}
 
 }
