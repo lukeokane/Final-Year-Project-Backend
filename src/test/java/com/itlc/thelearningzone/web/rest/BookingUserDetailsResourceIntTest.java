@@ -457,6 +457,150 @@ public class BookingUserDetailsResourceIntTest {
         assertThat(testBookingUserDetails.getUsercheckInTime().equals(null));
 	}
 
+    /**
+     * Check that an existing BookingUserDetails entity has been updated with a check-in time stamp
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void checkInBlackBox1() throws Exception
+	{
+    	Instant currentTime = Instant.now();
+    	
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/checkIn/" + booking.getId() + "/" + user.getLogin())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+            .andExpect(status().isOk());
+
+        // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+        BookingUserDetails testBookingUserDetails = bookingUserDetailsList.get(bookingUserDetailsList.size() - 1);
+        assertThat(testBookingUserDetails.getUsercheckInTime()).isAfter(currentTime);
+	}
+    
+    /**
+     * Check that the correct error response occurs when user passed in does not exist
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void checkInBlackBox2() throws Exception
+	{
+    	
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+
+        String fakeUser = "user123";
+        
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/checkIn/" + booking.getId() + "/" + fakeUser)
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.detail").value("User login does not exist"));
+
+        // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+	}
+    
+    /**
+     * Check that the correct error response occurs when booking ID passed in does not exist
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void checkInBlackBox3() throws Exception
+	{
+    	
+    	userInfo.setUser(user);
+		booking.getUserInfos().add(userInfo);
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingUserDetailsDTO bookingUserDetailsDTO = bookingUserDetailsMapper.toDto(updatedBookingUserDetails);
+
+        Long fakeBookingId = 100l;
+        
+        restBookingUserDetailsMockMvc.perform(put("/api/booking-user-details/checkIn/" + fakeBookingId + "/" + updatedUser.getLogin())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bookingUserDetailsDTO)))
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.detail").value("Booking with that ID does not exist"));
+
+        // Validate the BookingUserDetails in the database
+        List<BookingUserDetails> bookingUserDetailsList = bookingUserDetailsRepository.findAll();
+        assertThat(bookingUserDetailsList).hasSize(databaseSizeBeforeUpdate);
+	}
+    
     @Test
     @Transactional
     public void createBookingUserDetails() throws Exception {
