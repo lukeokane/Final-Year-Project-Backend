@@ -146,12 +146,13 @@ public class UserService {
         }
         
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
-      
+        userRepository.save(newUser);     
         log.debug("Created Information for User: {}", newUser);
+        
         UserInfo newUserInfo = new UserInfo();
         newUserInfo.setUser(newUser);
         userInfoRepository.save(newUserInfo);
+        log.debug("Created Information for User Info: {}", newUserInfo);
         
         return newUser;
     }
