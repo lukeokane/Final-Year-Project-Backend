@@ -485,7 +485,9 @@ public class BookingServiceImpl implements BookingService {
 	public List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer selectedYear) {
 		List<BookingDTO> list = new ArrayList<>();
-		//List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
+		List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
+		for (Booking p : ps)
+		list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
