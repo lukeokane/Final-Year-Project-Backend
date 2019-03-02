@@ -149,6 +149,9 @@ public class UserService {
         userRepository.save(newUser);
       
         log.debug("Created Information for User: {}", newUser);
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setUser(newUser);
+        userInfoRepository.save(newUserInfo);
         
         return newUser;
     }
@@ -156,15 +159,20 @@ public class UserService {
     public User registerUser(UserDTO userDTO, String password, Long courseYearId) {
     	Optional<CourseYear> courseYear = courseYearRepository.findById(courseYearId);
         if (courseYear.isPresent()) {
-        	// Create and save the UserInfo entity
-            UserInfo newUserInfo = new UserInfo();
-        	//newUserInfo.setSemesterGroup(semesterGroup.get());
         	
         	User newUser = this.registerUser(userDTO, password);
-        	newUserInfo.setUser(newUser);
-        	newUserInfo.setCourseYear(courseYear.get());
-            userInfoRepository.save(newUserInfo);
-            log.debug("Created Information for UserInfo: {}", newUserInfo);
+        	
+        	// Get user info of user from repository
+        	UserInfo userInfo = userInfoRepository.findById(newUser.getId()).orElse(null);
+        	      		
+        	// Set course year
+        	userInfo.setCourseYear(courseYear.get());
+        	
+        	// save back in repository
+        	userInfoRepository.save(userInfo);
+        	
+            log.debug("Created Information for UserInfo: {}", userInfo);
+            
             return newUser;
     	} else {
     		throw new IllegalArgumentException("Course Year ID does not exist");
@@ -174,10 +182,19 @@ public class UserService {
     private boolean removeNonActivatedUser(User existingUser){
         if (existingUser.getActivated()) {
              return false;
-        }
+        }       
+        
+        // Delete user info
+        UserInfo existingUserInfo = userInfoRepository.findById(existingUser.getId()).orElse(null);
+        userInfoRepository.delete(existingUserInfo);
+        userInfoRepository.flush();
+        
+        // Delete user
         userRepository.delete(existingUser);
         userRepository.flush();
         this.clearUserCaches(existingUser);
+
+        
         return true;
     }
 
