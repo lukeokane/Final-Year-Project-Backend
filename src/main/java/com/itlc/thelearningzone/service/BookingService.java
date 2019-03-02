@@ -241,4 +241,9 @@ public interface BookingService {
      * @return the entity
      */
 	BookingDTO cancelBooking(Long bookingID);
+
+	List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId, Integer selectedYear);
+
+
 }

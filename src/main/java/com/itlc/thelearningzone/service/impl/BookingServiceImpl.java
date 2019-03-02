@@ -471,15 +471,6 @@ public class BookingServiceImpl implements BookingService {
 		return list;
 	}
 	
-//	@Override
-//	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
-//		List<BookingDTO> list = new ArrayList<>();
-//		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
-//		for (Booking p : ps)
-//			list.add(bookingMapper.toDto(p));
-//
-//		return list;
-//	}
 	
 	@Override
 	public List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate,
@@ -491,7 +482,19 @@ public class BookingServiceImpl implements BookingService {
 
 		return list;
 	}
+	
+	@Override
+	public List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId, Integer selectedYear) {
+		Long lCourseId = new Long(courseId);
+		List<BookingDTO> list = new ArrayList<>();
+		List<Booking> ps = bookingRepository.findBookingsSelectedCourseSelectedYear(instantFromDate, instantToDate, lCourseId, selectedYear);
+		for (Booking p : ps)
+		list.add(bookingMapper.toDto(p));
 
+		return list;
+	
+	}
 	
     /**
      * Send booking reminders to participants

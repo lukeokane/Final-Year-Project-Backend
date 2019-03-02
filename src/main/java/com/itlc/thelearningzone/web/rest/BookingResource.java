@@ -675,32 +675,7 @@ public class BookingResource {
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
     
-    /**
-     * GET  /bookings/ get all the bookings in a list form between a start date and end date with no booking user details are populated
-     *
-     * @param id the id of the bookingDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
-     */
-    @GetMapping("/bookings/findAllBookingsDistributionList/{fromDate}/toDate/{toDate}")
-    @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsDistributionList(@PathVariable String fromDate,
-			@PathVariable String toDate) {
-        log.debug("REST request to get Booking list form");
-
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
-        Instant instantFromDate = Instant.parse(fromDate);
-        Instant instantToDate = Instant.parse(toDate);
-        List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
-        for (BookingDTO booking : bookings)
-        {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
-        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
-        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
-        
-        }
-		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
-    }
+    
     
     /**
      * GET  /bookings/ get all the bookings in a list form with all courses and a selected year between a start date and end date with booking user details populated
@@ -710,7 +685,7 @@ public class BookingResource {
      */
     @GetMapping("/bookings/findAllBookingsAllCoursesSelectedYear/{fromDate}/toDate/{toDate}/selectedYear/{selectedYear}")
     @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYearBetweenDates(@PathVariable String fromDate,
+    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYear(@PathVariable String fromDate,
 			@PathVariable String toDate, @PathVariable Integer selectedYear) {
         log.debug("REST request to get Booking list form");
 
@@ -729,6 +704,33 @@ public class BookingResource {
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
 
+    
+    /**
+     * GET  /bookings/ get all the bookings in a list form with a selected course and a selected year between a start date and end date with booking user details populated
+     *
+     * @param id the id of the bookingDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/bookings/findAllBookingsSelectedCourseAndSelectedYear/{fromDate}/toDate/{toDate}/selectedCourse/{courseId}/selectedYear/{selectedYear}")
+    @Timed
+    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYearBetweenDates(@PathVariable String fromDate,
+			@PathVariable String toDate, @PathVariable Integer courseId, @PathVariable Integer selectedYear) {
+        log.debug("REST request to get Booking list form");
+
+        fromDate= fromDate + dateParse;
+        toDate = toDate + dateParse;
+        Instant instantFromDate = Instant.parse(fromDate);
+        Instant instantToDate = Instant.parse(toDate);
+        List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseSelectedYearBetweenDates(instantFromDate, instantToDate, courseId, selectedYear);        
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
+        
+        }      
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
+    }
     /**
      * GET  /bookings/:id : get the "id" booking.
      *
