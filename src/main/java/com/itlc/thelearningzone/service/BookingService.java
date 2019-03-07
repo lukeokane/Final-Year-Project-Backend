@@ -245,5 +245,8 @@ public interface BookingService {
 	List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer courseId, Integer selectedYear);
 
+	List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId);
+
 
 }

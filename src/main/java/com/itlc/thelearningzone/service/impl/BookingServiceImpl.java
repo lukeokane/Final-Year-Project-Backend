@@ -496,6 +496,18 @@ public class BookingServiceImpl implements BookingService {
 	
 	}
 	
+	@Override
+	public List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId) {
+		Long lCourseId = new Long(courseId);
+		List<BookingDTO> list = new ArrayList<>();
+		List<Booking> ps = bookingRepository.findBookingsSelectedCourseAllYears(instantFromDate, instantToDate, lCourseId);
+		for (Booking p : ps)
+		list.add(bookingMapper.toDto(p));
+
+		return list;
+	}
+	
     /**
      * Send booking reminders to participants
 	 *
@@ -618,5 +630,6 @@ public class BookingServiceImpl implements BookingService {
     		throw new IllegalArgumentException("Booking with that ID does not exist");
     	}
 	}
+
 
 }
