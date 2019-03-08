@@ -232,19 +232,19 @@ public class MailService {
     
     @Async
 	public void sendBookingCancelledEmail(Booking booking, User user, User tutorUser) {
-		log.debug("Sending email to '{}'", user.getEmail());
+		log.debug("Sending booking cancelled email to '{}'", user.getEmail());
 		sendBookingCancelledEmailFromTemplate(booking, user, tutorUser, "mail/cancellationEmail", "email.cancelled.title");
 	}
     
     @Async
 	public void sendBookingAcceptedByTutorEmail(Booking booking,User user,User tutorUser) {
-		log.debug("Sending email to '{}'", user.getEmail());
+		log.debug("Sending booking accepted by tutor email to '{}'", user.getEmail());
 		sendBookingAcceptedByTutorFromTemplate(booking, user, tutorUser,"mail/bookingAcceptedByTutorEmail", "email.accepted.title");
 	}
      
     @Async
 	public void sendBookingEditedyAdminEmail(Booking booking, User user, User tutorUser) {
-		log.debug("Sending email to '{}'", user.getEmail());
+		log.debug("Sending booking edited email to '{}'", user.getEmail());
 		sendBookingEditedByAdminFromTemplate(booking, user, tutorUser, "mail/bookingEditedByAdminEmail", "email.edit.title");
 	}
 	

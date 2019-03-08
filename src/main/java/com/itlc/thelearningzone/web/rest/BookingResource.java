@@ -1,7 +1,6 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.SubjectService;
@@ -44,15 +43,15 @@ public class BookingResource {
 
     private static final String ENTITY_NAME = "booking";
     
-    private final String ID_NULL = "idnull";
+    private static final String ID_NULL = "idnull";
+    
+    private static final String DATE_SUFFIX = "T00:00:00Z";
 
     private final BookingService bookingService;
     
     private final SubjectService subjectService;
 
     private final BookingUserDetailsService bookingUserDetailsService;
-    
-    private final String dateParse = "T00:00:00Z";
 
     public BookingResource(BookingService bookingService, SubjectService subjectService, BookingUserDetailsService bookingUserDetailsService) {
         this.bookingService = bookingService;
@@ -136,7 +135,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBooking(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.save(bookingDTO);
         return ResponseEntity.ok()
@@ -159,7 +158,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingAssignedToTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingAssignedTutor(bookingDTO);
         return ResponseEntity.ok()
@@ -181,7 +180,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingAcceptedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingAccepted(bookingDTO);
         return ResponseEntity.ok()
@@ -203,7 +202,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingRejectedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingRejectedByTutor(bookingDTO);
         return ResponseEntity.ok()
@@ -225,7 +224,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingToCancelled(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingCancelled(bookingDTO);
         return ResponseEntity.ok()
@@ -247,7 +246,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO);
         return ResponseEntity.ok()
@@ -659,8 +658,8 @@ public class BookingResource {
 			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         
@@ -689,8 +688,8 @@ public class BookingResource {
 			@PathVariable String toDate, @PathVariable Integer selectedYear) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);        
@@ -717,8 +716,8 @@ public class BookingResource {
 			@PathVariable String toDate, @PathVariable Integer courseId, @PathVariable Integer selectedYear) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseSelectedYearBetweenDates(instantFromDate, instantToDate, courseId, selectedYear);        
@@ -744,8 +743,8 @@ public class BookingResource {
 			@PathVariable String toDate, @PathVariable Integer courseId) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseAllYearsBetweenDates(instantFromDate, instantToDate, courseId);        

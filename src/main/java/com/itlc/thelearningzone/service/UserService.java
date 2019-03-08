@@ -46,8 +46,6 @@ public class UserService {
     
     private final UserInfoRepository userInfoRepository;
     
-    private final UserMapper userMapper;
-    
     private final CourseYearRepository courseYearRepository;
     
     private final UserInfoService userInfoService;
@@ -58,10 +56,9 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, UserMapper userMapper, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
-        this.userMapper = userMapper;
         this.courseYearRepository = courseYearRepository;
         this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
@@ -167,7 +164,11 @@ public class UserService {
         	UserInfo userInfo = userInfoRepository.findById(newUser.getId()).orElse(null);
         	      		
         	// Set course year
+        	if (userInfo != null) {
         	userInfo.setCourseYear(courseYear.get());
+        	} else {
+        		throw new IllegalArgumentException("User " + userDTO.getLogin() + " does not exist");
+        	}
         	
         	// save back in repository
         	userInfoRepository.save(userInfo);

@@ -45,6 +45,7 @@ import java.util.*;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -87,10 +88,10 @@ public class AccountResourceIntTest {
     @Mock
     private UserService mockUserService;
     
-    @Mock
+    @Autowired
     private CourseYearRepository courseYearRepository;
     
-    @Mock
+    @Autowired
     private UserInfoRepository userInfoRepository;
 
     @Mock
@@ -103,6 +104,8 @@ public class AccountResourceIntTest {
     private User user;
     
     private UserInfo userInfo;
+    
+    private Course course;
     
     private CourseYear courseYear;
 
@@ -149,8 +152,17 @@ public class AccountResourceIntTest {
 		return userInfo;
 	}
 	
+	private static Course createCourseEntity(EntityManager em) {
+		Course course = new Course();
+		course.setCourseCode("DK_181");
+		course.setTitle("BSc. (Hons) in Computing");
+		
+		return course;
+	}
+	
 	public static CourseYear createCourseYearEntity(EntityManager em) {
 		CourseYear courseYear = new CourseYear();
+		courseYear.setCourseYear(1);
 		return courseYear;
 	}
 	
@@ -158,9 +170,13 @@ public class AccountResourceIntTest {
 	public void initTest() {
 		user = createUserEntity(em);
 		userInfo = createUserInfoEntity(em);
+		course = createCourseEntity(em);
 		courseYear = createCourseYearEntity(em);
-		
+	
 		userInfo.setUser(user);
+		courseYear.setCourse(course);
+		Set<CourseYear> courseYears = new HashSet<>();
+		courseYears.add(courseYear);
 	}
 
     @Test
@@ -247,44 +263,78 @@ public class AccountResourceIntTest {
         assertThat(userRepository.findOneByLogin("test-register-valid").isPresent()).isTrue();
     }
     
-//    @Test
-//    @Transactional
-//    public void testRegisterValidWithCourseYear() throws Exception {
-//        ManagedUserVM validUser = new ManagedUserVM();
-//        
-//        validUser.setLogin("test-register-valid");
-//        validUser.setPassword("password");
-//        validUser.setFirstName("Alice");
-//        validUser.setLastName("Test");
-//        validUser.setEmail("test-register-valid@example.com");
-//        validUser.setImageUrl("http://placehold.it/50x50");
-//        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
-//        
-//        Course course = new Course();
-//        course.setCourseCode("eeke");
-//        course.setTitle("test");
-//       courseRepository.save(course);
-//       courseYear.setCourse(course);
-//        courseYearRepository.save(courseYear);
-//        
-//        validUser.setCourseYearId(courseYear.getId());
-//       System.out.println(validUser.toString());
-//       System.out.println(courseYearRepository.count());
-//        restMvc.perform(
-//            post("/api/register")
-//                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-//                .content(TestUtil.convertObjectToJsonBytes(validUser)))
-//            .andExpect(status().isCreated());
-//
-//        Optional<User> user = userRepository.findOneByLogin("test-register-valid");
-//        assertThat(user.isPresent()).isTrue();
-//        
-//        Optional<UserInfo> userInfo = userInfoRepository.findById(user.get().getId());
-//        System.out.println(userInfoRepository.count());
-//        assertThat(userInfo.isPresent()).isTrue();
-//        assertThat(userInfo.get().getCourseYear().getId()).isEqualTo(validUser.getCourseYearId());       
-//        
-//    }
+	/*
+	 * Check that a user registers and is associated with a course year
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testRegisterValidWithCourseYear() throws Exception {
+        ManagedUserVM validUser = new ManagedUserVM();
+        
+        validUser.setLogin("test-register-valid");
+        validUser.setPassword("password");
+        validUser.setFirstName("Alice");
+        validUser.setLastName("Test");
+        validUser.setEmail("test-register-valid@example.com");
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        
+       courseRepository.save(course);
+       System.out.println(course);
+    
+       courseYear.setCourse(course);
+       courseYearRepository.save(courseYear);
+       
+       validUser.setCourseYearId(courseYear.getId());
+       System.out.println(validUser.toString());
+       System.out.println(courseYearRepository.count());
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+            .andExpect(status().isCreated());
+
+        Optional<User> user = userRepository.findOneByLogin("test-register-valid");
+        assertThat(user.isPresent()).isTrue();
+        
+        Optional<UserInfo> userInfo = userInfoRepository.findById(user.get().getId());
+       
+        System.out.println(userInfoRepository.count());
+        assertThat(userInfo.isPresent()).isTrue();
+        assertThat(userInfo.get().getCourseYear().getId()).isEqualTo(validUser.getCourseYearId());              
+    }
+    
+    /*
+	 * Check that a user register fails when passing in a course year ID that does not exist
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testRegisterValidWithCourseYear2() throws Exception {
+        ManagedUserVM validUser = new ManagedUserVM();
+        
+        validUser.setLogin("test-register-valid");
+        validUser.setPassword("password");
+        validUser.setFirstName("Alice");
+        validUser.setLastName("Test");
+        validUser.setEmail("test-register-valid@example.com");
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+
+       // Set course year to a non-existent ID in the repository
+       validUser.setCourseYearId(10001L);
+       System.out.println(validUser.toString());
+       System.out.println(courseYearRepository.count());
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+            .andExpect(status().is5xxServerError())
+            .andExpect(jsonPath("$.detail", is("Course Year ID does not exist")));
+    }
     
     @Test
     @Transactional
@@ -560,32 +610,33 @@ public class AccountResourceIntTest {
             .andExpect(status().is4xxClientError());
     }
 
-//    @Test
-//    @Transactional
-//    public void testRegisterAdminIsIgnored() throws Exception {
-//    	ManagedUserVM validUser = new ManagedUserVM(); 
-//        
-//    	validUser.setLogin("badguy");
-//        validUser.setFirstName("Bad");
-//        validUser.setLastName("Guy");
-//        validUser.setEmail("badguy@example.com");
-//        validUser.setActivated(true);
-//        validUser.setImageUrl("http://placehold.it/50x50");
-//        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
-//        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
-//
-//
-//        restMvc.perform(
-//            post("/api/register")
-//                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-//                .content(TestUtil.convertObjectToJsonBytes(validUser)))
-//            .andExpect(status().isCreated());
-//
-//        Optional<User> userDup = userRepository.findOneByLogin("badguy");
-//        assertThat(userDup.isPresent()).isTrue();
-//        assertThat(userDup.get().getAuthorities()).hasSize(1)
-//            .containsExactly(authorityRepository.findById(AuthoritiesConstants.USER).get());
-//    }          
+    @Test
+    @Transactional
+    public void testRegisterAdminIsIgnored() throws Exception {
+    	ManagedUserVM validUser = new ManagedUserVM(); 
+        
+    	validUser.setLogin("badguy");
+        validUser.setFirstName("Bad");
+        validUser.setLastName("Guy");
+        validUser.setEmail("badguy@example.com");
+        validUser.setPassword("password123");
+        validUser.setActivated(true);
+        validUser.setImageUrl("http://placehold.it/50x50");
+        validUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
+
+
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(validUser)))
+            .andExpect(status().isCreated());
+
+        Optional<User> userDup = userRepository.findOneByLogin("badguy");
+        assertThat(userDup.isPresent()).isTrue();
+        assertThat(userDup.get().getAuthorities()).hasSize(1)
+            .containsExactly(authorityRepository.findById(AuthoritiesConstants.USER).get());
+    }     
 
     @Test
     @Transactional
