@@ -1,4 +1,4 @@
-id;tag;reason;message
+id;tag;reason;content
 1;cancelBooking;Cancel booking reason 1;Cancel booking message 1
 2;cancelBooking;Cancel booking reason 2;Cancel booking message 2
 3;cancelBooking;Cancel booking reason 3;Cancel booking message 3

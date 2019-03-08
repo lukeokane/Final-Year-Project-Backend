@@ -46,17 +46,6 @@ entity CourseYear {
 	courseYear Integer required
 }
 
-entity Semester {
-    semesterNumber SemesterNumber required
-    semesterStartDate LocalDate
-    semesterEndDate LocalDate
-}
-
-entity SemesterGroup {
-	title String required
-	
-}
-
 entity Subject {
 	title String required,
     subjectCode String required
@@ -74,12 +63,15 @@ entity Resource {
     
 }
 
-enum OrdinalScale {
-	NONE, LOW, MEDIUM, HIGH
+entity Message {
+	tag String, 
+    reason String,
+    content String
+    
 }
 
-enum SemesterNumber {
-	NONE, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT
+enum OrdinalScale {
+	NONE, LOW, MEDIUM, HIGH
 }
 
 relationship OneToOne {
@@ -99,15 +91,13 @@ relationship OneToMany {
     Booking{bookingUserDetails} to BookingUserDetails{booking},
     Topic{resource} to Resource{topic},
     Course{courseYear} to CourseYear{course},
-    CourseYear{semester} to Semester{courseYear},
-    Semester{semesterGroup} to SemesterGroup{semester},
-    SemesterGroup{userInfo} to UserInfo{semesterGroup},
+    CourseYear{userInfo} to UserInfo{courseYear},
 }
 
 relationship ManyToMany {
     Booking{userInfo} to UserInfo{booking},
     Subject{topic} to Topic{subject},
-    SemesterGroup{subject} to Subject{semesterGroup}
+    CourseYear{subject} to Subject{courseYear}
     Booking{topic} to Topic{booking}
 
 }

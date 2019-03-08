@@ -9,6 +9,7 @@ import { ThelearningzoneCourseYearModule } from './course-year/course-year.modul
 import { ThelearningzoneSubjectModule } from './subject/subject.module';
 import { ThelearningzoneTopicModule } from './topic/topic.module';
 import { ThelearningzoneResourceModule } from './resource/resource.module';
+import { ThelearningzoneMessageModule } from './message/message.module';
 /* jhipster-needle-add-entity-module-import - JHipster will add entity modules imports here */
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ThelearningzoneResourceModule } from './resource/resource.module';
         ThelearningzoneSubjectModule,
         ThelearningzoneTopicModule,
         ThelearningzoneResourceModule,
+        ThelearningzoneMessageModule,
         /* jhipster-needle-add-entity-module - JHipster will add entity modules here */
     ],
     declarations: [],
