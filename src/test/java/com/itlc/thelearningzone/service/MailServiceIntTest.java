@@ -910,8 +910,11 @@ public class MailServiceIntTest {
         assertThat(emailBody).contains(oldBooking.getTitle());
         assertThat(emailBody).contains(oldStartTime + " to " + oldEndTIme);
         
-        /* Check email includes tutor and subject information */
-      System.out.println(emailBody);
+        /* Check email includes tutor, subject and topic information */
+        assertThat(emailBody).contains(tutor.getFirstName() + " " + tutor.getLastName());
+        assertThat(emailBody).contains(bookingEdited.getSubject().getTitle());
+        assertThat(emailBody).contains(topic.getTitle());
+        
         // Disconnect from session so that the updates on the required entities are not directly saved in db
         em.detach(oldBooking);
         em.detach(updatedUserInfo);
