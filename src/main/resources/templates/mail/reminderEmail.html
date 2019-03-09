@@ -21,11 +21,11 @@
         	<span th:if="${!iter.last}" th:text="${topic.title} + ', '">topic title with delimiter</span>
         </strong>
         <span th:if="${tutorUser != null}" th:text="'tutorial ' + #{email.reminder.sentence2WithTutor(${relativeTimePeriod}, ${#dates.format(booking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(booking.startTime, 'HH.mma')}, ${#dates.format(booking.endTime, 'HH.mma')}, ${tutorUser.firstName + ' ' + tutorUser.lastName})}">
-           {tomorrow/today}, 01/12/2019 from 18:00 to 21:00 with John Doe
+           {tomorrow/today}, 01/12/2019 from 18:00PM to 21:00PM with John Doe
         </span> 
         
         <span th:if="${tutorUser == null}" th:text="'booking ' + #{email.reminder.sentence2(${relativeTimePeriod}, ${#dates.format(booking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(booking.startTime, 'HH.mma')}, ${#dates.format(booking.endTime, 'HH.mma')})}">
-           {tomorrow/today}, 01/12/2019 from 18:00 to 21:00
+           {tomorrow/today}, 01/12/2019 from 18:00PM to 21:00PM
         </span>
         
         <p th:text="#{email.contactinfo}"></p>	

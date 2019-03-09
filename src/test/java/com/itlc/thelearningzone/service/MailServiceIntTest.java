@@ -113,6 +113,8 @@ public class MailServiceIntTest {
     
     private Booking booking;
     
+    private Booking bookingEdited;
+    
     private Subject subject;
     
     private Topic topic;
@@ -218,8 +220,10 @@ public class MailServiceIntTest {
     	topic = createTopicEntity(em);
     	resource1 = createResourceEntity(em);
     	booking = createBookingEntity(em);
+    	bookingEdited = createBookingEntity(em);
     	
     	booking.setSubject(subject);
+    	bookingEdited.setSubject(subject);
     	
     	Set<Topic> topics = new HashSet<Topic>();
     	topics.add(topic);
@@ -737,6 +741,179 @@ public class MailServiceIntTest {
       
         // Disconnect from session so that the updates on the required entities are not directly saved in db
         em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+    }
+    
+	/*
+	 * Check that an edited booking with no tutor sends successfully
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingEditedEmail1() throws Exception {   	
+    	
+		// Initialize the database
+        userInfoRepository.save(userInfo);
+        userInfoRepository.save(tutorUserInfo);
+        userInfoRepository.flush();
+        topicRepository.saveAndFlush(topic);
+        resourceRepository.save(resource1);
+        resourceRepository.save(resource2);
+        resourceRepository.flush();
+        subjectRepository.saveAndFlush(subject);
+        
+    	// Set subject to null
+    	booking.setSubject(null);
+    	
+    	// Add requesting user to user infos.
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+    	
+    	// Set user infos
+    	booking.setUserInfos(userInfos);
+        
+		bookingRepository.saveAndFlush(booking);
+		
+		bookingEdited.setTitle("Edited Booking");
+		bookingEdited.setStartTime(Instant.now().plus(1, ChronoUnit.HOURS));
+		bookingEdited.setEndTime(Instant.now().plus(2, ChronoUnit.HOURS));
+		
+        // Get the required entities
+        Booking oldBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Resources is empty since booking has no subject
+        List<Resource> resources = new ArrayList<>();
+        // Tutor is null since it is not a tutorial
+        User tutor = null;
+
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title present in email */
+        String emailBody = message.getContent().toString();
+        
+        /* Check email includes new title and times */
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+                .withZone(ZoneId.systemDefault()); 
+        DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mma")
+                .withZone(ZoneId.systemDefault());
+        String editedBookingDate = DATE_TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedStartTime = TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedEndTime = TIME_FORMATTER.format(bookingEdited.getEndTime());
+        
+        assertThat(oldBooking.getTitle()).doesNotContain(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedBookingDate);
+        assertThat(emailBody).contains(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedStartTime + " to " + editedEndTime);
+        
+        /* Check email includes old title and times */
+        
+        String oldBookingDate = DATE_TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldStartTime = TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldEndTIme = TIME_FORMATTER.format(oldBooking.getEndTime());
+        
+        assertThat(emailBody).contains(oldBookingDate);
+        assertThat(emailBody).contains(oldBooking.getTitle());
+        assertThat(emailBody).contains(oldStartTime + " to " + oldEndTIme);
+      
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(oldBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+    }
+    
+    /*
+	 * Check that an edited booking with no tutor sends successfully
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingEditedEmail2() throws Exception {   	
+    	
+		// Initialize the database
+        userInfoRepository.save(userInfo);
+        userInfoRepository.save(tutorUserInfo);
+        userInfoRepository.flush();
+        topicRepository.saveAndFlush(topic);
+        resourceRepository.save(resource1);
+        resourceRepository.save(resource2);
+        resourceRepository.flush();
+        subjectRepository.saveAndFlush(subject);
+       
+    	// Add requesting user to user infos.
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+    	
+    	// Set user infos & topics of booking and edited booking
+    	booking.setUserInfos(userInfos);
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	booking.setTopics(topics);
+		bookingRepository.saveAndFlush(booking);
+		
+		bookingEdited.setTitle("Edited Booking");
+		bookingEdited.setStartTime(Instant.now().plus(1, ChronoUnit.HOURS));
+		bookingEdited.setEndTime(Instant.now().plus(2, ChronoUnit.HOURS));
+		bookingEdited.setUserInfos(userInfos);
+    	topics.add(topic);
+    	bookingEdited.setTopics(topics);
+		
+        // Get the required entities
+        Booking oldBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        User tutor = userRepository.findById(tutorUser.getId()).get();
+        // Resources is empty since booking has no subject
+        List<Resource> resources = new ArrayList<>();
+
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title present in email */
+        String emailBody = message.getContent().toString();
+
+        /* Check email includes new title and times */
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+                .withZone(ZoneId.systemDefault()); 
+        DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mma")
+                .withZone(ZoneId.systemDefault());
+        String editedBookingDate = DATE_TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedStartTime = TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedEndTime = TIME_FORMATTER.format(bookingEdited.getEndTime());
+        
+        assertThat(oldBooking.getTitle()).doesNotContain(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedBookingDate);
+        assertThat(emailBody).contains(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedStartTime + " to " + editedEndTime);
+        
+        /* Check email includes old title and times */
+        
+        String oldBookingDate = DATE_TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldStartTime = TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldEndTIme = TIME_FORMATTER.format(oldBooking.getEndTime());
+        
+        assertThat(emailBody).contains(oldBookingDate);
+        assertThat(emailBody).contains(oldBooking.getTitle());
+        assertThat(emailBody).contains(oldStartTime + " to " + oldEndTIme);
+        
+        /* Check email includes tutor and subject information */
+      System.out.println(emailBody);
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(oldBooking);
         em.detach(updatedUserInfo);
         em.detach(updatedUser);
     }

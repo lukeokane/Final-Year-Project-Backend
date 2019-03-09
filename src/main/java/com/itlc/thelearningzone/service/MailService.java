@@ -213,6 +213,25 @@ public class MailService {
     }
     
     @Async
+    public void sendBookingEditedEmailFromTemplate(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User tutor, String templateName, String titleKey) {
+    	
+    	Context context = new Context();
+    	context.setVariable("oldBooking", oldBooking);
+    	context.setVariable("editedBooking", editedBooking);
+    	context.setVariable(TUTOR_USER, tutor);
+    	context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+    	
+    	for (UserInfo user : bookingUsers) {
+    		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
+        	context.setLocale(locale);
+    		context.setVariable(USER, user);
+    		String content = templateEngine.process(templateName, context);
+    		String subject = messageSource.getMessage(titleKey, null, locale).replace("{0}", oldBooking.getTitle());
+    		sendEmail(user.getUser().getEmail(), subject, content, false, true);
+    	}
+    }
+    
+    @Async
     public void sendActivationEmail(User user) {
         log.debug("Sending activation email to '{}'", user.getEmail());
         sendEmailFromTemplate(user, "mail/activationEmail", "email.activation.title");
@@ -261,7 +280,12 @@ public class MailService {
 	}
     
     public void sendBookingReminderEmail(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod) {
-    	log.debug("Sending booking reminder email");
-    	sendBookingReminderEmailFromTemplate(booking, bookingUsers, tutor, relativeTimePeriod, "mail/reminderEmail", "email.confirmed.title");
+    	log.debug("Sending booking reminder email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
+    	sendBookingReminderEmailFromTemplate(booking, bookingUsers, tutor, relativeTimePeriod, "mail/reminderEmail", "email.reminder.title");
+    }
+    
+    public void sendBookingEditedEmail(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User tutor) {
+    	log.debug("Sending booking edited email to {} users for booking ID {}", bookingUsers.size(), editedBooking.getId());
+    	sendBookingEditedEmailFromTemplate(oldBooking, editedBooking, bookingUsers, tutor, "mail/bookingEdited", "email.edited.title");
     }
 }
