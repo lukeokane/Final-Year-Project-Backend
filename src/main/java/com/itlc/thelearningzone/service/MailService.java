@@ -129,7 +129,7 @@ public class MailService {
 	}
 
     @Async
-    public void sendBookingRejectedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
+    public void sendBookingNotPossibleEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
 			String titleKey) { 
     	
     	Context context = new Context();
@@ -248,9 +248,9 @@ public class MailService {
 	}    
 	
     @Async
-    public void sendBookingRejectedEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
-    	log.debug("Sending booking rejected email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
-		sendBookingRejectedEmailFromTemplate(booking, bookingUsers, resources, "mail/bookingRejected", "email.rejected.title");
+    public void sendBookingNotPossibleEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
+    	log.debug("Sending booking not possible email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
+		sendBookingNotPossibleEmailFromTemplate(booking, bookingUsers, resources, "mail/bookingRejected", "email.rejected.title");
 	}
     
     @Async

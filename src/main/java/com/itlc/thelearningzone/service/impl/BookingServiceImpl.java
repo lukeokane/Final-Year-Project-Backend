@@ -452,7 +452,7 @@ public class BookingServiceImpl implements BookingService {
 		resources = resourceRepository.findAllResourcesInBooking(booking.getId());
 		}
 		// Send booking rejected email to user
-		mailService.sendBookingRejectedEmail(booking, booking.getUserInfos(), resources);
+		mailService.sendBookingNotPossibleEmail(booking, booking.getUserInfos(), resources);
 		
 		return bookingMapper.toDto(booking);
 	}

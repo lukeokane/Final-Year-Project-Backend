@@ -388,7 +388,7 @@ public class MailServiceIntTest {
     }
      
 	/*
-	 * Check that mail sends and includes topic and resources titles of the booking
+	 * Check that rejected mail sends and includes topic and resources titles of the booking
 	 * Necessary for 100% statement coverage
 	 * Necessary for 100% condition coverage
 	 */
@@ -436,7 +436,7 @@ public class MailServiceIntTest {
         Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
         bookingUsers.add(bookingUserInfo);
         
-        mailService.sendBookingRejectedEmail(booking, bookingUsers, resources);
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
@@ -447,6 +447,74 @@ public class MailServiceIntTest {
         /* Check booking title, the topic and it's resources are present in email */
         String emailBody = message.getContent().toString();
         
+        assertThat(emailBody).contains("could not be accepted");  
+        assertThat(emailBody).contains(booking.getTitle());  
+        assertThat(emailBody).contains(topic.getTitle());
+        assertThat(emailBody).contains(resource2.getTitle());        
+    }
+    
+    /*
+	 * Check that cancelled mail sends and includes topic and resources titles of the booking
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    public void testSendBookingCancelledEmail() throws Exception {
+    	
+    	/* Create user */
+    	User bookingUser = new User();
+    	bookingUser.setFirstName("John");
+    	bookingUser.setLastName("Doe");
+    	bookingUser.setEmail("lukecjokane@gmail.com");
+    	bookingUser.setLangKey("en");
+    	UserInfo bookingUserInfo = new UserInfo();
+    	bookingUserInfo.setUser(bookingUser);
+    	
+    	/* Create booking */
+        Booking booking = new Booking();
+        booking.setRequestedBy(bookingUser.getFirstName() + " " + bookingUser.getLastName());
+        booking.setTitle("Object Oriented Programming");
+        booking.setAdminAcceptedId(1);
+        
+        /* Create topics under booking */
+        Topic topic = new Topic();
+        topic.setId(1L);
+        topic.setTitle("Topic 1 Title");
+        
+        /* Create resources under booking */
+        Resource resource1 = new Resource();
+        resource1.setId(1L);
+        resource1.setTitle("Resource 1 Title");
+        resource1.setResourceURL("www.example.com");
+        resource1.setTopic(topic);
+        
+        Resource resource2 = new Resource();
+        resource2.setId(2L);
+        resource2.setTitle("Resource 2 Title");
+        resource2.setResourceURL("www.dkit.ie");
+        resource2.setTopic(topic);
+     
+        /* Add resources to a list */
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.add(resource1);
+        resources.add(resource2);
+        
+        /* Add user to a set */      
+        Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
+        bookingUsers.add(bookingUserInfo);
+        
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title, the topic and it's resources are present in email */
+        String emailBody = message.getContent().toString();
+        
+        assertThat(emailBody).contains("has had to be cancelled");  
         assertThat(emailBody).contains(booking.getTitle());  
         assertThat(emailBody).contains(topic.getTitle());
         assertThat(emailBody).contains(resource2.getTitle());        

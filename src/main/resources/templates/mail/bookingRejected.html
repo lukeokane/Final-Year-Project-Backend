@@ -15,9 +15,14 @@
         </span> 
         <strong th:text="${booking.title}"> booking title </strong>
         
-        <span th:text="#{email.rejected.booking2}">
+        <span th:if="${booking.adminAcceptedId == null}" th:text="#{email.rejected.booking2}">
            could not be accepted
         </span> 
+        
+        <span th:if="${booking.adminAcceptedId != null}" th:text="#{email.cancelled.booking2}">
+           has had to be cancelled
+        </span>
+        
         </p>
         
         <div th:if="${#lists.size(resources) > 0}">
