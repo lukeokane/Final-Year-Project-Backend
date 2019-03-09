@@ -127,20 +127,6 @@ public class MailService {
 		String subject = messageSource.getMessage(titleKey, null, locale);
 		sendEmail(user.getEmail(), subject, content, false, true);	
 	}
-    
-    @Async
-    private void sendBookingEditedByAdminFromTemplate(Booking booking, User user, User tutorUser, String templateName,
-			String titleKey) {	
-    	Locale locale = Locale.forLanguageTag(user.getLangKey());
-		Context context = new Context(locale);
-		context.setVariable(USER, user);
-		context.setVariable(TUTOR_USER, tutorUser);
-		context.setVariable(BOOKING, booking);
-		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
-		String content = templateEngine.process(templateName, context);
-		String subject = messageSource.getMessage(titleKey, null, locale);
-		sendEmail(user.getEmail(), subject, content, false, true);			
-	}
 
     @Async
     public void sendBookingRejectedEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
@@ -259,13 +245,7 @@ public class MailService {
 	public void sendBookingAcceptedByTutorEmail(Booking booking,User user,User tutorUser) {
 		log.debug("Sending booking accepted by tutor email to '{}'", user.getEmail());
 		sendBookingAcceptedByTutorFromTemplate(booking, user, tutorUser,"mail/bookingAcceptedByTutorEmail", "email.accepted.title");
-	}
-     
-    @Async
-	public void sendBookingEditedyAdminEmail(Booking booking, User user, User tutorUser) {
-		log.debug("Sending booking edited email to '{}'", user.getEmail());
-		sendBookingEditedByAdminFromTemplate(booking, user, tutorUser, "mail/bookingEditedByAdminEmail", "email.edit.title");
-	}
+	}    
 	
     @Async
     public void sendBookingRejectedEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
