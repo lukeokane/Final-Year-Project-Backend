@@ -212,6 +212,8 @@ public interface BookingService {
      * @param id the id of the entity
      */
     void delete(Long id);
+    
+    BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO);
 
 	BookingDTO updateBookingCancelled(@Valid BookingDTO bookingDTO);
 

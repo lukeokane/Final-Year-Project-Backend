@@ -202,6 +202,94 @@ public class BookingServiceImpl implements BookingService {
 	}
 	
 	@Override
+	public BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO) {
+		log.debug("Request to edit booking and send notifications: {}", editedBookingDTO);
+		
+		// Get the current Booking entity saved in the database
+		Booking currentBooking = bookingRepository.findById(editedBookingDTO.getId()).orElseThrow(() -> new BadRequestAlertException("Booking with id " + editedBookingDTO.getId() + " does not exist", ENTITY_NAME, ID_NULL));
+		
+		if ((currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			System.out.println("Booking went from rejected to confirmed");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+			
+			// Send confirmed booking email
+			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
+		}
+		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() == null)) {
+			System.out.println("Booking went from pending to rejected");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			// Send confirmed booking email
+			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources);
+		}
+		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() != null) && (editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			System.out.println("Booking went from confirmed to cancelled");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			// Send confirmed booking email
+			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources);
+		}
+		else if ((currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() != null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			System.out.println("Booking went from cancelled to confirmed");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+			
+			// Send confirmed booking email
+			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
+		}
+		else {
+			System.out.println("Booking was only edited");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+			
+			// Send confirmed booking email
+			mailService.sendBookingEditedEmail(currentBooking, bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor);
+		}
+		
+		bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+		
+		return editedBookingDTO;
+	}
+	
+	@Override
 	public void saveBookingWithAdminNotification(@Valid BookingDTO bookingDTO) {
 
 		// booking updated so set modifiedTimestamp

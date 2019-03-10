@@ -80,6 +80,25 @@ public class BookingResource {
     }
     
     /**
+     * POST  /bookings : Create a new booking.
+     *
+     * @param bookingDTO the bookingDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new bookingDTO, or with status 400 (Bad Request) if the booking has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/edit")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingEdited(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+        log.debug("REST request to save Booking : {}", bookingDTO);
+        if (bookingDTO.getId() == null) {
+            throw new BadRequestAlertException("A booking must already have an ID", ENTITY_NAME, "idexists");
+        }
+        BookingDTO result = bookingService.updateBooking(bookingDTO);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, bookingDTO.getId().toString())).build();
+    }
+    
+    
+    /**
      * POST  /bookings : Create a new booking and create a booking notification for the ITLC admin for a new booking request
      *
      * @param bookingDTO the bookingDTO to create
