@@ -2,10 +2,13 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.ResourceRepository;
+import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.UserInfoDTO;
 import com.itlc.thelearningzone.service.dto.NotificationDTO;
@@ -30,9 +33,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.ArrayList;
 
 
@@ -52,6 +57,8 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingMapper bookingMapper;
 
 	private final UserRepository userRepository;
+	
+	private final BookingUserDetailsRepository bookingUserDetailsRepository;
 
 	private final MailService mailService;
 	
@@ -72,10 +79,11 @@ public class BookingServiceImpl implements BookingService {
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService) {
+			UserRepository userRepository, BookingUserDetailsRepository bookingUserDetailsRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.userRepository = userRepository;
+		this.bookingUserDetailsRepository = bookingUserDetailsRepository;
 		this.mailService = mailService;
 		this.resourceRepository = resourceRepository;
 		this.notificationService = notificationService;
@@ -196,7 +204,21 @@ public class BookingServiceImpl implements BookingService {
 		
 		// booking updated so set modifiedTimestamp
 		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
+		// if a new booking, create booking user details for all users 
+		if (booking.getId() == null && booking.getUserInfos().size() > 0) {
+			Set<BookingUserDetails> bookingUserDetails = new HashSet<BookingUserDetails>();
+			for (UserInfo userInfo : booking.getUserInfos()) {
+				BookingUserDetails bookingUserDetail = new BookingUserDetails();
+				bookingUserDetail.setBooking(booking);
+				bookingUserDetail.setUserInfo(userInfo);
 				
+				bookingUserDetailsRepository.save(bookingUserDetail);
+				bookingUserDetails.add(bookingUserDetail);
+			}
+			booking.setBookingUserDetails(bookingUserDetails);
+		}
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
 	}

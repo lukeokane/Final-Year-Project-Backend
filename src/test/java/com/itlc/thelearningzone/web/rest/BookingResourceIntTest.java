@@ -11,6 +11,9 @@ import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
+import com.itlc.thelearningzone.repository.ResourceRepository;
+import com.itlc.thelearningzone.repository.SubjectRepository;
+import com.itlc.thelearningzone.repository.TopicRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.BookingService;
@@ -129,6 +132,15 @@ public class BookingResourceIntTest {
 	@Autowired
 	private UserInfoRepository userInfoRepository;
 
+	@Autowired
+	private SubjectRepository subjectRepository;
+	
+	@Autowired
+	private TopicRepository topicRepository;
+	
+	@Autowired ResourceRepository resourceRepository;
+	
+	
 	@Autowired
 	private BookingMapper bookingMapper;
 
@@ -403,13 +415,6 @@ public class BookingResourceIntTest {
     	topic = createTopicEntity(em);
     	resource = createResourceEntity(em);
     	
-    	
-    	Set<Topic> topics = new HashSet<Topic>();
-    	topics.add(topic);
-    	subject.setTopics(topics);
-    	
-    	resource.setTopic(topic);
-    	booking.setTopics(topics);
 	}
 
 	@Test
@@ -5247,7 +5252,19 @@ public class BookingResourceIntTest {
 	@Test
 	@Transactional
 	public void updateBooking1() throws Exception {
-
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
 		// Set booking as rejected
 		booking.setCancelled(true);
 
@@ -5277,6 +5294,19 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void updateBooking2() throws Exception {
 
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
 		// Set booking as pending
 		booking.setCancelled(false);
 		booking.setAdminAcceptedId(null);
@@ -5312,6 +5342,18 @@ public class BookingResourceIntTest {
 	@Test
 	@Transactional
 	public void updateBooking3() throws Exception {
+			
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
 
 		// Set booking as confirmed
 		booking.setCancelled(false);
@@ -5348,6 +5390,19 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void updateBooking4() throws Exception {
 
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
 		// Set booking as confirmed
 		booking.setCancelled(true);
 		booking.setAdminAcceptedId(1);
@@ -5381,6 +5436,19 @@ public class BookingResourceIntTest {
 	@Transactional
 	public void updateBooking5() throws Exception {
 
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
 		// Set booking as confirmed
 		booking.setCancelled(true);
 		booking.setAdminAcceptedId(1);
