@@ -87,4 +87,19 @@ public class MessageServiceImpl implements MessageService {
         log.debug("Request to delete Message : {}", id);
         messageRepository.deleteById(id);
     }
+
+    /**
+     * Get all the messages by tag.
+     *
+     * @param tag the type of message response required
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MessageDTO> findAllByTag(String tag, Pageable pageable) {
+        log.debug("Request to get all Messages by tag");
+        return messageRepository.findAllByTag(tag, pageable)
+            .map(messageMapper::toDto);
+    }
 }

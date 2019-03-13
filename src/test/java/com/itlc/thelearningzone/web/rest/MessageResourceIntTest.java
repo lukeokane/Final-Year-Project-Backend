@@ -165,6 +165,22 @@ public class MessageResourceIntTest {
     
     @Test
     @Transactional
+    public void getAllMessagesByTag() throws Exception {
+        // Initialize the database
+        messageRepository.saveAndFlush(message);
+
+        // Get all the messageList by tag
+        restMessageMockMvc.perform(get("/api/messages/getByTag/{tag}", message.getTag()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(message.getId().intValue())))
+            .andExpect(jsonPath("$.[*].tag").value(hasItem(DEFAULT_TAG.toString())))
+            .andExpect(jsonPath("$.[*].reason").value(hasItem(DEFAULT_REASON.toString())))
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())));
+    }
+    
+    @Test
+    @Transactional
     public void getMessage() throws Exception {
         // Initialize the database
         messageRepository.saveAndFlush(message);

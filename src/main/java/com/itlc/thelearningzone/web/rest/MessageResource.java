@@ -95,6 +95,22 @@ public class MessageResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/messages");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    /**
+     * GET  /messages/{tag} : get all the booking messages by tag.
+     *
+     * @param tag the type of message response required
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of messages in body
+     */
+    @GetMapping("/messages/getByTag/{tag}")
+    @Timed
+    public ResponseEntity<List<MessageDTO>> getAllMessagesByTag(@PathVariable String tag, Pageable pageable) {
+        log.debug("REST request to get a page of Messages by tag");
+        Page<MessageDTO> page = messageService.findAllByTag(tag, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/messages/getByTag/{tag}" + tag);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
 
     /**
      * GET  /messages/:id : get the "id" message.

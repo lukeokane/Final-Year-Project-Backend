@@ -27,6 +27,15 @@ public interface MessageService {
      * @return the list of entities
      */
     Page<MessageDTO> findAll(Pageable pageable);
+    
+    /**
+     * Get all the messages by tag.
+     *
+     * @param tag the type of message response required
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    Page<MessageDTO> findAllByTag(String tag, Pageable pageable);
 
 
     /**
