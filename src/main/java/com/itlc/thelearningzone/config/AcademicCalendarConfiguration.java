@@ -5,16 +5,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class AcademicCalendarConfiguration {
 
-	private static AcademicCalendarConfiguration INSTANCE;
+	private static final AcademicCalendarConfiguration INSTANCE =
+			new AcademicCalendarConfiguration();
     private String startDate;
      
     private AcademicCalendarConfiguration() {        
     }
      
     public static AcademicCalendarConfiguration getInstance() {
-        if(INSTANCE == null) {
-            INSTANCE = new AcademicCalendarConfiguration();
-        }
         return INSTANCE;
     }
 
