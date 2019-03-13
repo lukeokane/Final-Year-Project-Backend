@@ -32,33 +32,33 @@ public class AcademicYearResource {
 	private final Logger log = LoggerFactory.getLogger(AcademicYearResource.class);
 
 	private static final String ENTITY_NAME = "academicYear";
-	
+
 	private static final String FILE_NOT_FOUND_ERROR_MESSAGE = "The settings file could not be found.";
 
 	public AcademicYearResource() {
 
 	}
-	
+
 	@GetMapping("/academicYear/getStartDate")
-    @Timed
-    public ResponseEntity<String> getAcademicYearStartDate() {
-        log.debug("REST request to get the start date of the current academic year");
-        AcademicYear academicYear = new AcademicYear();
+	@Timed
+	public ResponseEntity<String> getAcademicYearStartDate() {
+		log.debug("REST request to get the start date of the current academic year");
+		AcademicYear academicYear = new AcademicYear();
 
-        try {
+		try {
 
-    		File academicYearSettingsFile = new File("academicYearSettings.xml");
-    		JAXBContext jaxbContext = JAXBContext.newInstance(AcademicYear.class);
-    		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-    		academicYear = (AcademicYear) jaxbUnmarshaller.unmarshal(academicYearSettingsFile);
-    		System.out.println(academicYear);
-    		
-    	  } catch (JAXBException e) {
-    		e.printStackTrace();
-    		return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
-    	  } 
-        return new ResponseEntity<>(academicYear.getStartDate(), HttpStatus.OK);
-    }
+			File academicYearSettingsFile = new File("academicYearSettings.xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(AcademicYear.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			academicYear = (AcademicYear) jaxbUnmarshaller.unmarshal(academicYearSettingsFile);
+			System.out.println(academicYear);
+
+		} catch (JAXBException e) {
+			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
+			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
+		}
+		return new ResponseEntity<>(academicYear.getStartDate(), HttpStatus.OK);
+	}
 
 	@PutMapping("/academicYear/editStartDate/{startDate}")
 	@Timed
@@ -79,11 +79,10 @@ public class AcademicYearResource {
 			jaxbMarshaller.marshal(academicYear, System.out);
 
 		} catch (JAXBException e2) {
-			e2.printStackTrace();			
+			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e2);
 			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
 		}
-		return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, startDate))
-				.body(startDate);
+		return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, startDate)).body(startDate);
 	}
 
 }
