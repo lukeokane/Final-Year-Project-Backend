@@ -18,10 +18,6 @@ public final class AcademicCalendarConfiguration {
         return INSTANCE;
     }
 
-	public static AcademicCalendarConfiguration getINSTANCE() {
-		return INSTANCE;
-	}
-
 	public String getStartDate() {
 		return startDate;
 	}
