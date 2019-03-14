@@ -12,6 +12,7 @@ import com.itlc.thelearningzone.repository.TopicRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Message;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.domain.Topic;
@@ -436,7 +437,9 @@ public class MailServiceIntTest {
         Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
         bookingUsers.add(bookingUserInfo);
         
-        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources);
+        Message rejectionMessage = null;
+        
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources, rejectionMessage);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
@@ -503,7 +506,11 @@ public class MailServiceIntTest {
         Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
         bookingUsers.add(bookingUserInfo);
         
-        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources);
+        Message cancelledMessage = new Message();
+        cancelledMessage.setContent("This event is no longer required");
+        cancelledMessage.setReason("Not required");
+        
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources, cancelledMessage);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
@@ -514,10 +521,13 @@ public class MailServiceIntTest {
         /* Check booking title, the topic and it's resources are present in email */
         String emailBody = message.getContent().toString();
         
+        System.out.println(emailBody);
+        
         assertThat(emailBody).contains("has had to be cancelled");  
         assertThat(emailBody).contains(booking.getTitle());  
         assertThat(emailBody).contains(topic.getTitle());
-        assertThat(emailBody).contains(resource2.getTitle());        
+        assertThat(emailBody).contains(resource2.getTitle());  
+        assertThat(emailBody).contains(cancelledMessage.getContent());
     }
     
 	/*

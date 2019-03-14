@@ -10,6 +10,7 @@ import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
+import com.itlc.thelearningzone.service.dto.MessageDTO;
 import com.itlc.thelearningzone.service.dto.SubjectDTO;
 
 import io.github.jhipster.web.util.ResponseUtil;
@@ -88,13 +89,16 @@ public class BookingResource {
      */
     @PutMapping("/bookings/edit")
     @Timed
-    public ResponseEntity<BookingDTO> updateBookingEdited(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
-        log.debug("REST request to save Booking : {}", bookingDTO);
-        if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("A booking must already have an ID", ENTITY_NAME, "idexists");
+    public ResponseEntity<BookingDTO> updateBookingEdited(@Valid @RequestBody BookingDetailsDTO bookingDetailsDTO) throws URISyntaxException {
+    	log.debug("REST request to update Booking : {}", bookingDetailsDTO);
+    	System.out.println("IN" + bookingDetailsDTO.getBooking().toString());
+        if (bookingDetailsDTO.getBooking().getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
-        BookingDTO result = bookingService.updateBooking(bookingDTO);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, bookingDTO.getId().toString())).build();
+        BookingDTO result = bookingService.updateBooking(bookingDetailsDTO.getBooking(), bookingDetailsDTO.getMessage());
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
     
     
@@ -262,12 +266,13 @@ public class BookingResource {
      */
     @PutMapping("/bookings/updateBookingRequestRejectedByAdmin")
     @Timed
-    public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+    public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO,
+    		@RequestParam(required = false) MessageDTO message) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
-        BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO);
+        BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO, message);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
             .body(result);

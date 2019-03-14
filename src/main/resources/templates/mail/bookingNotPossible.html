@@ -25,6 +25,11 @@
         
         </p>
         
+        <div th:if="${message != null}">
+        <span th:text="#{email.notpossible.reason}"></span>
+        <i th:text="${message.content} + '.'"></i>
+        </div>
+        
         <div th:if="${#lists.size(resources) > 0}">
         <p  th:text="#{email.rejected.resourcesText}"></p>
         </div>

@@ -20,7 +20,7 @@ import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
-import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
+import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
@@ -5277,11 +5277,12 @@ public class BookingResourceIntTest {
 		
 		bookingEdited.setCancelled(false);
 		bookingEdited.setAdminAcceptedId(1);
+		
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
 
-		System.out.println(booking);
-		System.out.println(bookingEdited);
 		restBookingMockMvc
-		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingEdited)))
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
 		.andExpect(status().isOk());	
 	}
     
@@ -5322,10 +5323,11 @@ public class BookingResourceIntTest {
 		bookingEdited.setCancelled(true);
 		bookingEdited.setAdminAcceptedId(null);
 
-		System.out.println(booking);
-		System.out.println(bookingEdited);
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
 		restBookingMockMvc
-		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingEdited)))
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
 		.andExpect(status().isOk());
 		
 		// Get edited booking from repository to confirm change occurred
@@ -5370,10 +5372,11 @@ public class BookingResourceIntTest {
 		bookingEdited.setCancelled(true);
 		bookingEdited.setAdminAcceptedId(1);
 
-		System.out.println(booking);
-		System.out.println(bookingEdited);
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
 		restBookingMockMvc
-		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingEdited)))
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
 		.andExpect(status().isOk());
 		
 		// Get edited booking from repository to confirm change occured
@@ -5418,8 +5421,11 @@ public class BookingResourceIntTest {
 		bookingEdited.setCancelled(false);
 		bookingEdited.setAdminAcceptedId(1);
 
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
 		restBookingMockMvc
-		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingEdited)))
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
 		.andExpect(status().isOk());	
 		
 		// Get edited booking from repository to confirm change occured
@@ -5462,9 +5468,11 @@ public class BookingResourceIntTest {
 		
 		// Set booking as cancelled
 		bookingEdited.setTitle("New title");
-
+		
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
 		restBookingMockMvc
-		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingEdited)))
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
 		.andExpect(status().isOk());	
 		
 		// Get edited booking from repository to confirm change occured

@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.mail.internet.MimeMessage;
 
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Message;
 import com.itlc.thelearningzone.domain.Resource;
 
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ public class MailService {
     private static final String RESOURCES = "resources";
 
     private static final String BASE_URL = "baseUrl";
+    
+    private static final String MESSAGE = "message";
 
     private final JHipsterProperties jHipsterProperties;
 
@@ -129,13 +132,14 @@ public class MailService {
 	}
 
     @Async
-    public void sendBookingNotPossibleEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, String templateName,
+    public void sendBookingNotPossibleEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, Message message, String templateName,
 			String titleKey) { 
     	
     	Context context = new Context();
 		context.setVariable(BOOKING, booking);
 		context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
   		context.setVariable(RESOURCES, resources);
+  		context.setVariable(MESSAGE, message);
   		
     	for (UserInfo user : bookingUsers) {
     		Locale locale = Locale.forLanguageTag(user.getUser().getLangKey());
@@ -248,9 +252,9 @@ public class MailService {
 	}    
 	
     @Async
-    public void sendBookingNotPossibleEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources) {
+    public void sendBookingNotPossibleEmail(Booking booking, Set<UserInfo> bookingUsers, List<Resource> resources, Message message) {
     	log.debug("Sending booking not possible email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
-		sendBookingNotPossibleEmailFromTemplate(booking, bookingUsers, resources, "mail/bookingRejected", "email.rejected.title");
+		sendBookingNotPossibleEmailFromTemplate(booking, bookingUsers, resources, message, "mail/bookingNotPossible", "email.rejected.title");
 	}
     
     @Async
@@ -259,11 +263,13 @@ public class MailService {
     	sendBookingConfirmedEmailFromTemplate(booking, bookingUsers, tutor, resources, "mail/bookingConfirmed", "email.confirmed.title");
 	}
     
+    @Async
     public void sendBookingReminderEmail(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod) {
     	log.debug("Sending booking reminder email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
     	sendBookingReminderEmailFromTemplate(booking, bookingUsers, tutor, relativeTimePeriod, "mail/reminderEmail", "email.reminder.title");
     }
     
+    @Async
     public void sendBookingEditedEmail(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User tutor) {
     	log.debug("Sending booking edited email to {} users for booking ID {}", bookingUsers.size(), editedBooking.getId());
     	sendBookingEditedEmailFromTemplate(oldBooking, editedBooking, bookingUsers, tutor, "mail/bookingEdited", "email.edited.title");

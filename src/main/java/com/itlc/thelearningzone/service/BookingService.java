@@ -1,6 +1,7 @@
 package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.service.dto.BookingDTO;
+import com.itlc.thelearningzone.service.dto.MessageDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -213,7 +214,7 @@ public interface BookingService {
      */
     void delete(Long id);
     
-    BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO);
+    BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO, MessageDTO message);
 
 	BookingDTO updateBookingCancelled(@Valid BookingDTO bookingDTO);
 
@@ -227,7 +228,7 @@ public interface BookingService {
 
 	BookingDTO updateBookingRejectedByTutor(@Valid BookingDTO bookingDTO);
 	
-	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO);
+	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO, MessageDTO message);
 
 	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
 
