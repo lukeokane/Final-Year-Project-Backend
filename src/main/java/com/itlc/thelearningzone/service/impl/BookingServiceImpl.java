@@ -344,8 +344,8 @@ public class BookingServiceImpl implements BookingService {
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
 		notification.setRead(false);
-		// getting sender 
-		Optional<User> sender = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
+//		// getting sender 
+		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
 		}
@@ -362,7 +362,7 @@ public class BookingServiceImpl implements BookingService {
            notification.setReceiverId(receiver.get().getId());
 		}
 		
-		notificationService.save(notification);
+		//notificationService.save(notification);
 				
 	}
 	

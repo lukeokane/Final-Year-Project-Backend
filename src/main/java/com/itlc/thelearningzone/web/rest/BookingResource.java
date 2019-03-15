@@ -690,7 +690,7 @@ public class BookingResource {
         List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         }
@@ -719,7 +719,7 @@ public class BookingResource {
         List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);        
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
@@ -747,7 +747,7 @@ public class BookingResource {
         List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseSelectedYearBetweenDates(instantFromDate, instantToDate, courseId, selectedYear);        
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
@@ -774,7 +774,7 @@ public class BookingResource {
         List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseAllYearsBetweenDates(instantFromDate, instantToDate, courseId);        
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
