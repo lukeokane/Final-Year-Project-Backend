@@ -231,11 +231,15 @@ public interface BookingService {
 	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO, MessageDTO message);
 
 	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
-
-	//List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate);
-		
+	
 	List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate, Instant instantToDate,
 			Integer selectedYear);
+	
+	List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId, Integer selectedYear);
+
+	List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId);
 	
 	/**
      * Cancel the "bookingID" booking.
@@ -245,11 +249,7 @@ public interface BookingService {
      */
 	BookingDTO cancelBooking(Long bookingID);
 
-	List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
-			Instant instantToDate, Integer courseId, Integer selectedYear);
-
-	List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
-			Instant instantToDate, Integer courseId);
+	
 
 
 }

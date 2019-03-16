@@ -248,18 +248,7 @@ public class NotificationResourceIntTest {
             .andExpect(jsonPath("$.senderImageURL").value(DEFAULT_SENDER_IMAGE_URL.toString()))
             .andExpect(jsonPath("$.read").value(DEFAULT_READ.booleanValue()));
     }
-    
-//    @Test
-//    @Transactional
-//    public void getAllNotificationsDateAscList() throws Exception {
-//        // Initialize the database
-//        notificationRepository.saveAndFlush(notification);
-//        // Get the notification
-//        restNotificationMockMvc.perform(get("/api/findAllNotificationsDateAscList"))
-//             .andExpect(status().isNotFound());
-//            
-//    }
-    
+     
     @Test
     @Transactional
     public void getAllNotificationsPageable() throws Exception {

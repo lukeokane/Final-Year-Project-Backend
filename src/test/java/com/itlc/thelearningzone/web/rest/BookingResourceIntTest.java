@@ -80,6 +80,9 @@ public class BookingResourceIntTest {
 
 	private static final Instant DEFAULT_END_TIME = Instant.ofEpochMilli(0L);
 	private static final Instant UPDATED_END_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+	
+	private static final String sTime = "01/01/2019";
+	private static final String eTime = "01/06/2019";
 
 	private static final String DEFAULT_USER_COMMENTS = "AAAAAAAAAA";
 	private static final String UPDATED_USER_COMMENTS = "BBBBBBBBBB";
@@ -475,6 +478,35 @@ public class BookingResourceIntTest {
 				assertThat(testBooking.isCancelled()).isEqualTo(DEFAULT_CANCELLED);
 				assertThat(testBooking.getRequestTimes()).isEqualTo(DEFAULT_REQUEST_TIMES);
 				assertThat(testBooking.isReadByAdmin()).isEqualTo(DEFAULT_READ_BY_ADMIN);
+	}
+	
+	/*
+	 * Check that search for bookings between two dates after all booking times works, returns 0 bookings
+	 */
+	@Test
+	@Transactional
+	public void geBookingsBetweenDates() throws Exception {
+
+		        // Initialize the database
+				bookingRepository.saveAndFlush(booking);
+
+				 String sTime = "2019-01-01";
+				 String eTime = "2019-01-06";
+				 
+				 
+				 
+				// Get all the bookingList
+				restBookingMockMvc
+					.perform(get("/api/bookings/findAllBookingsList/{fromDate}/toDate/{toDate}", sTime, eTime));
+				
+				 String DATE_SUFFIX = "T00:00:00Z";
+				 
+				 sTime = sTime + DATE_SUFFIX;
+				 eTime = eTime + DATE_SUFFIX; 
+				 
+				 Instant instantFromDate = Instant.parse(sTime);
+			     Instant instantToDate = Instant.parse(eTime);
+					
 	}
 
 	@Test

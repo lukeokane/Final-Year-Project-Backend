@@ -48,8 +48,6 @@ public interface NotificationService {
 
 	Page<NotificationDTO> findAllDateAsc(Pageable pageable);
 
-	//List<NotificationDTO> findAllNotificationsList();
-	
 	/**
 	 * Get all notifications received by a user after with a timestamp...
 	 * equal or greater than @param startTime

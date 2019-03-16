@@ -608,7 +608,7 @@ public class BookingServiceImpl implements BookingService {
 		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
 		for (Booking p : ps)
-		list.add(bookingMapper.toDto(p));
+			list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
@@ -616,11 +616,11 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer courseId, Integer selectedYear) {
-		Long lCourseId = new Long(courseId);
+		Long lCourseId = Long.valueOf(courseId);
 		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findBookingsSelectedCourseSelectedYear(instantFromDate, instantToDate, lCourseId, selectedYear);
 		for (Booking p : ps)
-		list.add(bookingMapper.toDto(p));
+			list.add(bookingMapper.toDto(p));
 
 		return list;
 	
@@ -629,11 +629,11 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer courseId) {
-		Long lCourseId = new Long(courseId);
+		Long lCourseId = Long.valueOf(courseId);
 		List<BookingDTO> list = new ArrayList<>();
 		List<Booking> ps = bookingRepository.findBookingsSelectedCourseAllYears(instantFromDate, instantToDate, lCourseId);
 		for (Booking p : ps)
-		list.add(bookingMapper.toDto(p));
+			list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
