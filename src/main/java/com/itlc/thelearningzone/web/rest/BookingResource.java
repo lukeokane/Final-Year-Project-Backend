@@ -81,10 +81,10 @@ public class BookingResource {
     }
     
     /**
-     * POST  /bookings : Create a new booking.
+     * PUT  /bookings/edit : Edit a booking and send emails to users related to the booking
      *
-     * @param bookingDTO the bookingDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new bookingDTO, or with status 400 (Bad Request) if the booking has already an ID
+     * @param bookingDetailsDTO the bookingDetailsDTO with the Booking and an optional Message entity
+     * @return the ResponseEntity with status 201 (Created) and with body the newly saved bookingDTO, or with status 400 (Bad Request) if the booking does not have an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/bookings/edit")
