@@ -27,7 +27,7 @@
         
         <div th:if="${message != null}">
         <span th:text="#{email.notpossible.reason}"></span>
-        <i th:text="${message.content} + '.'"></i>
+        <em th:text="${message.content} + '.'"></em>
         </div>
         
         <div th:if="${#lists.size(resources) > 0}">
