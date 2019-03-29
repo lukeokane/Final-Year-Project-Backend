@@ -29,6 +29,7 @@ export interface IBooking {
     readByAdmin?: boolean;
     bookingUserDetails?: IBookingUserDetails[];
     subjectId?: number;
+    bookedById?: number;
     userInfos?: IUserInfo[];
     topics?: ITopic[];
     notifications?: INotification[];
@@ -53,6 +54,7 @@ export class Booking implements IBooking {
         public readByAdmin?: boolean,
         public bookingUserDetails?: IBookingUserDetails[],
         public subjectId?: number,
+        public bookedById?: number,
         public userInfos?: IUserInfo[],
         public topics?: ITopic[],
         public notifications?: INotification[]

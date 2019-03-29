@@ -81,6 +81,7 @@ relationship OneToOne {
 
 relationship ManyToOne {
     Booking{subject} to Subject{booking},
+    Booking{bookedBy} to User {user}
     BookingUserDetails{userInfo} to UserInfo{bookingUserDetails},
     Notification{sender} to UserInfo{sentNotifications},
 	Notification{receiver} to UserInfo{receivedNotifications},

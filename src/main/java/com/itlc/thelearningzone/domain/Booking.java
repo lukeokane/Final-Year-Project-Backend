@@ -1,5 +1,6 @@
 package com.itlc.thelearningzone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -83,6 +84,10 @@ public class Booking implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("bookings")
     private Subject subject;
+
+    @ManyToOne
+    @JsonIgnoreProperties("")
+    private User bookedBy;
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -328,6 +333,19 @@ public class Booking implements Serializable {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public User getBookedBy() {
+        return bookedBy;
+    }
+
+    public Booking bookedBy(User user) {
+        this.bookedBy = user;
+        return this;
+    }
+
+    public void setBookedBy(User user) {
+        this.bookedBy = user;
     }
 
     public Set<UserInfo> getUserInfos() {

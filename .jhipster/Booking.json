@@ -88,6 +88,12 @@
             "otherEntityField": "id"
         },
         {
+            "relationshipType": "many-to-one",
+            "relationshipName": "bookedBy",
+            "otherEntityName": "user",
+            "otherEntityField": "id"
+        },
+        {
             "relationshipType": "many-to-many",
             "otherEntityRelationshipName": "booking",
             "relationshipName": "userInfo",
