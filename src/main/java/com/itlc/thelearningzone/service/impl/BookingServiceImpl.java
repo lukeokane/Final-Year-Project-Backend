@@ -250,6 +250,8 @@ public class BookingServiceImpl implements BookingService {
 				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
 			}					
 			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
 			// Send confirmed booking email
 			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
 		}
@@ -267,6 +269,8 @@ public class BookingServiceImpl implements BookingService {
 				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
 			}		
 			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
 			mailService.sendBookingConfirmedEmail(bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor, resources);
 		}
 		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() == null)) {
@@ -277,6 +281,8 @@ public class BookingServiceImpl implements BookingService {
 			if (currentBooking.getTopics().size() > 0) {
 				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
 			}
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
 			
 			// Send confirmed booking email
 			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources, messageMapper.toEntity(message));
@@ -289,6 +295,8 @@ public class BookingServiceImpl implements BookingService {
 			if (currentBooking.getTopics().size() > 0) {
 				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
 			}
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
 			
 			// Send confirmed booking email
 			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources, messageMapper.toEntity(message));
@@ -306,6 +314,8 @@ public class BookingServiceImpl implements BookingService {
 			if (editedBookingDTO.getTutorAcceptedId() != null) {
 				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
 			}					
+
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
 			
 			// Send confirmed booking email
 			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
@@ -324,11 +334,11 @@ public class BookingServiceImpl implements BookingService {
 				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
 			}					
 			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
 			// Send confirmed booking email
 			mailService.sendBookingEditedEmail(currentBooking, bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor);
 		}		
-		
-		bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
 		
 		return editedBookingDTO;
 	}
