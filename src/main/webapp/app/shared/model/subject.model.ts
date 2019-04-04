@@ -1,6 +1,6 @@
 import { ITopic } from 'app/shared/model//topic.model';
 import { IBooking } from 'app/shared/model//booking.model';
-import { ISemesterGroup } from 'app/shared/model//semester-group.model';
+import { ICourseYear } from 'app/shared/model//course-year.model';
 
 export interface ISubject {
     id?: number;
@@ -8,7 +8,7 @@ export interface ISubject {
     subjectCode?: string;
     topics?: ITopic[];
     bookings?: IBooking[];
-    semesterGroups?: ISemesterGroup[];
+    courseYears?: ICourseYear[];
 }
 
 export class Subject implements ISubject {
@@ -18,6 +18,6 @@ export class Subject implements ISubject {
         public subjectCode?: string,
         public topics?: ITopic[],
         public bookings?: IBooking[],
-        public semesterGroups?: ISemesterGroup[]
+        public courseYears?: ICourseYear[]
     ) {}
 }

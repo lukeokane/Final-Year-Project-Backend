@@ -2,15 +2,19 @@ package com.itlc.thelearningzone.service.impl;
 
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.BookingUserDetails;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.User;
+import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
 import com.itlc.thelearningzone.repository.ResourceRepository;
-import com.itlc.thelearningzone.repository.UserInfoRepository;
+import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
+import com.itlc.thelearningzone.service.dto.MessageDTO;
 import com.itlc.thelearningzone.service.dto.UserInfoDTO;
 import com.itlc.thelearningzone.service.dto.NotificationDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
+import com.itlc.thelearningzone.service.mapper.MessageMapper;
 import com.itlc.thelearningzone.web.rest.errors.BadRequestAlertException;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.MailService;
@@ -21,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +35,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.ArrayList;
-
 
 import javax.validation.Valid;
 
@@ -50,8 +56,12 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingRepository bookingRepository;
 
 	private final BookingMapper bookingMapper;
+	
+	private final MessageMapper messageMapper;
 
 	private final UserRepository userRepository;
+	
+	private final BookingUserDetailsRepository bookingUserDetailsRepository;
 
 	private final MailService mailService;
 	
@@ -71,11 +81,13 @@ public class BookingServiceImpl implements BookingService {
 	
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneId.systemDefault());
 
-	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			UserRepository userRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService) {
+	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper, MessageMapper messageMapper,
+			UserRepository userRepository, BookingUserDetailsRepository bookingUserDetailsRepository, MailService mailService, ResourceRepository resourceRepository, NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
+		this.messageMapper = messageMapper;
 		this.userRepository = userRepository;
+		this.bookingUserDetailsRepository = bookingUserDetailsRepository;
 		this.mailService = mailService;
 		this.resourceRepository = resourceRepository;
 		this.notificationService = notificationService;
@@ -196,9 +208,139 @@ public class BookingServiceImpl implements BookingService {
 		
 		// booking updated so set modifiedTimestamp
 		booking.setModifiedTimestamp(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+		
+		// if a new booking, create booking user details for all users 
+		if (booking.getId() == null && booking.getUserInfos().size() > 0) {
+			Set<BookingUserDetails> bookingUserDetails = new HashSet<BookingUserDetails>();
+			for (UserInfo userInfo : booking.getUserInfos()) {
+				BookingUserDetails bookingUserDetail = new BookingUserDetails();
+				bookingUserDetail.setBooking(booking);
+				bookingUserDetail.setUserInfo(userInfo);
 				
+				bookingUserDetailsRepository.save(bookingUserDetail);
+				bookingUserDetails.add(bookingUserDetail);
+			}
+			booking.setBookingUserDetails(bookingUserDetails);
+		}
+		
 		booking = bookingRepository.save(booking);
 		return bookingMapper.toDto(booking);
+	}
+	
+	@Override
+	public BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO, MessageDTO message) {
+		log.debug("Request to edit booking and send notifications: {}", editedBookingDTO);
+		
+		// Get the current Booking entity saved in the database
+		Booking currentBooking = bookingRepository.findById(editedBookingDTO.getId()).orElseThrow(() -> new BadRequestAlertException("Booking with id " + editedBookingDTO.getId() + " does not exist", ENTITY_NAME, ID_NULL));
+		
+		log.debug(currentBooking.toString());
+		log.debug(editedBookingDTO.toString());
+		if ((currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			log.debug("Booking went from rejected to confirmed");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			// Send confirmed booking email
+			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
+		}
+		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			log.debug("Booking went from pending to confirmed");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}		
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			mailService.sendBookingConfirmedEmail(bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor, resources);
+		}
+		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() == null)) {
+			log.debug("Booking went from pending to rejected");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			// Send confirmed booking email
+			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources, messageMapper.toEntity(message));
+		}
+		else if ((!currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() != null) && (editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			log.debug("Booking went from confirmed to cancelled");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			// Send confirmed booking email
+			mailService.sendBookingNotPossibleEmail(currentBooking, currentBooking.getUserInfos(), resources, messageMapper.toEntity(message));
+		}
+		else if ((currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() != null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
+			log.debug("Booking went from cancelled to confirmed");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			// Send confirmed booking email
+			mailService.sendBookingConfirmedEmail(currentBooking, currentBooking.getUserInfos(), tutor, resources);
+		}
+		else {
+			log.debug("Booking was only edited");
+			
+			List<Resource> resources = new ArrayList<>();
+			// Get resources for topics
+			if (currentBooking.getTopics().size() > 0) {
+				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
+			}
+			
+			User tutor = null;
+			if (editedBookingDTO.getTutorAcceptedId() != null) {
+				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+			}					
+			
+			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
+			
+			// Send confirmed booking email
+			mailService.sendBookingEditedEmail(currentBooking, bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor);
+		}		
+		
+		return editedBookingDTO;
 	}
 	
 	@Override
@@ -212,7 +354,7 @@ public class BookingServiceImpl implements BookingService {
 		Instant instant = Instant.now();
 		notification.setTimestamp(instant);
 		notification.setRead(false);
-		// getting sender 
+//		// getting sender 
 		Optional<User> sender = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided																					
 		for(UserInfoDTO userInfoDTO : bookingDTO.getUserInfos()) {
 			notification.setSenderId(userInfoDTO.getId());
@@ -230,7 +372,7 @@ public class BookingServiceImpl implements BookingService {
            notification.setReceiverId(receiver.get().getId());
 		}
 		
-		notificationService.save(notification);
+		//notificationService.save(notification);
 				
 	}
 	
@@ -410,7 +552,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 	
 	@Override
-	public BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO) {
+	public BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO, MessageDTO messageDTO) {
 		
 		// Creating a notification for the student that requested a booking that there request is rejected. notification comes from the admin
 		NotificationDTO notification = new NotificationDTO();
@@ -425,7 +567,7 @@ public class BookingServiceImpl implements BookingService {
 		  notification.setSenderImageURL(SENDER_URL + sender.get().getLogin() + IMAGE_FORMAT);
 		}
 		// getting receiver
-		Optional<User> receiver = userRepository.findOneByLogin(bookingDTO.getRequestedBy()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
+		Optional<User> receiver = userRepository.findById(bookingDTO.getUserInfos().iterator().next().getId()); // using findByLogin to get receiverId of person who requested booking - requested by string provided	
 		// setting the notification message
 		if(receiver.isPresent()) {
 			String notificationMessage = "Sorry " + receiver.get().getFirstName() + ", there are no bookings on " + bookingDTO.getTitle() + " based on the times you selected. Please request again";
@@ -452,7 +594,7 @@ public class BookingServiceImpl implements BookingService {
 		resources = resourceRepository.findAllResourcesInBooking(booking.getId());
 		}
 		// Send booking rejected email to user
-		mailService.sendBookingRejectedEmail(booking, booking.getUserInfos(), resources);
+		mailService.sendBookingNotPossibleEmail(booking, booking.getUserInfos(), resources, messageMapper.toEntity(messageDTO));
 		
 		return bookingMapper.toDto(booking);
 	}
@@ -462,34 +604,104 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate) {
 		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAllWithBookingUserDetails(instantFromDate, instantToDate);
+		List<Booking> ps = bookingRepository.findAllBookings(instantFromDate, instantToDate);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
 	
-	@Override
-	public List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate) {
-		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAllWithoutBookingUserDetails(instantFromDate, instantToDate);
-		for (Booking p : ps)
-			list.add(bookingMapper.toDto(p));
-
-		return list;
-	}
 	
 	@Override
 	public List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate,
 			Instant instantToDate, Integer selectedYear) {
 		List<BookingDTO> list = new ArrayList<>();
-		List<Booking> ps = bookingRepository.findAll();
+		List<Booking> ps = bookingRepository.findBookingsAllcoursesSelectedYear(instantFromDate, instantToDate, selectedYear);
 		for (Booking p : ps)
 			list.add(bookingMapper.toDto(p));
 
 		return list;
 	}
+	
+	@Override
+	public List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId, Integer selectedYear) {
+		Long lCourseId = Long.valueOf(courseId);
+		List<BookingDTO> list = new ArrayList<>();
+		List<Booking> ps = bookingRepository.findBookingsSelectedCourseSelectedYear(instantFromDate, instantToDate, lCourseId, selectedYear);
+		for (Booking p : ps)
+			list.add(bookingMapper.toDto(p));
 
+		return list;
+	
+	}
+	
+	@Override
+	public List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId) {
+		Long lCourseId = Long.valueOf(courseId);
+		List<BookingDTO> list = new ArrayList<>();
+		List<Booking> ps = bookingRepository.findBookingsSelectedCourseAllYears(instantFromDate, instantToDate, lCourseId);
+		for (Booking p : ps)
+			list.add(bookingMapper.toDto(p));
+
+		return list;
+	}
+	
+    /**
+     * Send booking reminders to participants
+	 *
+     * This is scheduled to get fired everyday, at 18:00 (pm).
+     */
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void sendBookingEveningReminderEmail() {
+    	
+    	// Get next day time and end of next day time
+    	Instant currentTime = Instant.now();
+    	Instant nextDay = currentTime.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
+    	Instant endOfNextDay = nextDay.minus(1, ChronoUnit.DAYS);
+    	
+    	// Get bookings between those two times
+    	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(nextDay, endOfNextDay);
+    	
+    	log.debug("Scheduled task, runs at 18:00 every day: sending emails to attendees of {} bookings", bookings.size());
+    	for (int i = 0; i < bookings.size(); i++) {
+    		Booking booking = bookings.get(i);
+    		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
+    		if (tutor.isPresent()) {
+    		// Send email to attendees
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    		}
+    	}
+    }
+    
+    /**
+     * Send booking reminders to participants an hour before booking commences
+	 *
+     * This is scheduled to get fired every 5 minutes
+     */
+    @Scheduled(fixedRate = 300000)
+    public void sendBookingHourBeforeReminderEmail() {
+    	
+    	// Get time an hour from now and an hour + 5 minutes from now
+    	Instant currentTime = Instant.now();
+    	Instant startTime = currentTime.truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.HOURS);
+    	Instant endTime = startTime.plus(5, ChronoUnit.MINUTES);
+    	
+    	// Get bookings between those two times
+    	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(startTime, endTime);
+    			
+    	log.debug("Scheduled task, runs every 5 minutes: sending emails to attendees of {} bookings", bookings.size());
+    	for (int i = 0; i < bookings.size(); i++) {
+    		Booking booking = bookings.get(i);
+    		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
+    		if (tutor.isPresent()) {
+    		// Send email to attendees
+    		mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    		}
+    	}
+    }
+    
 	/**
 	 * Get all the bookings.
 	 *
@@ -534,6 +746,29 @@ public class BookingServiceImpl implements BookingService {
 	public void delete(Long id) {
 		log.debug("Request to delete Booking : {}", id);
 		bookingRepository.deleteById(id);
+	}
+
+	/**
+     * Cancel the "bookingID" booking.
+     *
+     * @param bookingID the bookingID belonging to the booking entity to be deleted
+     * @return the entity
+     */
+	@Override
+	public BookingDTO cancelBooking(Long bookingID) {
+		log.debug("Request to cancel Booking : {}", bookingID);
+		
+		Optional<Booking> booking = bookingRepository.findById(bookingID);
+    	if (booking.isPresent()) 
+    	{
+    		Booking updatedBooking = bookingRepository.getOne(bookingID);
+    		updatedBooking.setCancelled(true);
+    		updatedBooking = bookingRepository.save(updatedBooking);
+            log.debug("Created Information for Booking: {}", updatedBooking);
+            return bookingMapper.toDto(updatedBooking);
+    	} else {
+    		throw new IllegalArgumentException("Booking with that ID does not exist");
+    	}
 	}
 
 

@@ -14,6 +14,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="subject"/>
 
+        <addForeignKeyConstraint baseColumnNames="booked_by_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking_booked_by_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
         <addForeignKeyConstraint baseColumnNames="bookings_id"
                                  baseTableName="booking_user_info"
                                  constraintName="fk_booking_user_info_bookings_id"

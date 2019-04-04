@@ -67,6 +67,10 @@
                         <a [routerLink]="['/subject', booking.subjectId, 'view']">{{booking.subjectId}}</a>
                     </div>
                 </dd>
+                <dt><span>Booked By</span></dt>
+                <dd>
+                    {{booking.bookedById}}
+                </dd>
                 <dt><span>User Info</span></dt>
                 <dd>
                     <span *ngFor="let userInfo of booking.userInfos; let last = last">

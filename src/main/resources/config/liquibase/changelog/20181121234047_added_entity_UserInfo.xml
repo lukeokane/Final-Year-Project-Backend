@@ -32,7 +32,7 @@
             <column name="user_id" type="bigint">
                 <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_info_user_id" />
             </column>
-            <column name="semester_group_id" type="bigint">
+            <column name="course_year_id" type="bigint">
                 <constraints nullable="true" />
             </column>
 

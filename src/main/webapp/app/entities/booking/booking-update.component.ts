@@ -10,6 +10,7 @@ import { IBooking } from 'app/shared/model/booking.model';
 import { BookingService } from './booking.service';
 import { ISubject } from 'app/shared/model/subject.model';
 import { SubjectService } from 'app/entities/subject';
+import { IUser, UserService } from 'app/core';
 import { IUserInfo } from 'app/shared/model/user-info.model';
 import { UserInfoService } from 'app/entities/user-info';
 import { ITopic } from 'app/shared/model/topic.model';
@@ -25,6 +26,8 @@ export class BookingUpdateComponent implements OnInit {
 
     subjects: ISubject[];
 
+    users: IUser[];
+
     userinfos: IUserInfo[];
 
     topics: ITopic[];
@@ -36,6 +39,7 @@ export class BookingUpdateComponent implements OnInit {
         private jhiAlertService: JhiAlertService,
         private bookingService: BookingService,
         private subjectService: SubjectService,
+        private userService: UserService,
         private userInfoService: UserInfoService,
         private topicService: TopicService,
         private activatedRoute: ActivatedRoute
@@ -53,6 +57,12 @@ export class BookingUpdateComponent implements OnInit {
         this.subjectService.query().subscribe(
             (res: HttpResponse<ISubject[]>) => {
                 this.subjects = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+        this.userService.query().subscribe(
+            (res: HttpResponse<IUser[]>) => {
+                this.users = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -104,6 +114,10 @@ export class BookingUpdateComponent implements OnInit {
     }
 
     trackSubjectById(index: number, item: ISubject) {
+        return item.id;
+    }
+
+    trackUserById(index: number, item: IUser) {
         return item.id;
     }
 

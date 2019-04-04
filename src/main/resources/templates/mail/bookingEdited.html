@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:text="#{email.edit.title}">Booking change</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.greeting(${user.user.firstName})}">
+            Dear
+        </p>
+
+ 		<span th:text="#{email.edited.sentence1}">
+           We have made a change to the
+        </span>
+        
+        <strong th:text="${oldBooking.title}"> booking title </strong>  
+		<span  th:if="${#lists.size(oldBooking.topics) > 0}" th:text="'- '">dash for separating title and topics</span>
+        <strong th:each="topic, iter: ${oldBooking.topics}">
+        	<span th:if="${iter.last}" th:text="${topic.title}">topic w/ no delimiter</span>
+        	<span th:if="${!iter.last}" th:text="${topic.title} + ', '">topic title with delimiter</span>
+        </strong>
+        <span th:if="${tutorUser != null}" th:text="'tutorial ' + #{email.edited.sentence2WithTutor(${#dates.dayOfWeekName(oldBooking.startTime)}, ${#dates.format(oldBooking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(oldBooking.startTime, 'HH.mma')}, ${#dates.format(oldBooking.endTime, 'HH.mma')}, ${tutorUser.firstName + ' ' + tutorUser.lastName})}">
+           on Tuesday, 01/12/2019 from 18:00PM to 21:00PM with John Doe
+        </span> 
+        
+        <span th:if="${tutorUser == null}" th:text="'booking ' + #{email.edited.sentence2(${#dates.dayOfWeekName(oldBooking.startTime)}, ${#dates.format(oldBooking.startTime, 'dd-MMM-yyyy')}, ${#dates.format(oldBooking.startTime, 'HH.mma')}, ${#dates.format(oldBooking.endTime, 'HH.mma')})}">
+           on Tuesday, 01/12/2019 from 18:00PM to 21:00PM
+        </span>
+        
+        <p th:text="#{email.edited.sentence3}">The booking details is now the following:</p>
+        
+        <div>
+        <strong th:text="'Booking: '">Booking: </strong>
+        <span th:text="${editedBooking.title}">Booking Title</span>
+        </div>
+        
+        <div>
+        <strong th:text="'Date: '">Date: </strong>
+        <span th:text="${#dates.format(editedBooking.startTime, 'dd-MMM-yyyy')}">01-FEB-1970</span>
+        </div>
+        
+        <div>
+        <strong th:text="'Time: '">Time: </strong>
+        <span  th:text="#{email.edited.booking.duration(${#dates.format(editedBooking.startTime, 'HH.mma')}, ${#dates.format(editedBooking.endTime, 'HH.mma')})}">10:00AM to 12:00PM</span>
+        </div>
+        
+		<div th:if="${editedBooking.subject} != null">
+        <strong th:text="'Subject: '">Subject: </strong>
+        <span   th:text="${editedBooking.subject.title}">10:00AM to 12:00PM</span>
+        </div>
+        
+		<div th:if="${#lists.size(editedBooking.topics) > 0}">
+        <strong th:text="'Topic(s): '">Topic(s): </strong>
+         <span th:each="topic, iter: ${editedBooking.topics}">
+        	<span th:if="${iter.last}" th:text="${topic.title}">topic w/ no delimiter</span>
+        	<span th:if="${!iter.last}" th:text="${topic.title} + ', '">topic title with delimiter</span>
+        </span>
+        </div>
+        
+		<div th:if="${tutorUser != null}">
+        <strong th:text="'Tutor: '">Tutor: </strong>
+        <span th:text="${tutorUser.firstName + ' ' + tutorUser.lastName}">10:00AM to 12:00PM</span>
+        </div>
+        
+        
+        <p th:text="#{email.contactinfo}"></p>
+        
+        
+        
+        <p>
+            <span th:text="#{email.cancelled.text3}">Regards, </span>
+            <br/>
+            <div th:text="#{email.addy1}"></div>
+            <div th:text="#{email.addy2}"></div>
+            <div><strong th:text="'T:'"></strong> <a th:href="'tel:' + #{email.phoneNum}"><span th:text="#{email.phoneNum}"></span></a> <span th:text="#{email.phoneExtension}"></span></div>
+            <div><strong th:text="'E:'"></strong> <span th:text="#{email.ItlcEmail}"></span></div>
+            <div><strong th:text="'W:'"></strong> <a th:href="#{email.website}"><span th:text="#{email.website}"></span></a></div>
+        </p>
+    </body>
+</html>

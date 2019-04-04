@@ -123,17 +123,21 @@ public class BookingUserDetailsResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
     
-    @PutMapping("/booking-user-details/cancelAttendanceWithCard/{bookingID}/{studentNumber}")
+    @PutMapping("/booking-user-details/cancelAttendance/{bookingID}/{login}")
     @Timed
-    public ResponseEntity<BookingUserDetailsDTO> updateBookingUserDetailsForCancelledAttendance(@PathVariable Long bookingID, @PathVariable String studentNumber) throws URISyntaxException {
-    	log.debug("REST request to update BookingUserDetails for student : {}", studentNumber);
-        if (bookingID == null) {
-            throw new BadRequestAlertException("Invalid id", "Booking", "idnull");
-        }
-        if (studentNumber == null) {
-            throw new BadRequestAlertException("Invalid student number", "String", "stringnull");
-        }
-        BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendanceWithCard(bookingID, studentNumber);
+    public ResponseEntity<BookingUserDetailsDTO> updateBookingUserDetailsForCancelledAttendance(@PathVariable Long bookingID, @PathVariable String login) throws URISyntaxException {
+    	log.debug("REST request to update BookingUserDetails for User : {}", login);
+        BookingUserDetailsDTO result = bookingUserDetailsService.cancelAttendance(bookingID, login);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+    
+    @PutMapping("/booking-user-details/checkIn/{bookingID}/{login}")
+    @Timed
+    public ResponseEntity<BookingUserDetailsDTO> updateBookingUserDetailsForCheckIn(@PathVariable Long bookingID, @PathVariable String login) throws URISyntaxException {
+    	log.debug("REST request to update BookingUserDetails for User : {}", login);
+        BookingUserDetailsDTO result = bookingUserDetailsService.checkIn(bookingID, login);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);

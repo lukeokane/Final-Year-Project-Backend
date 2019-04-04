@@ -12,9 +12,17 @@
     "relationships": [
         {
             "relationshipType": "one-to-many",
-            "relationshipName": "semester",
-            "otherEntityName": "semester",
+            "relationshipName": "userInfo",
+            "otherEntityName": "userInfo",
             "otherEntityRelationshipName": "courseYear"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "courseYear",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id",
+            "ownerSide": true
         },
         {
             "relationshipType": "many-to-one",

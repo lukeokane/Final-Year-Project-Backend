@@ -1,6 +1,7 @@
 package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.service.dto.BookingDTO;
+import com.itlc.thelearningzone.service.dto.MessageDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -212,6 +213,8 @@ public interface BookingService {
      * @param id the id of the entity
      */
     void delete(Long id);
+    
+    BookingDTO updateBooking(@Valid BookingDTO editedBookingDTO, MessageDTO message);
 
 	BookingDTO updateBookingCancelled(@Valid BookingDTO bookingDTO);
 
@@ -225,12 +228,28 @@ public interface BookingService {
 
 	BookingDTO updateBookingRejectedByTutor(@Valid BookingDTO bookingDTO);
 	
-	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO);
+	BookingDTO updateBookingRequestRejectedByAdmin(@Valid BookingDTO bookingDTO, MessageDTO message);
 
 	List<BookingDTO> findAllBookingsList(Instant instantFromDate, Instant instantToDate);
-
-	List<BookingDTO> findAllBookingsDistributionList(Instant instantFromDate, Instant instantToDate);
-		
+	
 	List<BookingDTO> findAllBookingsAllCoursesSelectedYearBetweenDates(Instant instantFromDate, Instant instantToDate,
 			Integer selectedYear);
+	
+	List<BookingDTO> findAllBookingsSelectedCourseSelectedYearBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId, Integer selectedYear);
+
+	List<BookingDTO> findAllBookingsSelectedCourseAllYearsBetweenDates(Instant instantFromDate,
+			Instant instantToDate, Integer courseId);
+	
+	/**
+     * Cancel the "bookingID" booking.
+     *
+     * @param bookingID the bookingID belonging to the booking entity to be deleted
+     * @return the entity
+     */
+	BookingDTO cancelBooking(Long bookingID);
+
+	
+
+
 }

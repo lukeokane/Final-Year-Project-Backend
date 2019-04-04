@@ -85,6 +85,10 @@ public class Booking implements Serializable {
     @JsonIgnoreProperties("bookings")
     private Subject subject;
 
+    @ManyToOne
+    @JsonIgnoreProperties("")
+    private User bookedBy;
+
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "booking_user_info",
@@ -329,6 +333,19 @@ public class Booking implements Serializable {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public User getBookedBy() {
+        return bookedBy;
+    }
+
+    public Booking bookedBy(User user) {
+        this.bookedBy = user;
+        return this;
+    }
+
+    public void setBookedBy(User user) {
+        this.bookedBy = user;
     }
 
     public Set<UserInfo> getUserInfos() {

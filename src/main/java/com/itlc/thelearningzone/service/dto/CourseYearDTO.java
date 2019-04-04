@@ -2,6 +2,8 @@ package com.itlc.thelearningzone.service.dto;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -13,6 +15,8 @@ public class CourseYearDTO implements Serializable {
 
     @NotNull
     private Integer courseYear;
+
+    private Set<SubjectDTO> subjects = new HashSet<>();
 
     private Long courseId;
 
@@ -30,6 +34,14 @@ public class CourseYearDTO implements Serializable {
 
     public void setCourseYear(Integer courseYear) {
         this.courseYear = courseYear;
+    }
+
+    public Set<SubjectDTO> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(Set<SubjectDTO> subjects) {
+        this.subjects = subjects;
     }
 
     public Long getCourseId() {

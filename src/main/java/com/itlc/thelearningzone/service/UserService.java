@@ -2,24 +2,27 @@ package com.itlc.thelearningzone.service;
 
 import com.itlc.thelearningzone.config.Constants;
 import com.itlc.thelearningzone.domain.Authority;
-import com.itlc.thelearningzone.domain.SemesterGroup;
+import com.itlc.thelearningzone.domain.CourseYear;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.AuthorityRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
-import com.itlc.thelearningzone.repository.SemesterGroupRepository;
+import com.itlc.thelearningzone.repository.CourseYearRepository;
 import com.itlc.thelearningzone.security.AuthoritiesConstants;
 import com.itlc.thelearningzone.security.SecurityUtils;
 import com.itlc.thelearningzone.service.dto.UserDTO;
 import com.itlc.thelearningzone.service.util.RandomUtil;
 import com.itlc.thelearningzone.web.rest.errors.*;
+import com.itlc.thelearningzone.service.mapper.UserMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,7 @@ public class UserService {
     
     private final UserInfoRepository userInfoRepository;
     
-    private final SemesterGroupRepository semesterGroupRepository;
+    private final CourseYearRepository courseYearRepository;
     
     private final UserInfoService userInfoService;
 
@@ -53,10 +56,10 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, SemesterGroupRepository semesterGroupRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(UserRepository userRepository, UserInfoRepository userInfoRepository, CourseYearRepository courseYearRepository, UserInfoService userInfoService, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
-        this.semesterGroupRepository = semesterGroupRepository;
+        this.courseYearRepository = courseYearRepository;
         this.userInfoService = userInfoService;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
@@ -126,42 +129,74 @@ public class UserService {
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
         newUser.setActivated(false);
+        
+        Set<Authority> authorities = new HashSet<>();
+        
+        // If user is a tutor, set authority but don't make activation key, admin will activate a tutor.
+        if (userDTO.getAuthorities() != null && userDTO.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
+        	authorityRepository.findById(AuthoritiesConstants.TUTOR).ifPresent(authorities::add);
+        }
+        else {
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);       
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
-        Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        }
+        
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
-      
+        userRepository.save(newUser);     
         log.debug("Created Information for User: {}", newUser);
+        
+        UserInfo newUserInfo = new UserInfo();
+        newUserInfo.setUser(newUser);
+        userInfoRepository.save(newUserInfo);
+        log.debug("Created Information for User Info: {}", newUserInfo);
         
         return newUser;
     }
     
-    public User registerUser(UserDTO userDTO, String password, Long semesterGroupId) {
-    	Optional<SemesterGroup> semesterGroup = semesterGroupRepository.findById(semesterGroupId);
-        if (semesterGroup.isPresent()) {
-        	// Create and save the UserInfo entity
-            UserInfo newUserInfo = new UserInfo();
-        	newUserInfo.setSemesterGroup(semesterGroup.get());
+    public User registerUser(UserDTO userDTO, String password, Long courseYearId) {
+    	Optional<CourseYear> courseYear = courseYearRepository.findById(courseYearId);
+        if (courseYear.isPresent()) {
         	
         	User newUser = this.registerUser(userDTO, password);
-        	newUserInfo.setUser(newUser);
-            userInfoRepository.save(newUserInfo);
-            log.debug("Created Information for UserInfo: {}", newUserInfo);
+        	
+        	// Get user info of user from repository
+        	UserInfo userInfo = userInfoRepository.findById(newUser.getId()).orElse(null);
+        	      		
+        	// Set course year
+        	if (userInfo != null) {
+        	userInfo.setCourseYear(courseYear.get());
+        	} else {
+        		throw new IllegalArgumentException("User " + userDTO.getLogin() + " does not exist");
+        	}
+        	
+        	// save back in repository
+        	userInfoRepository.save(userInfo);
+        	
+            log.debug("Created Information for UserInfo: {}", userInfo);
+            
             return newUser;
     	} else {
-    		throw new IllegalArgumentException("Semester Group ID is does not exist");
+    		throw new IllegalArgumentException("Course Year ID does not exist");
     	}
     }
     
     private boolean removeNonActivatedUser(User existingUser){
         if (existingUser.getActivated()) {
              return false;
-        }
+        }       
+        
+        // Delete user info
+        UserInfo existingUserInfo = userInfoRepository.findById(existingUser.getId()).orElse(null);
+        userInfoRepository.delete(existingUserInfo);
+        userInfoRepository.flush();
+        
+        // Delete user
         userRepository.delete(existingUser);
         userRepository.flush();
         this.clearUserCaches(existingUser);
+
+        
         return true;
     }
 
@@ -335,6 +370,20 @@ public class UserService {
      */
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+    
+    /**
+     * Return users that have a certain role and are activated or not activated
+     * 
+     * @param pageable the pagination information
+     * @param role authority of the user group
+     * @param activated activation status of the user group
+     */
+    public Page<UserDTO> findAllByRoleAndActivationStatus(Pageable pageable, @Param(value = "role") String role, @Param(value = "activated") boolean activated) {
+    	Page<User> users = userRepository.findAllByRoleAndActivationStatus(pageable, role, activated);
+    	long totalUsers = users.getTotalElements();
+    	return new PageImpl<UserDTO>(users.stream().map(user -> new UserDTO(user))
+    			.collect(Collectors.toList()), pageable, totalUsers);
     }
 
     private void clearUserCaches(User user) {

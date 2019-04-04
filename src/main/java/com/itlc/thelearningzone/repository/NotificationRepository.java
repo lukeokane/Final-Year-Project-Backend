@@ -22,9 +22,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	@Query("select notification from Notification notification where notification.receiver.user.login = ?#{principal.username} order by notification.timestamp asc")
 	Page<Notification> getAllTest(Pageable pageable);
-
-	@Query("select notification from Notification notification where notification.receiver.user.login = ?#{principal.username}  order by notification.timestamp asc")
-	List<Notification> findAllList();
 	
 	@Query("select notification from Notification notification where notification.receiver.user.id = :userId and notification.timestamp >= :startTime order by notification.timestamp asc")
 	Page<Notification> findUserNotificationsAfterTime(Pageable pageable, @Param("userId") Long userId,  @Param("startTime") Instant startTime);

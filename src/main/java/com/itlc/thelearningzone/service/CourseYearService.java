@@ -28,7 +28,13 @@ public interface CourseYearService {
      */
     Page<CourseYearDTO> findAll(Pageable pageable);
 
-
+    /**
+     * Get all the CourseYear with eager load of many-to-many relationships.
+     *
+     * @return the list of entities
+     */
+    Page<CourseYearDTO> findAllWithEagerRelationships(Pageable pageable);
+    
     /**
      * Get the "id" courseYear.
      *

@@ -3,15 +3,24 @@ package com.itlc.thelearningzone.web.rest;
 import com.itlc.thelearningzone.ThelearningzoneApp;
 
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.BookingUserDetails;
+import com.itlc.thelearningzone.domain.Resource;
+import com.itlc.thelearningzone.domain.Subject;
+import com.itlc.thelearningzone.domain.Topic;
 import com.itlc.thelearningzone.domain.User;
 import com.itlc.thelearningzone.domain.UserInfo;
 import com.itlc.thelearningzone.repository.BookingRepository;
+import com.itlc.thelearningzone.repository.BookingUserDetailsRepository;
+import com.itlc.thelearningzone.repository.ResourceRepository;
+import com.itlc.thelearningzone.repository.SubjectRepository;
+import com.itlc.thelearningzone.repository.TopicRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.SubjectService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
+import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
 import com.itlc.thelearningzone.service.mapper.BookingMapper;
 import com.itlc.thelearningzone.web.rest.errors.ExceptionTranslator;
 
@@ -71,6 +80,9 @@ public class BookingResourceIntTest {
 
 	private static final Instant DEFAULT_END_TIME = Instant.ofEpochMilli(0L);
 	private static final Instant UPDATED_END_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+	
+	private static final String sTime = "01/01/2019";
+	private static final String eTime = "01/06/2019";
 
 	private static final String DEFAULT_USER_COMMENTS = "AAAAAAAAAA";
 	private static final String UPDATED_USER_COMMENTS = "BBBBBBBBBB";
@@ -101,6 +113,18 @@ public class BookingResourceIntTest {
 	
 	private static final Boolean DEFAULT_READ_BY_ADMIN = false;
 	private static final Boolean UPDATED_READ_BY_ADMIN = true;
+	
+	private static final String DEFAULT_USER_FEEDBACK = "AAAAAAAAAA";
+
+    private static final OrdinalScale DEFAULT_USER_SATISFACTION = OrdinalScale.NONE;
+
+    private static final Instant DEFAULT_USERCHECK_IN_TIME = Instant.ofEpochMilli(0L);
+
+    private static final Instant DEFAULT_USERCHECK_OUT_TIME = Instant.ofEpochMilli(0L);
+
+    private static final Boolean DEFAULT_USER_CANCELLED = false;
+
+    private static final Boolean DEFAULT_TUTOR_REJECTED = false;
 
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -112,6 +136,15 @@ public class BookingResourceIntTest {
 	private UserInfoRepository userInfoRepository;
 
 	@Autowired
+	private SubjectRepository subjectRepository;
+	
+	@Autowired
+	private TopicRepository topicRepository;
+	
+	@Autowired ResourceRepository resourceRepository;
+	
+	
+	@Autowired
 	private BookingMapper bookingMapper;
 
 	@Mock
@@ -122,6 +155,9 @@ public class BookingResourceIntTest {
 	
 	@Mock
 	private BookingUserDetailsService bookingUserDetailsService;
+	
+	@Autowired
+	private BookingUserDetailsRepository bookingUserDetailsRepository;
 
 	@Mock
 	private SubjectService subjectServiceMock;
@@ -151,6 +187,8 @@ public class BookingResourceIntTest {
 	private Booking booking2;
 	
 	private Booking booking3;
+	
+	private BookingUserDetails bookingUserDetails;
 
 	private UserInfo userInfo;
 	
@@ -163,6 +201,12 @@ public class BookingResourceIntTest {
 	private UserInfo adminUserInfo;
 	
 	private User adminUser;
+	
+	private Subject subject;
+	
+	private Topic topic;
+	
+	private Resource resource;
 	
 	@Before
 	public void setup() {
@@ -298,13 +342,46 @@ public class BookingResourceIntTest {
 		
 		return user;
 	}
+	
+	public static BookingUserDetails createBookingUserDetailsEntity(EntityManager em) {
+        BookingUserDetails bookingUserDetails = new BookingUserDetails()
+            .userFeedback(DEFAULT_USER_FEEDBACK)
+            .userSatisfaction(DEFAULT_USER_SATISFACTION)
+            .usercheckInTime(DEFAULT_USERCHECK_IN_TIME)
+            .usercheckOutTime(DEFAULT_USERCHECK_OUT_TIME)
+            .userCancelled(DEFAULT_USER_CANCELLED)
+            .tutorRejected(DEFAULT_TUTOR_REJECTED);
+        return bookingUserDetails;
+    }
+	
+    public static Subject createSubjectEntity(EntityManager em) {
+    	Subject subject = new Subject()
+    		.title("Subject Title")
+    		.subjectCode("ABC123");
+    
+    	return subject;
+    }
+    
+    public static Topic createTopicEntity(EntityManager em) {
+    	Topic topic = new Topic()
+    		.title("Topic Title");
+    	
+    	return topic;
+    }
+    
+    public static Resource createResourceEntity(EntityManager em) {
+    	Resource resource = new Resource()
+    		.title("Resource Title")
+        	.resourceURL("www.dkit.ie");
+    	
+    	return resource;
+    }
 
 	@Before
 	public void initTest() {
 		booking = createEntity(em);
 		booking2 = createEntity2(em);
 		booking3 = createEntity3(em);
-		
 		
 		// Create user
 		user = createUserEntity(em);
@@ -334,6 +411,13 @@ public class BookingResourceIntTest {
 		userInfo.setUser(user);
 		tutorUserInfo.setUser(tutorUser);
 		adminUserInfo.setUser(adminUser);
+		
+		bookingUserDetails = createBookingUserDetailsEntity(em);
+		
+    	subject = createSubjectEntity(em);
+    	topic = createTopicEntity(em);
+    	resource = createResourceEntity(em);
+    	
 	}
 
 	@Test
@@ -364,6 +448,65 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.isCancelled()).isEqualTo(DEFAULT_CANCELLED);
 		assertThat(testBooking.getRequestTimes()).isEqualTo(DEFAULT_REQUEST_TIMES);
 		assertThat(testBooking.isReadByAdmin()).isEqualTo(DEFAULT_READ_BY_ADMIN);
+	}
+	
+	@Test
+	@Transactional
+	public void createBookingAdminNotification() throws Exception {
+		// Create the Booking
+		
+		        int databaseSizeBeforeCreate = bookingRepository.findAll().size();
+				BookingDTO bookingDTO = bookingMapper.toDto(booking);
+				restBookingMockMvc
+					.perform(post("/api/bookings/createBookingWithAdminNotification").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+					.andExpect(status().isCreated());
+
+				// Validate the Booking in the database
+				List<Booking> bookingList = bookingRepository.findAll();
+				assertThat(bookingList).hasSize(databaseSizeBeforeCreate + 1);
+				Booking testBooking = bookingList.get(bookingList.size() - 1);
+				assertThat(testBooking.getTitle()).isEqualTo(DEFAULT_TITLE);
+				assertThat(testBooking.getRequestedBy()).isEqualTo(DEFAULT_REQUESTED_BY);
+				assertThat(testBooking.getStartTime()).isEqualTo(DEFAULT_START_TIME);
+				assertThat(testBooking.getEndTime()).isEqualTo(DEFAULT_END_TIME);
+				assertThat(testBooking.getUserComments()).isEqualTo(DEFAULT_USER_COMMENTS);
+				assertThat(testBooking.getImportanceLevel()).isEqualTo(DEFAULT_IMPORTANCE_LEVEL);
+				assertThat(testBooking.getAdminAcceptedId()).isEqualTo(DEFAULT_ADMIN_ACCEPTED_ID);
+				assertThat(testBooking.isTutorAccepted()).isEqualTo(DEFAULT_TUTOR_ACCEPTED);
+		    	assertThat(testBooking.getTutorAcceptedId()).isEqualTo(DEFAULT_TUTOR_ACCEPTED_ID);
+				assertThat(testBooking.getTutorRejectedCount()).isEqualTo(DEFAULT_TUTOR_REJECTED_COUNT);				
+				assertThat(testBooking.isCancelled()).isEqualTo(DEFAULT_CANCELLED);
+				assertThat(testBooking.getRequestTimes()).isEqualTo(DEFAULT_REQUEST_TIMES);
+				assertThat(testBooking.isReadByAdmin()).isEqualTo(DEFAULT_READ_BY_ADMIN);
+	}
+	
+	/*
+	 * Check that search for bookings between two dates after all booking times works, returns 0 bookings
+	 */
+	@Test
+	@Transactional
+	public void geBookingsBetweenDates() throws Exception {
+
+		        // Initialize the database
+				bookingRepository.saveAndFlush(booking);
+
+				 String sTime = "2019-01-01";
+				 String eTime = "2019-01-06";
+				 
+				 
+				 
+				// Get all the bookingList
+				restBookingMockMvc
+					.perform(get("/api/bookings/findAllBookingsList/{fromDate}/toDate/{toDate}", sTime, eTime));
+				
+				 String DATE_SUFFIX = "T00:00:00Z";
+				 
+				 sTime = sTime + DATE_SUFFIX;
+				 eTime = eTime + DATE_SUFFIX; 
+				 
+				 Instant instantFromDate = Instant.parse(sTime);
+			     Instant instantToDate = Instant.parse(eTime);
+					
 	}
 
 	@Test
@@ -624,57 +767,6 @@ public class BookingResourceIntTest {
 		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
 	}
 
-	@Test
-	@Transactional
-	public void createBookingAdminNotification() throws Exception {
-		// Initialize the database
-		bookingRepository.saveAndFlush(booking);
-
-		int databaseSizeBeforeUpdate = bookingRepository.findAll().size();
-
-		// Update the booking
-		Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
-		// Disconnect from session so that the updates on updatedBooking are not
-		// directly saved in db
-		em.detach(updatedBooking);
-		updatedBooking
-			.title(UPDATED_TITLE)
-			.requestedBy(UPDATED_REQUESTED_BY)
-			.startTime(UPDATED_START_TIME)
-			.endTime(UPDATED_END_TIME)
-			.userComments(UPDATED_USER_COMMENTS)
-			.importanceLevel(UPDATED_IMPORTANCE_LEVEL)
-			.adminAcceptedId(UPDATED_ADMIN_ACCEPTED_ID)
-			.tutorAccepted(UPDATED_TUTOR_ACCEPTED)
-			.tutorAcceptedId(UPDATED_TUTOR_ACCEPTED_ID)
-			.tutorRejectedCount(UPDATED_TUTOR_REJECTED_COUNT)
-			.cancelled(UPDATED_CANCELLED)
-			.requestTimes(UPDATED_REQUEST_TIMES)
-			.readByAdmin(UPDATED_READ_BY_ADMIN);
-		BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
-
-		restBookingMockMvc
-			.perform(put("/api/bookings").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
-			.andExpect(status().isOk());
-
-		// Validate the Booking in the database
-		List<Booking> bookingList = bookingRepository.findAll();
-		assertThat(bookingList).hasSize(databaseSizeBeforeUpdate);
-		Booking testBooking = bookingList.get(bookingList.size() - 1);
-		assertThat(testBooking.getTitle()).isEqualTo(UPDATED_TITLE);
-		assertThat(testBooking.getRequestedBy()).isEqualTo(UPDATED_REQUESTED_BY);
-		assertThat(testBooking.getStartTime()).isEqualTo(UPDATED_START_TIME);
-		assertThat(testBooking.getEndTime()).isEqualTo(UPDATED_END_TIME);
-		assertThat(testBooking.getUserComments()).isEqualTo(UPDATED_USER_COMMENTS);
-		assertThat(testBooking.getImportanceLevel()).isEqualTo(UPDATED_IMPORTANCE_LEVEL);
-		assertThat(testBooking.getAdminAcceptedId()).isEqualTo(UPDATED_ADMIN_ACCEPTED_ID);
-		assertThat(testBooking.isTutorAccepted()).isEqualTo(UPDATED_TUTOR_ACCEPTED);
-		assertThat(testBooking.getTutorAcceptedId()).isEqualTo(UPDATED_TUTOR_ACCEPTED_ID);
-		assertThat(testBooking.getTutorRejectedCount()).isEqualTo(UPDATED_TUTOR_REJECTED_COUNT);
-		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
-		assertThat(testBooking.getRequestTimes()).isEqualTo(UPDATED_REQUEST_TIMES);
-		assertThat(testBooking.isReadByAdmin()).isEqualTo(UPDATED_READ_BY_ADMIN);
-	}
 
 	@Test
 	@Transactional
@@ -5074,8 +5166,330 @@ public class BookingResourceIntTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.title", is("Booking with id " + invalidBookingId + " does not exist" )));	
 		
+	}	
+	
+	/**
+     * Check that an existing Booking entity has been updated to cancelled
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void cancelBooking1() throws Exception
+	{
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+    	
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
+        
+        restBookingMockMvc
+		.perform(put("/api/bookings/cancelBooking/" + booking.getId())
+				.contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.andExpect(status().isOk());
+
+		// Validate the Booking in the database
+		List<Booking> bookingList = bookingRepository.findAll();
+		assertThat(bookingList).hasSize(databaseSizeBeforeUpdate);
+		Booking testBooking = bookingList.get(bookingList.size() - 1);
+		assertThat(testBooking.isCancelled()).isEqualTo(UPDATED_CANCELLED);
+	}
+    
+    /**
+     * Check that a Bad Request error is thrown when a booking has an ID = null
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+     */
+    @Test
+	@Transactional
+	public void cancelBooking2() throws Exception
+	{
+		bookingUserDetails.setBooking(booking);
+		bookingUserDetails.setUserInfo(userInfo);
+		
+		// Initialize the database
+		userRepository.saveAndFlush(user);
+		userInfoRepository.saveAndFlush(userInfo);
+		bookingRepository.saveAndFlush(booking);
+        bookingUserDetailsRepository.saveAndFlush(bookingUserDetails);
+
+        int databaseSizeBeforeUpdate = bookingUserDetailsRepository.findAll().size();
+    	
+        // Update the required entities
+        BookingUserDetails updatedBookingUserDetails = bookingUserDetailsRepository.findById(bookingUserDetails.getId()).get();
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBookingUserDetails);
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+        BookingDTO bookingDTO = bookingMapper.toDto(updatedBooking);
+        
+        bookingDTO.setId(null);
+        restBookingMockMvc
+		.perform(put("/api/bookings/cancelBooking/" + bookingDTO.getId())
+				.contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDTO)))
+			.andExpect(status().isBadRequest());
+
+		// Validate the Booking in the database
+		List<Booking> bookingList = bookingRepository.findAll();
+		assertThat(bookingList).hasSize(databaseSizeBeforeUpdate);
+		Booking testBooking = bookingList.get(bookingList.size() - 1);
+		assertThat(testBooking.isCancelled()).isEqualTo(DEFAULT_CANCELLED);
+	}
+    
+    /*
+	 * Update booking from rejected to confirmed
+	 */
+	@Test
+	@Transactional
+	public void updateBooking1() throws Exception {
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
+		// Set booking as rejected
+		booking.setCancelled(true);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+		// Get the booking and edit it to be a confirmed booking
+		Booking bookingEdited = bookingRepository.findById(booking.getId()).get();
+		
+		em.detach(booking);
+		
+		bookingEdited.setCancelled(false);
+		bookingEdited.setAdminAcceptedId(1);
+		
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+
+		restBookingMockMvc
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
+		.andExpect(status().isOk());	
+	}
+    
+	/*
+	 * Update booking from pending to rejected
+	 * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+	 */
+	@Test
+	@Transactional
+	public void updateBooking2() throws Exception {
+
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
+		// Set booking as pending
+		booking.setCancelled(false);
+		booking.setAdminAcceptedId(null);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+		// Get the booking and edit it to be a confirmed booking
+		Booking bookingEdited = bookingRepository.findById(booking.getId()).get();
+		
+		em.detach(booking);
+		
+		// Set booking to rejected
+		bookingEdited.setCancelled(true);
+		bookingEdited.setAdminAcceptedId(null);
+
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
+		restBookingMockMvc
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
+		.andExpect(status().isOk());
+		
+		// Get edited booking from repository to confirm change occurred
+		Booking bookingEditedRepo = bookingRepository.findById(bookingEdited.getId()).get();
+		assertThat(bookingEditedRepo.isCancelled()).isEqualTo(bookingEdited.isCancelled());
+		assertThat(bookingEditedRepo.getAdminAcceptedId()).isEqualTo(bookingEdited.getAdminAcceptedId());
 	}
 	
+	/*
+	 * Update booking from confirmed to cancelled
+	 * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+	 */
+	@Test
+	@Transactional
+	public void updateBooking3() throws Exception {
+			
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+
+		// Set booking as confirmed
+		booking.setCancelled(false);
+		booking.setAdminAcceptedId(1);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+		// Get the booking and edit it to be a confirmed booking
+		Booking bookingEdited = bookingRepository.findById(booking.getId()).get();
+		
+		em.detach(booking);
+		
+		// Set booking as cancelled
+		bookingEdited.setCancelled(true);
+		bookingEdited.setAdminAcceptedId(1);
+
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
+		restBookingMockMvc
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
+		.andExpect(status().isOk());
+		
+		// Get edited booking from repository to confirm change occured
+		Booking bookingEditedRepo = bookingRepository.findById(bookingEdited.getId()).get();
+		assertThat(bookingEditedRepo.isCancelled()).isEqualTo(bookingEdited.isCancelled());
+	}
+	
+	/*
+	 * Update booking from cancelled to confirmed
+	 * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+	 */
+	@Test
+	@Transactional
+	public void updateBooking4() throws Exception {
+
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
+		// Set booking as confirmed
+		booking.setCancelled(true);
+		booking.setAdminAcceptedId(1);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+		// Get the booking and edit it to be a confirmed booking
+		Booking bookingEdited = bookingRepository.findById(booking.getId()).get();
+		
+		em.detach(booking);
+		
+		// Set booking as cancelled
+		bookingEdited.setCancelled(false);
+		bookingEdited.setAdminAcceptedId(1);
+
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		
+		restBookingMockMvc
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
+		.andExpect(status().isOk());	
+		
+		// Get edited booking from repository to confirm change occured
+		Booking bookingEditedRepo = bookingRepository.findById(bookingEdited.getId()).get();
+		assertThat(bookingEditedRepo.isCancelled()).isEqualTo(bookingEdited.isCancelled());
+	}
+	
+	/*
+	 * Update booking properties, no status change
+     * Necessary for 100% statement coverage
+     * Necessary for 100% condition coverage
+	 */
+	@Test
+	@Transactional
+	public void updateBooking5() throws Exception {
+
+    	
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	subject.setTopics(topics);
+    	
+    	resource.setTopic(topic);
+    	booking.setTopics(topics);
+    	
+    	topicRepository.saveAndFlush(topic);
+    	resourceRepository.saveAndFlush(resource);
+    	subjectRepository.saveAndFlush(subject);
+		bookingRepository.saveAndFlush(booking);
+		
+		// Set booking as confirmed
+		booking.setCancelled(true);
+		booking.setAdminAcceptedId(1);
+
+		// Initialize the database
+		bookingRepository.saveAndFlush(booking);
+		// Get the booking and edit it to be a confirmed booking
+		Booking bookingEdited = bookingRepository.findById(booking.getId()).get();
+		
+		em.detach(booking);
+		
+		// Set booking as cancelled
+		bookingEdited.setTitle("New title");
+		
+		BookingDetailsDTO bookingDetailsDTO = new BookingDetailsDTO();
+		bookingDetailsDTO.setBooking(bookingMapper.toDto(bookingEdited));
+		restBookingMockMvc
+		.perform(put("/api/bookings/edit").contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(bookingDetailsDTO)))
+		.andExpect(status().isOk());	
+		
+		// Get edited booking from repository to confirm change occured
+		Booking bookingEditedRepo = bookingRepository.findById(bookingEdited.getId()).get();
+		assertThat(bookingEditedRepo.getTitle()).isEqualTo(bookingEdited.getTitle());
+	}
 	
 	@Test
 	@Transactional

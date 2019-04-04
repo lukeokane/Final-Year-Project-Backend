@@ -136,6 +136,13 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label class="form-control-label" for="field_bookedBy">Booked By</label>
+                    <select class="form-control" id="field_bookedBy" name="bookedBy" [(ngModel)]="booking.bookedById" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userOption.id" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="field_userInfo">User Info</label>
                     <select class="form-control" id="field_userInfo" multiple name="userInfo" [(ngModel)]="booking.userInfos">
                         <option [ngValue]="getSelected(booking.userInfos, userInfoOption)" *ngFor="let userInfoOption of userinfos; trackBy: trackUserInfoById">{{userInfoOption.id}}</option>

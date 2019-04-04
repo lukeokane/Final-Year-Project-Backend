@@ -1,7 +1,6 @@
 package com.itlc.thelearningzone.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.service.BookingService;
 import com.itlc.thelearningzone.service.BookingUserDetailsService;
 import com.itlc.thelearningzone.service.SubjectService;
@@ -11,6 +10,7 @@ import com.itlc.thelearningzone.web.rest.util.PaginationUtil;
 import com.itlc.thelearningzone.service.dto.BookingDTO;
 import com.itlc.thelearningzone.service.dto.BookingDetailsDTO;
 import com.itlc.thelearningzone.service.dto.BookingUserDetailsDTO;
+import com.itlc.thelearningzone.service.dto.MessageDTO;
 import com.itlc.thelearningzone.service.dto.SubjectDTO;
 
 import io.github.jhipster.web.util.ResponseUtil;
@@ -44,15 +44,15 @@ public class BookingResource {
 
     private static final String ENTITY_NAME = "booking";
     
-    private final String ID_NULL = "idnull";
+    private static final String ID_NULL = "idnull";
+    
+    private static final String DATE_SUFFIX = "T00:00:00Z";
 
     private final BookingService bookingService;
     
     private final SubjectService subjectService;
 
     private final BookingUserDetailsService bookingUserDetailsService;
-    
-    private final String dateParse = "T00:00:00Z";
 
     public BookingResource(BookingService bookingService, SubjectService subjectService, BookingUserDetailsService bookingUserDetailsService) {
         this.bookingService = bookingService;
@@ -79,6 +79,28 @@ public class BookingResource {
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+    
+    /**
+     * PUT  /bookings/edit : Edit a booking and send emails to users related to the booking
+     *
+     * @param bookingDetailsDTO the bookingDetailsDTO with the Booking and an optional Message entity
+     * @return the ResponseEntity with status 201 (Created) and with body the newly saved bookingDTO, or with status 400 (Bad Request) if the booking does not have an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/bookings/edit")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingEdited(@Valid @RequestBody BookingDetailsDTO bookingDetailsDTO) throws URISyntaxException {
+    	log.debug("REST request to update Booking : {}", bookingDetailsDTO);
+    	System.out.println("IN" + bookingDetailsDTO.getBooking().toString());
+        if (bookingDetailsDTO.getBooking().getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
+        }
+        BookingDTO result = bookingService.updateBooking(bookingDetailsDTO.getBooking(), bookingDetailsDTO.getMessage());
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+    
     
     /**
      * POST  /bookings : Create a new booking and create a booking notification for the ITLC admin for a new booking request
@@ -136,7 +158,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBooking(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.save(bookingDTO);
         return ResponseEntity.ok()
@@ -159,7 +181,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingAssignedToTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingAssignedTutor(bookingDTO);
         return ResponseEntity.ok()
@@ -181,7 +203,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingAcceptedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingAccepted(bookingDTO);
         return ResponseEntity.ok()
@@ -203,7 +225,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingRejectedByTutor(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingRejectedByTutor(bookingDTO);
         return ResponseEntity.ok()
@@ -225,7 +247,7 @@ public class BookingResource {
     public ResponseEntity<BookingDTO> updateBookingToCancelled(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
         BookingDTO result = bookingService.updateBookingCancelled(bookingDTO);
         return ResponseEntity.ok()
@@ -244,12 +266,13 @@ public class BookingResource {
      */
     @PutMapping("/bookings/updateBookingRequestRejectedByAdmin")
     @Timed
-    public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO) throws URISyntaxException {
+    public ResponseEntity<BookingDTO> updateBookingRequestRejectedByAdmin(@Valid @RequestBody BookingDTO bookingDTO,
+    		@RequestParam(required = false) MessageDTO message) throws URISyntaxException {
         log.debug("REST request to update Booking : {}", bookingDTO);
         if (bookingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, ID_NULL);
         }
-        BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO);
+        BookingDTO result = bookingService.updateBookingRequestRejectedByAdmin(bookingDTO, message);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bookingDTO.getId().toString()))
             .body(result);
@@ -659,15 +682,15 @@ public class BookingResource {
 			@PathVariable String toDate) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
         
         List<BookingDTO> bookings = bookingService.findAllBookingsList(instantFromDate,instantToDate);
         for (BookingDTO booking : bookings)
         {
-        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<BookingUserDetailsDTO>(); 	
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
         	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
         	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         }
@@ -675,48 +698,89 @@ public class BookingResource {
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
     
-    /**
-     * GET  /bookings/ get all the bookings in a list form between a start date and end date with no booking user details are populated
-     *
-     * @param id the id of the bookingDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
-     */
-    @GetMapping("/bookings/findAllBookingsDistributionList/{fromDate}/toDate/{toDate}")
-    @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsDistributionList(@PathVariable String fromDate,
-			@PathVariable String toDate) {
-        log.debug("REST request to get Booking list form");
-
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
-        Instant instantFromDate = Instant.parse(fromDate);
-        Instant instantToDate = Instant.parse(toDate);
-        List<BookingDTO> bookings = bookingService.findAllBookingsDistributionList(instantFromDate,instantToDate);
-        
-		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
-    }
+    
     
     /**
-     * GET  /bookings/ get all the bookings in a list form with all courses and a selected year between a start date and end date with no booking user details are populated
+     * GET  /bookings/ get all the bookings in a list form with all courses and a selected year between a start date and end date with booking user details populated
      *
      * @param id the id of the bookingDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
      */
     @GetMapping("/bookings/findAllBookingsAllCoursesSelectedYear/{fromDate}/toDate/{toDate}/selectedYear/{selectedYear}")
     @Timed
-    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYearBetweenDates(@PathVariable String fromDate,
+    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYear(@PathVariable String fromDate,
 			@PathVariable String toDate, @PathVariable Integer selectedYear) {
         log.debug("REST request to get Booking list form");
 
-        fromDate= fromDate + dateParse;
-        toDate = toDate + dateParse;
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
         Instant instantFromDate = Instant.parse(fromDate);
         Instant instantToDate = Instant.parse(toDate);
-        List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);
+        List<BookingDTO> bookings = bookingService.findAllBookingsAllCoursesSelectedYearBetweenDates(instantFromDate, instantToDate, selectedYear);        
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
         
+        }      
 		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
     }
 
+    
+    /**
+     * GET  /bookings/ get all the bookings in a list form with a selected course and a selected year between a start date and end date with booking user details populated
+     *
+     * @param id the id of the bookingDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/bookings/findAllBookingsSelectedCourseAndSelectedYear/{fromDate}/toDate/{toDate}/selectedCourse/{courseId}/selectedYear/{selectedYear}")
+    @Timed
+    public ResponseEntity<List<BookingDTO>> findAllBookingsAllCoursesSelectedYearBetweenDates(@PathVariable String fromDate,
+			@PathVariable String toDate, @PathVariable Integer courseId, @PathVariable Integer selectedYear) {
+        log.debug("REST request to get Booking list form");
+
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
+        Instant instantFromDate = Instant.parse(fromDate);
+        Instant instantToDate = Instant.parse(toDate);
+        List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseSelectedYearBetweenDates(instantFromDate, instantToDate, courseId, selectedYear);        
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
+        
+        }      
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
+    }
+    
+    /**
+     * GET  /bookings/ get all the bookings in a list form with a selected course and all years between a start date and end date with booking user details populated
+     *
+     * @param id the id of the bookingDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bookingDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/bookings/findAllBookingsSelectedCourseAndAllYears/{fromDate}/toDate/{toDate}/selectedCourse/{courseId}")
+    @Timed
+    public ResponseEntity<List<BookingDTO>> findAllBookingsSelectedCourseAllYearsBetweenDates(@PathVariable String fromDate,
+			@PathVariable String toDate, @PathVariable Integer courseId) {
+        log.debug("REST request to get Booking list form");
+
+        fromDate= fromDate + DATE_SUFFIX;
+        toDate = toDate + DATE_SUFFIX;
+        Instant instantFromDate = Instant.parse(fromDate);
+        Instant instantToDate = Instant.parse(toDate);
+        List<BookingDTO> bookings = bookingService.findAllBookingsSelectedCourseAllYearsBetweenDates(instantFromDate, instantToDate, courseId);        
+        for (BookingDTO booking : bookings)
+        {
+        	Set<BookingUserDetailsDTO> bookingUserDetailsDTO2 = new HashSet<>(); 	
+        	bookingUserDetailsDTO2 = bookingUserDetailsService.findAllByBookingId(booking.getId());
+        	booking.setBookingUserDetailsDTO(bookingUserDetailsDTO2);
+        
+        }      
+		return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bookings));
+    }
     /**
      * GET  /bookings/:id : get the "id" booking.
      *
@@ -743,5 +807,15 @@ public class BookingResource {
         log.debug("REST request to delete Booking : {}", id);
         bookingService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+    
+    @PutMapping("/bookings/cancelBooking/{bookingID}")
+    @Timed
+    public ResponseEntity<BookingDTO> updateBookingForCancellation(@PathVariable Long bookingID) throws URISyntaxException {
+    	log.debug("REST request to update Booking : {}", bookingID);
+        BookingDTO result = bookingService.cancelBooking(bookingID);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 }

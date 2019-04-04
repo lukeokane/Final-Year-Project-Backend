@@ -7,7 +7,7 @@ export interface IUserInfo {
     tutorSkills?: string;
     profileImageURL?: string;
     userId?: number;
-    semesterGroupId?: number;
+    courseYearId?: number;
     bookingUserDetails?: IBookingUserDetails[];
     sentNotifications?: INotification[];
     receivedNotifications?: INotification[];
@@ -20,7 +20,7 @@ export class UserInfo implements IUserInfo {
         public tutorSkills?: string,
         public profileImageURL?: string,
         public userId?: number,
-        public semesterGroupId?: number,
+        public courseYearId?: number,
         public bookingUserDetails?: IBookingUserDetails[],
         public sentNotifications?: INotification[],
         public receivedNotifications?: INotification[],

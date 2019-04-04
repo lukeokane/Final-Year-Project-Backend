@@ -8,6 +8,17 @@
     -->
     <changeSet id="20181121234052-2" author="jhipster">
         
+        <addForeignKeyConstraint baseColumnNames="course_years_id"
+                                 baseTableName="course_year_subject"
+                                 constraintName="fk_course_year_subject_course_years_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_year"/>
+        <addForeignKeyConstraint baseColumnNames="subjects_id"
+                                 baseTableName="course_year_subject"
+                                 constraintName="fk_course_year_subject_subjects_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="subject"/>
+        
         <addForeignKeyConstraint baseColumnNames="course_id"
                                  baseTableName="course_year"
                                  constraintName="fk_course_year_course_id"

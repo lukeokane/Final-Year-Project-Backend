@@ -47,7 +47,7 @@ public class Subject implements Serializable {
     @ManyToMany(mappedBy = "subjects")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JsonIgnore
-    private Set<SemesterGroup> semesterGroups = new HashSet<>();
+    private Set<CourseYear> courseYears = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -134,29 +134,29 @@ public class Subject implements Serializable {
         this.bookings = bookings;
     }
 
-    public Set<SemesterGroup> getSemesterGroups() {
-        return semesterGroups;
+    public Set<CourseYear> getCourseYears() {
+        return courseYears;
     }
 
-    public Subject semesterGroups(Set<SemesterGroup> semesterGroups) {
-        this.semesterGroups = semesterGroups;
+    public Subject courseYears(Set<CourseYear> courseYears) {
+        this.courseYears = courseYears;
         return this;
     }
 
-    public Subject addSemesterGroup(SemesterGroup semesterGroup) {
-        this.semesterGroups.add(semesterGroup);
-        semesterGroup.getSubjects().add(this);
+    public Subject addCourseYear(CourseYear courseYear) {
+        this.courseYears.add(courseYear);
+        courseYear.getSubjects().add(this);
         return this;
     }
 
-    public Subject removeSemesterGroup(SemesterGroup semesterGroup) {
-        this.semesterGroups.remove(semesterGroup);
-        semesterGroup.getSubjects().remove(this);
+    public Subject removeCourseYear(CourseYear courseYear) {
+        this.courseYears.remove(courseYear);
+        courseYear.getSubjects().remove(this);
         return this;
     }
 
-    public void setSemesterGroups(Set<SemesterGroup> semesterGroups) {
-        this.semesterGroups = semesterGroups;
+    public void setCourseYears(Set<CourseYear> courseYears) {
+        this.courseYears = courseYears;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

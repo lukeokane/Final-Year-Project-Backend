@@ -46,6 +46,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneWithAuthoritiesByEmail(String email);
 
     Page<User> findAllByLoginNot(Pageable pageable, String login);
+    
+    @Query(value = "SELECT user FROM User user left join user.authorities ua where user.activated = :activated AND ua.name = :role",
+  		  countQuery = "SELECT count(distinct user) from User user left join user.authorities ua where user.activated = :activated AND ua.name = :role")
+    Page<User> findAllByRoleAndActivationStatus(Pageable pageable, @Param(value = "role") String role, @Param(value = "activated") boolean activated);
+
 
 //    @Query("SELECT User FROM jhi_user_ where email = (:role)")
 //    Optional<User> findByAuthority( @Param(value = "role") String role);

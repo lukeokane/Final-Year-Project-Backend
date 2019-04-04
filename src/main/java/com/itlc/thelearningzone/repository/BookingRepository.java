@@ -72,6 +72,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where u.id = :userId and booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0 and booking.startTime between :startTime and :endTime")
     Page<Booking> findConfirmedUserBookingsInTimeFrame(Pageable pageable, @Param("userId") Long userId, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
     
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos u left join booking.topics t where booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0 and booking.startTime > :startTime and booking.startTime <= :endTime",
+    		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where and booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0 and booking.startTime > :startTime and booking.startTime <= :endTime")
+    List<Booking> findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);  
+    
     @Query(value = "select distinct booking from Booking booking left join booking.userInfos u left join booking.topics t where u.id = :userId and booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0",
     		countQuery = "select count(distinct booking) from Booking booking left join booking.userInfos u where u.id = :userId and booking.tutorAcceptedId IS NOT NULL and booking.cancelled = 0")
     Page<Booking> findUserConfirmedBookings(Pageable pageable, @Param("userId") Long userId);
@@ -97,13 +101,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findBookingsPendingAdminApprovalChanges(Pageable pageable, @Param("startTime") Instant startTime);
     
     @Query(value = "select distinct booking from Booking booking left join booking.topics t where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate order by booking.startTime asc")
-	List<Booking> findAllWithBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
+	List<Booking> findAllBookings(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
+  
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos bui where bui.courseYear.id in (select courseYear.id from CourseYear cy where cy.courseYear = :selectedYear) and booking.startTime between :instantFromDate and :instantToDate and booking.cancelled=0 order by booking.startTime asc")
+    List<Booking> findBookingsAllcoursesSelectedYear(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("selectedYear") Integer selectedYear);
+    
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos bui where bui.courseYear.id in (select courseYear.id from CourseYear cy where cy.courseYear = :selectedYear and cy.course.id = :lCourseId) and booking.startTime between :instantFromDate and :instantToDate and booking.cancelled=0 order by booking.startTime asc")
+    List<Booking> findBookingsSelectedCourseSelectedYear(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("lCourseId") Long lCourseId, @Param("selectedYear") Integer selectedYear);
 
-    @Query(value = "select distinct booking from Booking booking left join booking.topics t where booking.cancelled = 0 and booking.startTime between :instantFromDate and :instantToDate order by booking.startTime asc")
-    List<Booking> findAllWithoutBookingUserDetails(@Param("instantFromDate") Instant instantFromDate,@Param("instantToDate") Instant instantToDate);
-    
-	
-//  @Query(value = "select distinct booking from Booking booking left join booking.userInfos u where booking.userInfos.semesterGroup.id IN (select distinct semester_group.id from SemesterGroup)")
-//  List<Booking> findBookingsAllcoursesSelectedYear(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("selectedYear") Integer selectedYear);
-    
+    @Query(value = "select distinct booking from Booking booking left join booking.userInfos bui where bui.courseYear.id in (select courseYear.id from CourseYear cy where cy.course.id = :lCourseId) and booking.startTime between :instantFromDate and :instantToDate and booking.cancelled=0 order by booking.startTime asc")
+    List<Booking> findBookingsSelectedCourseAllYears(@Param("instantFromDate") Instant instantFromDate, @Param("instantToDate") Instant instantToDate, @Param("lCourseId") Long lCourseId);
 }

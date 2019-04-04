@@ -12,6 +12,7 @@ import com.itlc.thelearningzone.repository.TopicRepository;
 import com.itlc.thelearningzone.repository.UserInfoRepository;
 import com.itlc.thelearningzone.repository.UserRepository;
 import com.itlc.thelearningzone.domain.Booking;
+import com.itlc.thelearningzone.domain.Message;
 import com.itlc.thelearningzone.domain.Resource;
 import com.itlc.thelearningzone.domain.Subject;
 import com.itlc.thelearningzone.domain.Topic;
@@ -112,6 +113,8 @@ public class MailServiceIntTest {
     private UserInfo tutorUserInfo;
     
     private Booking booking;
+    
+    private Booking bookingEdited;
     
     private Subject subject;
     
@@ -218,8 +221,10 @@ public class MailServiceIntTest {
     	topic = createTopicEntity(em);
     	resource1 = createResourceEntity(em);
     	booking = createBookingEntity(em);
+    	bookingEdited = createBookingEntity(em);
     	
     	booking.setSubject(subject);
+    	bookingEdited.setSubject(subject);
     	
     	Set<Topic> topics = new HashSet<Topic>();
     	topics.add(topic);
@@ -382,31 +387,9 @@ public class MailServiceIntTest {
        
       
     }
-    
-    @Test
-    public void testSendBookingEditedByAdminEmail() throws Exception {
-        User user = new User();
-        User tutorUser = new User();
-        Booking booking = new Booking();
-        user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setLogin("john");
-        user.setEmail("john.doe@example.com");
-        booking.setRequestedBy("John Doe");
-        booking.setStartTime(Instant.parse("2014-11-12T05:50:00.0Z"));
-        booking.setTitle("Java");
-        mailService.sendBookingEditedyAdminEmail(booking, user, tutorUser);
-        verify(javaMailSender).send(messageCaptor.capture());
-        MimeMessage message = messageCaptor.getValue();
-        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
-        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
-        assertThat(message.getContent().toString()).isNotEmpty();
-        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
-       
-      
-    }
      
 	/*
-	 * Check that mail sends and includes topic and resources titles of the booking
+	 * Check that rejected mail sends and includes topic and resources titles of the booking
 	 * Necessary for 100% statement coverage
 	 * Necessary for 100% condition coverage
 	 */
@@ -454,7 +437,9 @@ public class MailServiceIntTest {
         Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
         bookingUsers.add(bookingUserInfo);
         
-        mailService.sendBookingRejectedEmail(booking, bookingUsers, resources);
+        Message rejectionMessage = null;
+        
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources, rejectionMessage);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
@@ -465,9 +450,84 @@ public class MailServiceIntTest {
         /* Check booking title, the topic and it's resources are present in email */
         String emailBody = message.getContent().toString();
         
+        assertThat(emailBody).contains("could not be accepted");  
         assertThat(emailBody).contains(booking.getTitle());  
         assertThat(emailBody).contains(topic.getTitle());
         assertThat(emailBody).contains(resource2.getTitle());        
+    }
+    
+    /*
+	 * Check that cancelled mail sends and includes topic and resources titles of the booking
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    public void testSendBookingCancelledEmail() throws Exception {
+    	
+    	/* Create user */
+    	User bookingUser = new User();
+    	bookingUser.setFirstName("John");
+    	bookingUser.setLastName("Doe");
+    	bookingUser.setEmail("lukecjokane@gmail.com");
+    	bookingUser.setLangKey("en");
+    	UserInfo bookingUserInfo = new UserInfo();
+    	bookingUserInfo.setUser(bookingUser);
+    	
+    	/* Create booking */
+        Booking booking = new Booking();
+        booking.setRequestedBy(bookingUser.getFirstName() + " " + bookingUser.getLastName());
+        booking.setTitle("Object Oriented Programming");
+        booking.setAdminAcceptedId(1);
+        
+        /* Create topics under booking */
+        Topic topic = new Topic();
+        topic.setId(1L);
+        topic.setTitle("Topic 1 Title");
+        
+        /* Create resources under booking */
+        Resource resource1 = new Resource();
+        resource1.setId(1L);
+        resource1.setTitle("Resource 1 Title");
+        resource1.setResourceURL("www.example.com");
+        resource1.setTopic(topic);
+        
+        Resource resource2 = new Resource();
+        resource2.setId(2L);
+        resource2.setTitle("Resource 2 Title");
+        resource2.setResourceURL("www.dkit.ie");
+        resource2.setTopic(topic);
+     
+        /* Add resources to a list */
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.add(resource1);
+        resources.add(resource2);
+        
+        /* Add user to a set */      
+        Set<UserInfo> bookingUsers = new HashSet<UserInfo>();
+        bookingUsers.add(bookingUserInfo);
+        
+        Message cancelledMessage = new Message();
+        cancelledMessage.setContent("This event is no longer required");
+        cancelledMessage.setReason("Not required");
+        
+        mailService.sendBookingNotPossibleEmail(booking, bookingUsers, resources, cancelledMessage);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(bookingUserInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title, the topic and it's resources are present in email */
+        String emailBody = message.getContent().toString();
+        
+        System.out.println(emailBody);
+        
+        assertThat(emailBody).contains("has had to be cancelled");  
+        assertThat(emailBody).contains(booking.getTitle());  
+        assertThat(emailBody).contains(topic.getTitle());
+        assertThat(emailBody).contains(resource2.getTitle());  
+        assertThat(emailBody).contains(cancelledMessage.getContent());
     }
     
 	/*
@@ -543,10 +603,7 @@ public class MailServiceIntTest {
 	 */
     @Test
     @Transactional
-    public void testSendBookingConfirmedEmail2() throws Exception {
-    	
-    	
-    	System.out.println(userInfo.getUser().toString());
+    public void testSendBookingConfirmedEmail2() throws Exception {  
     	
 		// Initialize the database
         userInfoRepository.save(userInfo);
@@ -570,8 +627,6 @@ public class MailServiceIntTest {
         
 		bookingRepository.saveAndFlush(booking);
 
-		System.out.println(userInfo.getUser().toString());
-		
         // Get the required entities
         Booking updatedBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
         User updatedUser = userRepository.findById(user.getId()).get();
@@ -580,14 +635,7 @@ public class MailServiceIntTest {
         List<Resource> resources = new ArrayList<>();
         // Tutor is null since it is not a tutorial
         User tutor = null;
-        
-        for (UserInfo ui : updatedBooking.getUserInfos()) {
-        	System.out.println(ui.getUser().toString());
-        }       
-        
-        for (UserInfo ui : updatedBooking.getUserInfos()) {
-        	System.out.println(ui.getUser().toString());
-        }
+
         mailService.sendBookingConfirmedEmail(updatedBooking, updatedBooking.getUserInfos(), tutor, resources);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
@@ -618,6 +666,316 @@ public class MailServiceIntTest {
         em.detach(updatedUser);
     }
 
+    /*
+	 * Check that booking that is a tutorial shows topics and tutor name
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingReminderEmail1() throws Exception {
+        	
+    		// Initialize the database
+            userInfoRepository.save(userInfo);
+            userInfoRepository.save(tutorUserInfo);
+            userInfoRepository.flush();
+            topicRepository.saveAndFlush(topic);
+            resourceRepository.save(resource1);
+            resourceRepository.save(resource2);
+            resourceRepository.flush();
+            subjectRepository.saveAndFlush(subject);
+            
+        	// Set booking to accepted and set tutor
+        	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+        	userInfos.add(userInfo);
+        	
+        	// Set topic in booking 
+        	Set<Topic> topics = new HashSet<Topic>();
+        	topics.add(topic);
+        	booking.setUserInfos(userInfos);
+        	booking.setTutorAccepted(true);
+        	booking.setTutorAcceptedId(tutorUserInfo.getId().intValue());
+        	booking.setTopics(topics);
+    		bookingRepository.saveAndFlush(booking);
+
+            // Get the required entities
+            Booking updatedBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+            User updatedUser = userRepository.findById(user.getId()).get();
+            UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+            User tutor = userRepository.findById(updatedBooking.getTutorAcceptedId().longValue()).get();
+            Topic updatedTopic = topicRepository.findById(topic.getId()).get();
+            mailService.sendBookingReminderEmail(updatedBooking, updatedBooking.getUserInfos(), tutor, "tomorrow");
+            verify(javaMailSender).send(messageCaptor.capture());
+            MimeMessage message = messageCaptor.getValue();
+            assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+            assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+            assertThat(message.getContent().toString()).isNotEmpty();
+            assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+            
+            /* Check booking title, the topic and it's resources are present in email */
+            String emailBody = message.getContent().toString();
+            
+            assertThat(emailBody).contains(booking.getTitle());
+            
+            assertThat(emailBody).contains(updatedTopic.getTitle());
+            
+            // Check if the tutor's name is present and dates are correct
+            assertThat(emailBody).contains(tutor.getFirstName() + " " + tutor.getLastName());
+            
+            // Disconnect from session so that the updates on the required entities are not directly saved in db
+            em.detach(updatedBooking);
+            em.detach(updatedUserInfo);
+            em.detach(updatedUser);
+            em.detach(tutor);
+            em.detach(updatedTopic);
+            
+        }
+    
+	/*
+	 * Check that booking successfully sends with no tutor present
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingReminderEmail2() throws Exception {   	
+    	
+		// Initialize the database
+        userInfoRepository.save(userInfo);
+        userInfoRepository.save(tutorUserInfo);
+        userInfoRepository.flush();
+        topicRepository.saveAndFlush(topic);
+        resourceRepository.save(resource1);
+        resourceRepository.save(resource2);
+        resourceRepository.flush();
+        subjectRepository.saveAndFlush(subject);
+        
+    	// Set subject to null
+    	booking.setSubject(null);
+    	
+    	// Add requesting user to user infos.
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+    	
+    	// Set user infos
+    	booking.setUserInfos(userInfos);
+        
+		bookingRepository.saveAndFlush(booking);
+		
+        // Get the required entities
+        Booking updatedBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Resources is empty since booking has no subject
+        List<Resource> resources = new ArrayList<>();
+        // Tutor is null since it is not a tutorial
+        User tutor = null;
+
+        mailService.sendBookingConfirmedEmail(updatedBooking, updatedBooking.getUserInfos(), tutor, resources);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title present in email */
+        String emailBody = message.getContent().toString();
+        
+        /* Check email includes strings used for non-tutorial bookings*/
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+                .withZone(ZoneId.systemDefault()); 
+        DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mma")
+                .withZone(ZoneId.systemDefault());
+        String bookingDate = DATE_TIME_FORMATTER.format(updatedBooking.getStartTime());
+        String startTime = TIME_FORMATTER.format(updatedBooking.getStartTime());
+        String endTime = TIME_FORMATTER.format(updatedBooking.getEndTime());
+        
+        assertThat(emailBody).contains(booking.getTitle());
+        assertThat(emailBody).contains(bookingDate + " from " + startTime + " to " + endTime + ".");
+      
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(updatedBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+    }
+    
+	/*
+	 * Check that an edited booking with no tutor sends successfully
+	 * Necessary for 100% statement coverage
+	 * Necessary for 100% condition coverage
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingEditedEmail1() throws Exception {   	
+    	
+		// Initialize the database
+        userInfoRepository.save(userInfo);
+        userInfoRepository.save(tutorUserInfo);
+        userInfoRepository.flush();
+        topicRepository.saveAndFlush(topic);
+        resourceRepository.save(resource1);
+        resourceRepository.save(resource2);
+        resourceRepository.flush();
+        subjectRepository.saveAndFlush(subject);
+        
+    	// Set subject to null
+    	booking.setSubject(null);
+    	
+    	// Add requesting user to user infos.
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+    	
+    	// Set user infos
+    	booking.setUserInfos(userInfos);
+        
+		bookingRepository.saveAndFlush(booking);
+		
+		bookingEdited.setTitle("Edited Booking");
+		bookingEdited.setStartTime(Instant.now().plus(1, ChronoUnit.HOURS));
+		bookingEdited.setEndTime(Instant.now().plus(2, ChronoUnit.HOURS));
+		
+        // Get the required entities
+        Booking oldBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        // Resources is empty since booking has no subject
+        List<Resource> resources = new ArrayList<>();
+        // Tutor is null since it is not a tutorial
+        User tutor = null;
+
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title present in email */
+        String emailBody = message.getContent().toString();
+        
+        /* Check email includes new title and times */
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+                .withZone(ZoneId.systemDefault()); 
+        DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mma")
+                .withZone(ZoneId.systemDefault());
+        String editedBookingDate = DATE_TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedStartTime = TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedEndTime = TIME_FORMATTER.format(bookingEdited.getEndTime());
+        
+        assertThat(oldBooking.getTitle()).doesNotContain(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedBookingDate);
+        assertThat(emailBody).contains(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedStartTime + " to " + editedEndTime);
+        
+        /* Check email includes old title and times */
+        
+        String oldBookingDate = DATE_TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldStartTime = TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldEndTIme = TIME_FORMATTER.format(oldBooking.getEndTime());
+        
+        assertThat(emailBody).contains(oldBookingDate);
+        assertThat(emailBody).contains(oldBooking.getTitle());
+        assertThat(emailBody).contains(oldStartTime + " to " + oldEndTIme);
+      
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(oldBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+    }
+    
+    /*
+	 * Check that an edited booking with no tutor sends successfully
+	 */
+    @Test
+    @Transactional
+    public void testSendBookingEditedEmail2() throws Exception {   	
+    	
+		// Initialize the database
+        userInfoRepository.save(userInfo);
+        userInfoRepository.save(tutorUserInfo);
+        userInfoRepository.flush();
+        topicRepository.saveAndFlush(topic);
+        resourceRepository.save(resource1);
+        resourceRepository.save(resource2);
+        resourceRepository.flush();
+        subjectRepository.saveAndFlush(subject);
+       
+    	// Add requesting user to user infos.
+    	Set<UserInfo> userInfos = new HashSet<UserInfo>();
+    	userInfos.add(userInfo);
+    	
+    	// Set user infos & topics of booking and edited booking
+    	booking.setUserInfos(userInfos);
+    	Set<Topic> topics = new HashSet<Topic>();
+    	topics.add(topic);
+    	booking.setTopics(topics);
+		bookingRepository.saveAndFlush(booking);
+		
+		bookingEdited.setTitle("Edited Booking");
+		bookingEdited.setStartTime(Instant.now().plus(1, ChronoUnit.HOURS));
+		bookingEdited.setEndTime(Instant.now().plus(2, ChronoUnit.HOURS));
+		bookingEdited.setUserInfos(userInfos);
+    	topics.add(topic);
+    	bookingEdited.setTopics(topics);
+		
+        // Get the required entities
+        Booking oldBooking = bookingRepository.findOneWithEagerRelationships(booking.getId()).get();
+        User updatedUser = userRepository.findById(user.getId()).get();
+        UserInfo updatedUserInfo = userInfoRepository.findById(userInfo.getId()).get();
+        User tutor = userRepository.findById(tutorUser.getId()).get();
+        // Resources is empty since booking has no subject
+        List<Resource> resources = new ArrayList<>();
+
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        verify(javaMailSender).send(messageCaptor.capture());
+        MimeMessage message = messageCaptor.getValue();
+        assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
+        assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
+        assertThat(message.getContent().toString()).isNotEmpty();
+        assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+        
+        /* Check booking title present in email */
+        String emailBody = message.getContent().toString();
+
+        /* Check email includes new title and times */
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy")
+                .withZone(ZoneId.systemDefault()); 
+        DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mma")
+                .withZone(ZoneId.systemDefault());
+        String editedBookingDate = DATE_TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedStartTime = TIME_FORMATTER.format(bookingEdited.getStartTime());
+        String editedEndTime = TIME_FORMATTER.format(bookingEdited.getEndTime());
+        
+        assertThat(oldBooking.getTitle()).doesNotContain(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedBookingDate);
+        assertThat(emailBody).contains(bookingEdited.getTitle());
+        assertThat(emailBody).contains(editedStartTime + " to " + editedEndTime);
+        
+        /* Check email includes old title and times */
+        
+        String oldBookingDate = DATE_TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldStartTime = TIME_FORMATTER.format(oldBooking.getStartTime());
+        String oldEndTIme = TIME_FORMATTER.format(oldBooking.getEndTime());
+        
+        assertThat(emailBody).contains(oldBookingDate);
+        assertThat(emailBody).contains(oldBooking.getTitle());
+        assertThat(emailBody).contains(oldStartTime + " to " + oldEndTIme);
+        
+        /* Check email includes tutor, subject and topic information */
+        assertThat(emailBody).contains(tutor.getFirstName() + " " + tutor.getLastName());
+        assertThat(emailBody).contains(bookingEdited.getSubject().getTitle());
+        assertThat(emailBody).contains(topic.getTitle());
+        
+        // Disconnect from session so that the updates on the required entities are not directly saved in db
+        em.detach(oldBooking);
+        em.detach(updatedUserInfo);
+        em.detach(updatedUser);
+    }
 
     @Test
     public void testSendEmailWithException() throws Exception {

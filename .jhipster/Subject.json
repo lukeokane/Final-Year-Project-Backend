@@ -33,8 +33,8 @@
         },
         {
             "relationshipType": "many-to-many",
-            "relationshipName": "semesterGroup",
-            "otherEntityName": "semesterGroup",
+            "relationshipName": "courseYear",
+            "otherEntityName": "courseYear",
             "ownerSide": false,
             "otherEntityRelationshipName": "subject"
         }

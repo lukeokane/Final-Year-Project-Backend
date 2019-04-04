@@ -187,4 +187,20 @@ public class UserResource {
         userService.deleteUser(login);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + login, login)).build();
     }
+    
+    /**
+     * GET  /user/tutors/activation : get all tutors pending activation .
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of userInfos in body
+     */
+    @GetMapping("/users/tutors/activation")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<List<UserDTO>> getAllTutorsPendingActivation(Pageable pageable) {
+        log.debug("REST request to get a page of tutors pending activation");
+        Page<UserDTO> page = userService.findAllByRoleAndActivationStatus(pageable, AuthoritiesConstants.TUTOR, false);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users/tutors/activation");
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
 }

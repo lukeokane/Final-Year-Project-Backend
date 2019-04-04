@@ -17,10 +17,10 @@
                 <dd>
                     {{userInfo.userId}}
                 </dd>
-                <dt><span>Semester Group</span></dt>
+                <dt><span>Course Year</span></dt>
                 <dd>
-                    <div *ngIf="userInfo.semesterGroupId">
-                        <a [routerLink]="['/semester-group', userInfo.semesterGroupId, 'view']">{{userInfo.semesterGroupId}}</a>
+                    <div *ngIf="userInfo.courseYearId">
+                        <a [routerLink]="['/course-year', userInfo.courseYearId, 'view']">{{userInfo.courseYearId}}</a>
                     </div>
                 </dd>
             </dl>

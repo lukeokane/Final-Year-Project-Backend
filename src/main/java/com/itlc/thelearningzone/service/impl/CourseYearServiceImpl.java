@@ -62,6 +62,15 @@ public class CourseYearServiceImpl implements CourseYearService {
             .map(courseYearMapper::toDto);
     }
 
+    /**
+     * Get all the CourseYear with eager load of many-to-many relationships.
+     *
+     * @return the list of entities
+     */
+    public Page<CourseYearDTO> findAllWithEagerRelationships(Pageable pageable) {
+        return courseYearRepository.findAllWithEagerRelationships(pageable).map(courseYearMapper::toDto);
+    }
+    
 
     /**
      * Get one courseYear by id.
@@ -73,7 +82,7 @@ public class CourseYearServiceImpl implements CourseYearService {
     @Transactional(readOnly = true)
     public Optional<CourseYearDTO> findOne(Long id) {
         log.debug("Request to get CourseYear : {}", id);
-        return courseYearRepository.findById(id)
+        return courseYearRepository.findOneWithEagerRelationships(id)
             .map(courseYearMapper::toDto);
     }
 
