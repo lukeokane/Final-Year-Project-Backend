@@ -135,11 +135,13 @@ public class UserService {
         // If user is a tutor, set authority but don't make activation key, admin will activate a tutor.
         if (userDTO.getAuthorities() != null && userDTO.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
         	authorityRepository.findById(AuthoritiesConstants.TUTOR).ifPresent(authorities::add);
+        	// new user gets registration key
+            newUser.setActivationKey(RandomUtil.generateActivationKey());
         }
         else {
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);       
-        // new user gets registration key
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
+        	authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);       
+        	// new user gets registration key
+        	newUser.setActivationKey(RandomUtil.generateActivationKey());
         }
         
         newUser.setAuthorities(authorities);
