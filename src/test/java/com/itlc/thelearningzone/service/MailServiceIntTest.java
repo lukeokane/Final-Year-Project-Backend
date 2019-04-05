@@ -845,7 +845,7 @@ public class MailServiceIntTest {
         // Tutor is null since it is not a tutorial
         User tutor = null;
 
-        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor, tutor);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());
@@ -930,7 +930,7 @@ public class MailServiceIntTest {
         // Resources is empty since booking has no subject
         List<Resource> resources = new ArrayList<>();
 
-        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor);
+        mailService.sendBookingEditedEmail(oldBooking, bookingEdited, oldBooking.getUserInfos(), tutor, tutor);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(userInfo.getUser().getEmail());

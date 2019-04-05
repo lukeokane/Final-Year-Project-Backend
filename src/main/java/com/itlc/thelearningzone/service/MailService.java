@@ -181,7 +181,7 @@ public class MailService {
     	}
     }
     
-    @Async
+    
     public void sendBookingReminderEmailFromTemplate(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod, String templateName,
 			String titleKey) { 
     	
@@ -203,12 +203,13 @@ public class MailService {
     }
     
     @Async
-    public void sendBookingEditedEmailFromTemplate(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User tutor, String templateName, String titleKey) {
+    public void sendBookingEditedEmailFromTemplate(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User oldTutor, User newTutor, String templateName, String titleKey) {
     	
     	Context context = new Context();
     	context.setVariable("oldBooking", oldBooking);
     	context.setVariable("editedBooking", editedBooking);
-    	context.setVariable(TUTOR_USER, tutor);
+    	context.setVariable("oldTutorUser", oldTutor);
+    	context.setVariable("newTutorUser", newTutor);
     	context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
     	
     	for (UserInfo user : bookingUsers) {
@@ -263,15 +264,15 @@ public class MailService {
     	sendBookingConfirmedEmailFromTemplate(booking, bookingUsers, tutor, resources, "mail/bookingConfirmed", "email.confirmed.title");
 	}
     
-    @Async
+    
     public void sendBookingReminderEmail(Booking booking, Set<UserInfo> bookingUsers, User tutor, String relativeTimePeriod) {
     	log.debug("Sending booking reminder email to {} users for booking ID {}", bookingUsers.size(), booking.getId());
     	sendBookingReminderEmailFromTemplate(booking, bookingUsers, tutor, relativeTimePeriod, "mail/reminderEmail", "email.reminder.title");
     }
     
     @Async
-    public void sendBookingEditedEmail(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User tutor) {
+    public void sendBookingEditedEmail(Booking oldBooking, Booking editedBooking, Set<UserInfo> bookingUsers, User oldTutor, User newTutor) {
     	log.debug("Sending booking edited email to {} users for booking ID {}", bookingUsers.size(), editedBooking.getId());
-    	sendBookingEditedEmailFromTemplate(oldBooking, editedBooking, bookingUsers, tutor, "mail/bookingEdited", "email.edited.title");
+    	sendBookingEditedEmailFromTemplate(oldBooking, editedBooking, bookingUsers, oldTutor, newTutor, "mail/bookingEdited", "email.edited.title");
     }
 }

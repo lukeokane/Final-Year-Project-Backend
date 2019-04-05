@@ -25,6 +25,31 @@ import com.itlc.thelearningzone.domain.enumeration.OrdinalScale;
 public class Booking implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    public Booking() {};
+    public Booking(Booking booking) {
+    	this.id = booking.id;
+    	this.title = booking.title;
+    	this.requestedBy = booking.requestedBy;
+    	this.startTime = booking.startTime;
+    	this.endTime = booking.endTime;
+    	this.userComments = booking.userComments;
+    	this.importanceLevel = booking.importanceLevel;
+    	this.adminAcceptedId = booking.adminAcceptedId;
+    	this.tutorAccepted = booking.tutorAccepted;
+    	this.tutorAcceptedId = booking.tutorAcceptedId;
+    	this.modifiedTimestamp = booking.modifiedTimestamp;
+    	this.tutorRejectedCount = booking.tutorRejectedCount;
+    	this.cancelled = booking.cancelled;
+    	this.requestTimes = booking.requestTimes;
+    	this.readByAdmin = booking.readByAdmin;
+    	this.bookingUserDetails = booking.bookingUserDetails;
+    	this.subject = booking.subject;
+    	this.bookedBy = booking.bookedBy;
+    	this.userInfos = booking.userInfos;
+    	this.topics = booking.topics;
+    	this.notifications = booking.notifications;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,7 +98,7 @@ public class Booking implements Serializable {
     private Boolean cancelled;
 
     @Column(name = "request_times")
-    private String requestTimes;
+	private String requestTimes;
 
     @Column(name = "read_by_admin")
     private Boolean readByAdmin;

@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -233,9 +234,7 @@ public class BookingServiceImpl implements BookingService {
 		
 		// Get the current Booking entity saved in the database
 		Booking currentBooking = bookingRepository.findById(editedBookingDTO.getId()).orElseThrow(() -> new BadRequestAlertException("Booking with id " + editedBookingDTO.getId() + " does not exist", ENTITY_NAME, ID_NULL));
-		
-		log.debug(currentBooking.toString());
-		log.debug(editedBookingDTO.toString());
+
 		if ((currentBooking.isCancelled() && currentBooking.getAdminAcceptedId() == null) && (!editedBookingDTO.isCancelled() && editedBookingDTO.getAdminAcceptedId() != null)) {
 			log.debug("Booking went from rejected to confirmed");
 			
@@ -329,15 +328,16 @@ public class BookingServiceImpl implements BookingService {
 				resources = resourceRepository.findAllResourcesInBooking(currentBooking.getId());
 			}
 			
-			User tutor = null;
+			User oldTutor = null;
+			User newTutor = null;
 			if (editedBookingDTO.getTutorAcceptedId() != null) {
-				tutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+				oldTutor = userRepository.findById((long) currentBooking.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
+				newTutor = userRepository.findById((long) editedBookingDTO.getTutorAcceptedId()).orElseThrow(() -> new BadRequestAlertException("Tutor with id " + editedBookingDTO.getTutorAcceptedId() + " does not exist", ENTITY_NAME, ID_NULL));
 			}					
-			
+			Booking oldBooking = new Booking(currentBooking);
 			bookingRepository.save(bookingMapper.toEntity(editedBookingDTO));
-			
 			// Send confirmed booking email
-			mailService.sendBookingEditedEmail(currentBooking, bookingMapper.toEntity(editedBookingDTO), currentBooking.getUserInfos(), tutor);
+			mailService.sendBookingEditedEmail(oldBooking, currentBooking, currentBooking.getUserInfos(), oldTutor, newTutor);
 		}		
 		
 		return editedBookingDTO;
@@ -653,24 +653,29 @@ public class BookingServiceImpl implements BookingService {
 	 *
      * This is scheduled to get fired everyday, at 18:00 (pm).
      */
+	@Async
     @Scheduled(cron = "0 0 18 * * ?")
     public void sendBookingEveningReminderEmail() {
     	
     	// Get next day time and end of next day time
     	Instant currentTime = Instant.now();
     	Instant nextDay = currentTime.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
-    	Instant endOfNextDay = nextDay.minus(1, ChronoUnit.DAYS);
+    	Instant endOfNextDay = nextDay.plus(1, ChronoUnit.DAYS);
     	
     	// Get bookings between those two times
     	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(nextDay, endOfNextDay);
     	
     	log.debug("Scheduled task, runs at 18:00 every day: sending emails to attendees of {} bookings", bookings.size());
+    	log.debug("Scheduled task @ 18:00 getting bookings from {} to {}", nextDay, endOfNextDay );
     	for (int i = 0; i < bookings.size(); i++) {
-    		Booking booking = bookings.get(i);
+    		Booking booking = new Booking(bookings.get(i));
     		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
     		if (tutor.isPresent()) {
     		// Send email to attendees
-    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "tomorrow");
+    		}
+    		else {
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), null, "tomorrow");
     		}
     	}
     }
@@ -680,13 +685,22 @@ public class BookingServiceImpl implements BookingService {
 	 *
      * This is scheduled to get fired every 5 minutes
      */
-    @Scheduled(fixedRate = 300000)
+    @Async
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void sendBookingHourBeforeReminderEmail() {
     	
     	// Get time an hour from now and an hour + 5 minutes from now
-    	Instant currentTime = Instant.now();
-    	Instant startTime = currentTime.truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.HOURS);
-    	Instant endTime = startTime.plus(5, ChronoUnit.MINUTES);
+    	Instant currentTime = new Date().toInstant();
+
+    	// Add daylight savings
+    	Boolean DST = ZoneId.of(ZoneId.systemDefault().toString()).getRules().isDaylightSavings(Instant.now());
+    	if (DST) {
+    		//currentTime = currentTime.atOffset(ZoneOffset.ofHours(1)).toInstant();
+    		currentTime = currentTime.plus(1, ChronoUnit.HOURS); 		
+    	}
+    	
+    	Instant startTime = currentTime.plus(1, ChronoUnit.HOURS);
+    	Instant endTime = startTime.plus(5, ChronoUnit.MINUTES);   	
     	
     	// Get bookings between those two times
     	List<Booking> bookings = bookingRepository.findConfirmedBookingsAfterStartTimeAndEndTimeInclusive(startTime, endTime);
@@ -694,10 +708,14 @@ public class BookingServiceImpl implements BookingService {
     	log.debug("Scheduled task, runs every 5 minutes: sending emails to attendees of {} bookings", bookings.size());
     	for (int i = 0; i < bookings.size(); i++) {
     		Booking booking = bookings.get(i);
+
     		Optional<User> tutor = userRepository.findById(booking.getTutorAcceptedId().longValue());
     		if (tutor.isPresent()) {
-    		// Send email to attendees
-    		mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    			// Send email to attendees
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), tutor.get(), "today");
+    		}
+    		else {
+    			mailService.sendBookingReminderEmail(bookings.get(i), bookings.get(i).getUserInfos(), null, "today");
     		}
     	}
     }
