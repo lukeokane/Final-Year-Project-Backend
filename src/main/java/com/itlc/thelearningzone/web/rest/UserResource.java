@@ -203,4 +203,20 @@ public class UserResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users/tutors/activation");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+    
+    /**
+     * GET  /user/tutors/ : get all tutors.
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of users in body
+     */
+    @GetMapping("/users/tutors")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<List<UserDTO>> getAllTutors(Pageable pageable) {
+        log.debug("REST request to get a page of tutors pending activation");
+        Page<UserDTO> page = userService.findAllByRoleAndActivationStatus(pageable, AuthoritiesConstants.TUTOR, true);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users/tutors");
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
 }

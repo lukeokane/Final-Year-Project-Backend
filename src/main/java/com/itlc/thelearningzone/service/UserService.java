@@ -168,6 +168,7 @@ public class UserService {
         	// Set course year
         	if (userInfo != null) {
         	userInfo.setCourseYear(courseYear.get());
+        	userInfo.setUser(newUser);
         	} else {
         		throw new IllegalArgumentException("User " + userDTO.getLogin() + " does not exist");
         	}
