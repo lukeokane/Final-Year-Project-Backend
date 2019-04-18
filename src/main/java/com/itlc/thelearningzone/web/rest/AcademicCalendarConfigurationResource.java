@@ -1,8 +1,6 @@
 package com.itlc.thelearningzone.web.rest;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import javax.xml.bind.JAXBContext;
@@ -10,10 +8,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +23,7 @@ import com.itlc.thelearningzone.config.AcademicCalendarConfiguration;
 import com.itlc.thelearningzone.web.rest.util.HeaderUtil;
 
 /**
- * REST controller for managing Academic Year settings.
+ * REST controller for managing Academic Calendar Configuration settings.
  */
 @RestController
 @RequestMapping("/api")
@@ -50,14 +46,11 @@ public class AcademicCalendarConfigurationResource {
 		
 		AcademicCalendarConfiguration academicCalendarConfiguration = AcademicCalendarConfiguration.getInstance();
 		try {
-			File academicCalendarSettingsFile = new ClassPathResource("config/academicCalendarConfiguration.xml").getFile();
+			File academicCalendarSettingsFile = new File("academicCalendarConfiguration.xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(AcademicCalendarConfiguration.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			academicCalendarConfiguration = (AcademicCalendarConfiguration) jaxbUnmarshaller.unmarshal(academicCalendarSettingsFile);
 		} catch (JAXBException e) {
-			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
-			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
-		} catch (IOException e) {
 			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
 			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
 		}
@@ -74,16 +67,13 @@ public class AcademicCalendarConfigurationResource {
 		String newStartDate = startDate;
 		academicCalendarConfiguration.setStartDate(newStartDate);
 		try {
-			File academicCalendarSettingsFile = new ClassPathResource("config/academicCalendarConfiguration.xml").getFile();
+			File academicCalendarSettingsFile = new File("academicCalendarConfiguration.xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(AcademicCalendarConfiguration.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			jaxbMarshaller.marshal(academicCalendarConfiguration, academicCalendarSettingsFile);
 
 		} catch (JAXBException e) {
-			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
-			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
-		} catch (IOException e) {
 			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
 			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
 		}
