@@ -763,6 +763,12 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public void delete(Long id) {
 		log.debug("Request to delete Booking : {}", id);
+		Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BadRequestAlertException("Booking with id " + id + " does not exist", ENTITY_NAME, ID_NULL));
+		// Delete BookingUserDetails foreign key constraints
+		for (BookingUserDetails bud : booking.getBookingUserDetails()) {
+			bookingUserDetailsRepository.deleteById(bud.getId());
+		}
+		
 		bookingRepository.deleteById(id);
 	}
 
