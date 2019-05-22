@@ -72,10 +72,7 @@ public class AccountResource {
         	user = userService.registerUser(managedUserVM, managedUserVM.getPassword());	
         }
         
-        // Do not send activation email to a tutor, will be activated by the admin.
-        if (managedUserVM.getAuthorities() != null && !managedUserVM.getAuthorities().contains(AuthoritiesConstants.TUTOR)) {
         mailService.sendActivationEmail(user);
-        }
     }
 
     /**

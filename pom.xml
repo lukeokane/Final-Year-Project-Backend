@@ -4,7 +4,7 @@
 
     <groupId>com.itlc.thelearningzone</groupId>
     <artifactId>thelearningzone</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>2.0.1-RELEASE</version>
     <packaging>war</packaging>
     <name>Thelearningzone</name>
 

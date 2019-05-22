@@ -23,7 +23,7 @@ import com.itlc.thelearningzone.config.AcademicCalendarConfiguration;
 import com.itlc.thelearningzone.web.rest.util.HeaderUtil;
 
 /**
- * REST controller for managing Academic Year settings.
+ * REST controller for managing Academic Calendar Configuration settings.
  */
 @RestController
 @RequestMapping("/api")
@@ -50,7 +50,6 @@ public class AcademicCalendarConfigurationResource {
 			JAXBContext jaxbContext = JAXBContext.newInstance(AcademicCalendarConfiguration.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			academicCalendarConfiguration = (AcademicCalendarConfiguration) jaxbUnmarshaller.unmarshal(academicCalendarSettingsFile);
-
 		} catch (JAXBException e) {
 			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
 			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
@@ -65,7 +64,8 @@ public class AcademicCalendarConfigurationResource {
 		log.debug("REST request to save AcademicCalendarConfiguration start date as : {}", startDate);
 		
 		AcademicCalendarConfiguration academicCalendarConfiguration = AcademicCalendarConfiguration.getInstance();
-		academicCalendarConfiguration.setStartDate(startDate);
+		String newStartDate = startDate;
+		academicCalendarConfiguration.setStartDate(newStartDate);
 		try {
 			File academicCalendarSettingsFile = new File("academicCalendarConfiguration.xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(AcademicCalendarConfiguration.class);
@@ -73,12 +73,12 @@ public class AcademicCalendarConfigurationResource {
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			jaxbMarshaller.marshal(academicCalendarConfiguration, academicCalendarSettingsFile);
 
-		} catch (JAXBException e2) {
-			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e2);
+		} catch (JAXBException e) {
+			log.debug(FILE_NOT_FOUND_ERROR_MESSAGE, e);
 			return new ResponseEntity<>(FILE_NOT_FOUND_ERROR_MESSAGE, HttpStatus.CONFLICT);
 		}
-		return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, startDate))
-				.body(academicCalendarConfiguration.getStartDate());
+		return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, newStartDate))
+				.body(newStartDate);
 	}
 
 }

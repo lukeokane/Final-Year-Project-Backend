@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookingUserDetailsRepository extends JpaRepository<BookingUserDetails, Long> {
 
-	@Query("select distinct bookingUserDetails from BookingUserDetails bookingUserDetails where bookingUserDetails.booking.id =:id")
+	@Query("select distinct bookingUserDetails from BookingUserDetails bookingUserDetails where bookingUserDetails.booking.id =:id and bookingUserDetails.usercheckInTime != null")
 	Set<BookingUserDetails> findAlltest(@Param("id") Long id);
 	
 	@Query("select bookingUserDetails from BookingUserDetails bookingUserDetails where bookingUserDetails.booking.id =:bookingID and bookingUserDetails.userInfo.id =:userInfoID")
